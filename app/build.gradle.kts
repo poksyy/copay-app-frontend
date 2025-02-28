@@ -50,6 +50,14 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    // Allows to work with coroutines in the ViewModel.
+    implementation (libs.kotlinx.coroutines.android)
+    // LiveData support in Compose.
+    implementation (libs.androidx.lifecycle.livedata.ktx)
+    // Allows to use ViewModels with Compose.
+    implementation (libs.androidx.lifecycle.viewmodel.compose)
+    // Navigation library.
+    implementation (libs.androidx.navigation.compose)
     // Retrofit core library for making HTTP requests and handling API communication.
     implementation(libs.retrofit)
     // Gson converter for Retrofit, enabling automatic JSON serialization and deserialization.
