@@ -1,47 +1,44 @@
-package com.copay.app
+package com.copay.app.ui
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.copay.app.ui.theme.CopayappfrontendTheme
+import android.app.Activity
+import android.util.Log
+import com.copay.app.utils.ConnectionManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class MainActivity : ComponentActivity() {
+class MainActivity : Activity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            CopayappfrontendTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+        setContentView(android.R.layout.simple_list_item_1)
+
+        // Method to verify the connection with the backend.
+        testApiConnection();
+    }
+
+    private fun testApiConnection() {
+        // Using CoroutineScope to handle the asynchronous call on the IO thread.
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ConnectionManager.testConnection()
+
+                // Returning to the main thread to log the result.
+                withContext(Dispatchers.Main) {
+
+                    if (response != null) {
+                        Log.d("TestConnection", "Connection Successful")
+                    } else {
+                        Log.e("TestConnection", "Error: Response body is null")
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.e("TestConnection", "Exception occurred: ${e.message}", e)
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CopayappfrontendTheme {
-        Greeting("Android")
     }
 }
