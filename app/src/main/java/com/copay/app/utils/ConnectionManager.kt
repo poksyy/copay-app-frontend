@@ -8,16 +8,17 @@ import retrofit2.Response
 object ConnectionManager {
 
     suspend fun testConnection(): String? {
-        return try {
-            // Hacer la llamada a la API
+        try {
+            // Make the API call using Retrofit.
             val response: Response<ResponseBody> = RetrofitInstance.api.getConnectionResponse()
 
-            // Verificar si la respuesta fue exitosa
+            // Response management.
             if (response.isSuccessful) {
                 val responseBody = response.body()
+
                 if (responseBody != null) {
-                    // Obtener el cuerpo de la respuesta como texto
-                    return responseBody.string() // Retorna el texto plano
+                    // Return the response body as plain text.
+                    return responseBody.string()
                 } else {
                     Log.e("TestConnection", "Response body is null")
                     return null
@@ -27,7 +28,6 @@ object ConnectionManager {
                 return null
             }
         } catch (e: Exception) {
-            // Manejo de excepciones
             Log.e("TestConnection", "Exception occurred: ${e.message}", e)
             return null
         }

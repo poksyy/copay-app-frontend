@@ -1,22 +1,33 @@
-package com.copay.app.ui
+package com.copay.app
 
 import android.os.Bundle
-import android.app.Activity
 import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.navigation.compose.rememberNavController
+import com.copay.app.navigation.CopayNavHost
 import com.copay.app.utils.ConnectionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : Activity() {
+
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(android.R.layout.simple_list_item_1)
+
+        setContent {
+
+            // Initialize NavController to handle navigation.
+            val navController = rememberNavController()
+            // Pass the NavController to the CopayNavHost for navigation management.
+            CopayNavHost(navController = navController)
+        }
 
         // Method to verify the connection with the backend.
-        testApiConnection();
+        testApiConnection()
     }
 
     private fun testApiConnection() {
