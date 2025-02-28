@@ -14,3 +14,5 @@
 .cxx
 local.properties
 .idea/inspectionProfiles/Project_Default.xml
+gradle/libs.versions.toml
+.idea/gradle.xml
