@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.copay.app.R
 import com.copay.app.ui.theme.AppTypography
@@ -68,7 +70,40 @@ fun SecondaryButton(
         Text(
             text = text,
             color = Black,
-            style =  AppTypography.displayMedium
+            style = AppTypography.displayMedium
+        )
+    }
+}
+
+@Composable
+fun SignInWithGoogleButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = SecondaryButtonFill),
+        border = BorderStroke(1.dp, SecondaryButtonBorder),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(28.dp),
+    ) {
+        // Google icon 256x256.
+        Image(
+            painter = painterResource(id = R.drawable.google_256),
+            contentDescription = "Google Logo",
+            modifier = Modifier.size(24.dp)
+        )
+
+        // Space between the google image and the text.
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = text,
+            color = Black,
+            style = AppTypography.displayMedium
         )
     }
 }
@@ -93,41 +128,6 @@ fun LogoutButton(
         )
     }
 }
-
-//@Composable
-//fun SignInWithGoogleButton(
-//    text: String,
-//    onClick: () -> Unit,
-//    modifier: Modifier = Modifier
-//) {
-//    Button(
-//        onClick = onClick,
-//        colors = ButtonDefaults.buttonColors(containerColor = SecondaryButtonFill),
-//        border = BorderStroke(1.dp, SecondaryButtonBorder),
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .height(56.dp),
-//        shape = RoundedCornerShape(28.dp),
-//    ) {
-//        // Logo de Google
-//        Image(
-//            painter = rememberImagePainter("file:///android_asset/google_logo.svg"), // Ruta del logo
-//            contentDescription = "Google Logo",
-//            modifier = Modifier.size(24.dp) // Ajusta el tamaño según sea necesario
-//        )
-//
-//        // Espaciado entre el logo y el texto
-//        Spacer(modifier = Modifier.width(8.dp))
-//
-//        // Texto del botón
-//        Text(
-//            text = text,
-//            fontSize = 16.sp,
-//            fontWeight = FontWeight.Medium,
-//            color = White
-//        )
-//    }
-//}
 
 @Composable
 fun BackButtonTop(navController: NavController, modifier: Modifier = Modifier) {
