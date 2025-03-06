@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.compose.rememberNavController
 import com.copay.app.navigation.CopayNavHost
+import com.copay.app.ui.theme.CopayTheme
 import com.copay.app.utils.ConnectionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,11 +20,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-
-            // Initialize NavController to handle navigation.
-            val navController = rememberNavController()
-            // Pass the NavController to the CopayNavHost for navigation management.
-            CopayNavHost(navController = navController)
+            CopayTheme {
+                // Initialize NavController to handle navigation.
+                val navController = rememberNavController()
+                // Pass the NavController to the CopayNavHost for navigation management.
+                CopayNavHost(navController = navController)
+            }
         }
 
         // Method to verify the connection with the backend.
