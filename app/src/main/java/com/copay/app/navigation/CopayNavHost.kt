@@ -5,6 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.copay.app.ui.screen.auth.RegisterScreen
+import com.copay.app.ui.screen.auth.LoginScreen
 import com.copay.app.ui.screen.HubScreen
 
 @Composable
@@ -23,19 +25,22 @@ fun CopayNavHost(
         // Apply modifier to NavHost.
         modifier = modifier
     ) {
+        // HubScreen
         composable(NavRoutes.HubScreen.route) {
             HubScreen(
-                onSignUpClick = { navController.navigate(NavRoutes.RegisterScreen.route) },
+                onSignUpClick = { navController.navigate(NavRoutes.RegisterScreen.route)},
                 onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) }
             )
         }
 
-        composable(NavRoutes.LoginScreen.route) {
-//            LoginScreen(navController)
+        // RegisterScreen
+        composable(NavRoutes.RegisterScreen.route) {
+            RegisterScreen(navController)
         }
 
-        composable(NavRoutes.RegisterScreen.route) {
-//            RegisterScreen(navController)
+        // LoginScreen
+        composable(NavRoutes.LoginScreen.route) {
+            LoginScreen(navController)
         }
     }
 }

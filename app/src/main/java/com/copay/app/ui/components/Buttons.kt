@@ -1,23 +1,26 @@
 package com.copay.app.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.copay.app.R
 import com.copay.app.ui.theme.AppTypography
 import com.copay.app.ui.theme.Black
@@ -44,7 +47,7 @@ fun PrimaryButton(
         Text(
             text = text,
             color = White,
-            style = AppTypography.displayMedium
+            style =  AppTypography.displayMedium
         )
     }
 }
@@ -116,13 +119,27 @@ fun LogoutButton(
         colors = ButtonDefaults.buttonColors(containerColor = LogoutButtonBackground),
         modifier = modifier
             .fillMaxWidth()
-            .padding(64.dp)
-            .height(64.dp)
+            .height(56.dp)
     ) {
         Text(
             text = text,
             color = White,
             style = AppTypography.displayMedium
+        )
+    }
+}
+
+@Composable
+fun BackButtonTop(navController: NavController, modifier: Modifier = Modifier) {
+    IconButton(
+        onClick = { navController.popBackStack() },
+        modifier = modifier
+            .size(80.dp)
+            .statusBarsPadding()
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_back),
+            contentDescription = "Back"
         )
     }
 }
