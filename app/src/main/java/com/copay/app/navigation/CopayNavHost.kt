@@ -1,6 +1,8 @@
 package com.copay.app.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -8,27 +10,43 @@ import androidx.navigation.compose.composable
 import com.copay.app.ui.screen.auth.RegisterScreen
 import com.copay.app.ui.screen.auth.LoginScreen
 import com.copay.app.ui.screen.HubScreen
+import com.copay.app.ui.screen.SplashScreen
+import com.copay.app.viewmodel.SplashViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun CopayNavHost(
-    // NavController to manage navigation, passed from MainActivity.
     navController: NavHostController,
-    // Modifier for UI customization.
     modifier: Modifier = Modifier,
-    // TODO: ADD SPLASH SCREEN HERE:
-    startDestination: String = NavRoutes.HubScreen.route
+    startDestination: String = NavRoutes.SplashScreen.route
 ) {
+    val splashViewModel: SplashViewModel = viewModel()
+    val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
+
+    LaunchedEffect(isDataLoaded.value) {
+        if (isDataLoaded.value) {
+            navController.navigate(NavRoutes.HubScreen.route) {
+                // Pop the SplashScreen from the back stack after navigating
+                popUpTo(NavRoutes.SplashScreen.route) { inclusive = true }
+            }
+        }
+    }
+
+    // Set up the navigation graph
     NavHost(
         navController = navController,
-        // Set the start destination screen.
         startDestination = startDestination,
-        // Apply modifier to NavHost.
         modifier = modifier
     ) {
+        // SplashScreen
+        composable(NavRoutes.SplashScreen.route) {
+            SplashScreen(navController)
+        }
+
         // HubScreen
         composable(NavRoutes.HubScreen.route) {
             HubScreen(
-                onSignUpClick = { navController.navigate(NavRoutes.RegisterScreen.route)},
+                onSignUpClick = { navController.navigate(NavRoutes.RegisterScreen.route) },
                 onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) }
             )
         }
