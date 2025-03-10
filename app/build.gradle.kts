@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.converter.gson)
     // OkHttp Logging Interceptor for logging HTTP request and response details, useful for debugging.
     implementation(libs.logging.interceptor)
+    // DataStore Preferences for storing key-value pairs in a modern and safe way.
+    implementation (libs.androidx.datastore.preferences)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
