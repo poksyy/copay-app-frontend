@@ -6,9 +6,9 @@ object UserValidation {
 
     /** Validations for Login **/
     // Validate if the username is not empty.
-    fun validateLoginUsername(username: String): ValidationResult {
+    fun validateLoginPhoneNumber(username: String): ValidationResult {
         return when {
-            username.isBlank() -> ValidationResult(false, "Username cannot be empty")
+            username.isBlank() -> ValidationResult(false, "Phone number cannot be empty")
             else -> ValidationResult(true)
         }
     }
@@ -22,6 +22,15 @@ object UserValidation {
     }
 
     /** Validations for Register **/
+    // Validate if the phone number is not empty and has a valid length.
+    fun validateRegisterPhoneNumber(phoneNumber: String): ValidationResult {
+        return when {
+            phoneNumber.isBlank() -> ValidationResult(false, "PhoneNumber cannot be empty")
+            phoneNumber.length < 3 -> ValidationResult(false, "PhoneNumber must be above 3 characters")
+            else -> ValidationResult(true)
+        }
+    }
+
     // Validate if the username is not empty and has a valid length.
     fun validateRegisterUsername(username: String): ValidationResult {
         return when {
