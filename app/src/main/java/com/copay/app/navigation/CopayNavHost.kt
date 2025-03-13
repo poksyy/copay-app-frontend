@@ -3,6 +3,7 @@ package com.copay.app.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,6 +14,8 @@ import com.copay.app.ui.screen.HubScreen
 import com.copay.app.ui.screen.SplashScreen
 import com.copay.app.viewmodel.SplashViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.copay.app.repository.UserRepository
+import com.copay.app.config.RetrofitInstance
 
 @Composable
 fun CopayNavHost(
@@ -22,11 +25,11 @@ fun CopayNavHost(
 ) {
     val splashViewModel: SplashViewModel = viewModel()
     val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
+    val userRepository = remember { UserRepository(RetrofitInstance.api) }
 
     LaunchedEffect(isDataLoaded.value) {
         if (isDataLoaded.value) {
             navController.navigate(NavRoutes.HubScreen.route) {
-                // Pop the SplashScreen from the back stack after navigating
                 popUpTo(NavRoutes.SplashScreen.route) { inclusive = true }
             }
         }
@@ -53,12 +56,12 @@ fun CopayNavHost(
 
         // RegisterScreen
         composable(NavRoutes.RegisterScreen.route) {
-            RegisterScreen(navController)
+            RegisterScreen(navController, userRepository)
         }
 
         // LoginScreen
         composable(NavRoutes.LoginScreen.route) {
-            LoginScreen(navController)
+            LoginScreen(navController, userRepository)
         }
     }
 }
