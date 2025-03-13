@@ -9,15 +9,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import com.copay.app.R
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.copay.app.ui.components.PrimaryButton
 import com.copay.app.ui.components.SecondaryButton
+import com.copay.app.ui.components.SignInWithGoogleButton
 
 @Composable
 fun HubScreen(
+    // Redirection to RegisterScreen.
     onSignUpClick: () -> Unit = {},
+    // Redirection to LoginScreen.
     onLogInClick: () -> Unit = {},
 ) {
     Column(
@@ -30,13 +32,16 @@ fun HubScreen(
         // Space between the image.
         Spacer(modifier = Modifier.height(200.dp))
 
-        // Logo and tagline
+        // Copay banner.
         Image(
             painter = painterResource(id = R.drawable.copay_banner),
             contentDescription = "Copay Logo",
         )
 
-        // Sign up button (Primary)
+        // Space between the image and the button.
+        Spacer(modifier = Modifier.height(30.dp))
+
+        // Sign up button.
         PrimaryButton(
             text = "Sign up",
             onClick = onSignUpClick,
@@ -46,7 +51,7 @@ fun HubScreen(
         // Space between the buttons.
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Log in button (Secondary)
+        // Log in button.
         SecondaryButton(
             text = "Log in",
             onClick = onLogInClick,
@@ -56,23 +61,23 @@ fun HubScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Log in with Google button (Secondary).
-        SecondaryButton(
+        SignInWithGoogleButton(
             text = "Sign in with Google",
             onClick = onLogInClick,
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Footer with terms and policies
+        // Footer with terms and policies.
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Terms", fontSize = 14.sp, color = Color.Black)
-            Text(text = " | ", fontSize = 14.sp, color = Color.Black)
-            Text(text = "Privacy Policy", fontSize = 14.sp, color = Color.Black)
-            Text(text = " | ", fontSize = 14.sp, color = Color.Black)
-            Text(text = "Contact Us", fontSize = 14.sp, color = Color.Black)
+            Text(text = "Terms", fontSize = 15.sp, color = Color.Black)
+            Text(text = " | ", fontSize = 15.sp, color = Color.Black)
+            Text(text = "Privacy Policy", fontSize = 15.sp, color = Color.Black)
+            Text(text = " | ", fontSize = 15.sp, color = Color.Black)
+            Text(text = "Contact Us", fontSize = 15.sp, color = Color.Black)
         }
     }
 }

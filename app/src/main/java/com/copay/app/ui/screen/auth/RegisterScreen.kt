@@ -13,6 +13,7 @@ import com.copay.app.ui.components.BackButtonTop
 import com.copay.app.ui.components.InputField
 import com.copay.app.ui.components.PrimaryButton
 import com.copay.app.ui.theme.CopayTheme
+import com.copay.app.validation.UserValidation
 
 @Composable
 fun RegisterScreen(navController: NavController) {
@@ -45,10 +46,22 @@ fun RegisterScreen(navController: NavController) {
             var email by remember { mutableStateOf("") }
             var password by remember { mutableStateOf("") }
             var passwordConfirmation by remember { mutableStateOf("") }
+            var usernameError by remember { mutableStateOf<String?>(null) }
+            var emailError by remember { mutableStateOf<String?>(null) }
+            var passwordError by remember { mutableStateOf<String?>(null) }
+            var passwordMatch by remember { mutableStateOf<String?>(null) }
+
+            // Function to validate all inputs
+            fun validateInputs() {
+                usernameError = UserValidation.validateRegisterUsername(username).errorMessage
+                emailError = UserValidation.validateEmail(email).errorMessage
+                passwordError = UserValidation.validateRegisterPassword(password).errorMessage
+                passwordMatch = UserValidation.validatePasswordMatch(password, passwordConfirmation).errorMessage
+            }
 
             /*
             We will implement this into a screen. The first time that the users
-            enters in the application
+            enters in the application.
              */
 
 //            InputField(
@@ -57,52 +70,74 @@ fun RegisterScreen(navController: NavController) {
 //                label = "Phone Number",
 //                isPassword = false
 //            )
-//
-//            Spacer(modifier = Modifier.height(12.dp))
 
             InputField(
                 value = username,
-                onValueChange = { username = it },
+                onValueChange = {
+                    username = it
+                    usernameError = UserValidation.validateRegisterUsername(it).errorMessage
+                },
                 label = "Username",
-                isRequired = false
+                isError = usernameError != null,
+                errorMessage = usernameError
             )
             Spacer(modifier = Modifier.height(12.dp))
 
             InputField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    email = it
+                    emailError = UserValidation.validateEmail(it).errorMessage
+                },
                 label = "Email Address",
-                isRequired = true
+                isError = emailError != null,
+                errorMessage = emailError
             )
+
             Spacer(modifier = Modifier.height(12.dp))
 
             InputField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    passwordError = UserValidation.validateRegisterPassword(it).errorMessage
+                },
                 label = "Password",
                 isPassword = true,
-                isRequired = true
+                isError = passwordError != null,
+                errorMessage = passwordError
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             InputField(
                 value = passwordConfirmation,
-                onValueChange = { passwordConfirmation = it },
+                onValueChange = {
+                    passwordConfirmation = it
+                    passwordMatch = UserValidation.validatePasswordMatch(password, it).errorMessage
+                },
                 label = "Confirm Password",
                 isPassword = true,
-                isRequired = true
+                isError = passwordMatch != null,
+                errorMessage = passwordMatch
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             PrimaryButton(
                 text = "Done",
-                onClick = { /* Handle Login Action */ },
+                onClick = {
+                    validateInputs()
+
+                    if (listOf(usernameError, emailError, passwordError, passwordMatch).all { it == null }) {
+                        // Handle register action here
+                    }
+                }
             )
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
