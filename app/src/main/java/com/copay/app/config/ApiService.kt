@@ -1,6 +1,8 @@
 package com.copay.app.config
 
-import com.copay.app.model.User
+import com.copay.app.dto.request.LoginRequest
+import com.copay.app.dto.request.RegisterRequest
+import com.copay.app.dto.response.JwtResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -19,9 +21,9 @@ interface ApiService {
 
     // Login API Call
     @POST("${BASE_PATH}auth/login")
-    suspend fun loginUser(@Body request: User): Response<User>
+    suspend fun loginUser(@Body request: LoginRequest): Response<JwtResponse>
 
     // Register API Call
     @POST("${BASE_PATH}auth/register")
-    suspend fun registerUser(@Body request: User): Response<User>
+    suspend fun registerUser(@Body request: RegisterRequest): Response<JwtResponse>
 }
