@@ -1,22 +1,28 @@
 package com.copay.app.ui.screen.auth
 
+import AuthViewModelFactory
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.copay.app.repository.UserRepository
 import com.copay.app.ui.components.BackButtonTop
 import com.copay.app.ui.components.InputField
 import com.copay.app.ui.components.PrimaryButton
-import com.copay.app.ui.theme.CopayTheme
 import com.copay.app.validation.UserValidation
+import com.copay.app.viewmodel.AuthViewModel
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(navController: NavController, userRepository: UserRepository) {
+    val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
+    val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -41,13 +47,14 @@ fun RegisterScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-//          var phone by remember { mutableStateOf("") }
             var username by remember { mutableStateOf("") }
             var email by remember { mutableStateOf("") }
+            var phoneNumber by remember { mutableStateOf("") }
             var password by remember { mutableStateOf("") }
-            var passwordConfirmation by remember { mutableStateOf("") }
+            var confirmPassword by remember { mutableStateOf("") }
             var usernameError by remember { mutableStateOf<String?>(null) }
             var emailError by remember { mutableStateOf<String?>(null) }
+            var phoneNumberError by remember { mutableStateOf<String?>(null) }
             var passwordError by remember { mutableStateOf<String?>(null) }
             var passwordMatch by remember { mutableStateOf<String?>(null) }
 
@@ -56,20 +63,8 @@ fun RegisterScreen(navController: NavController) {
                 usernameError = UserValidation.validateRegisterUsername(username).errorMessage
                 emailError = UserValidation.validateEmail(email).errorMessage
                 passwordError = UserValidation.validateRegisterPassword(password).errorMessage
-                passwordMatch = UserValidation.validatePasswordMatch(password, passwordConfirmation).errorMessage
+                passwordMatch = UserValidation.validatePasswordMatch(password, confirmPassword).errorMessage
             }
-
-            /*
-            We will implement this into a screen. The first time that the users
-            enters in the application.
-             */
-
-//            InputField(
-//                value = phone,
-//                onValueChange = { phone = it },
-//                label = "Phone Number",
-//                isPassword = false
-//            )
 
             InputField(
                 value = username,
@@ -96,6 +91,23 @@ fun RegisterScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            /*
+            We will implement Phone Number in a single screen.
+            */
+
+            InputField(
+                value = phoneNumber,
+                onValueChange = {
+                    phoneNumber = it
+                    phoneNumberError = UserValidation.validateRegisterPhoneNumber(it).errorMessage
+                },
+                label = "Phone Number",
+                isError = phoneNumberError != null,
+                errorMessage = phoneNumberError
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             InputField(
                 value = password,
                 onValueChange = {
@@ -111,9 +123,9 @@ fun RegisterScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(12.dp))
 
             InputField(
-                value = passwordConfirmation,
+                value = confirmPassword,
                 onValueChange = {
-                    passwordConfirmation = it
+                    confirmPassword = it
                     passwordMatch = UserValidation.validatePasswordMatch(password, it).errorMessage
                 },
                 label = "Confirm Password",
@@ -124,26 +136,21 @@ fun RegisterScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            val context = LocalContext.current
+
             PrimaryButton(
                 text = "Done",
                 onClick = {
                     validateInputs()
 
                     if (listOf(usernameError, emailError, passwordError, passwordMatch).all { it == null }) {
-                        // Handle register action here
+                        Log.d("RegisterScreen", "Login button clicked. Sending data -> Phone: $username, Password: $password")
+                        authViewModel.register(context, username, email, phoneNumber, password, confirmPassword)
+                    } else {
+                        Log.e("RegisterScreen", "Validation errors: PhoneError=$usernameError, PasswordError=$passwordError")
                     }
                 }
             )
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewRegisterScreen() {
-    CopayTheme {
-        val fakeNavController = rememberNavController()
-        RegisterScreen(navController = fakeNavController)
     }
 }
