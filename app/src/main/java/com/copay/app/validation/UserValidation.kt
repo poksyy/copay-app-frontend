@@ -26,7 +26,6 @@ object UserValidation {
     fun validateRegisterPhoneNumber(phoneNumber: String): ValidationResult {
         return when {
             phoneNumber.isBlank() -> ValidationResult(false, "PhoneNumber cannot be empty")
-            phoneNumber.length < 3 -> ValidationResult(false, "PhoneNumber must be above 3 characters")
             else -> ValidationResult(true)
         }
     }
