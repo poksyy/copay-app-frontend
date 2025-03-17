@@ -62,6 +62,7 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
             fun validateInputs() {
                 usernameError = UserValidation.validateRegisterUsername(username).errorMessage
                 emailError = UserValidation.validateEmail(email).errorMessage
+                phoneNumberError = UserValidation.validateRegisterPhoneNumber(phoneNumber).errorMessage
                 passwordError = UserValidation.validateRegisterPassword(password).errorMessage
                 passwordMatch = UserValidation.validatePasswordMatch(password, confirmPassword).errorMessage
             }
@@ -73,6 +74,7 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
                     usernameError = UserValidation.validateRegisterUsername(it).errorMessage
                 },
                 label = "Username",
+                isRequired = true,
                 isError = usernameError != null,
                 errorMessage = usernameError
             )
@@ -85,6 +87,7 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
                     emailError = UserValidation.validateEmail(it).errorMessage
                 },
                 label = "Email Address",
+                isRequired = true,
                 isError = emailError != null,
                 errorMessage = emailError
             )
@@ -102,6 +105,7 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
                     phoneNumberError = UserValidation.validateRegisterPhoneNumber(it).errorMessage
                 },
                 label = "Phone Number",
+                isRequired = true,
                 isError = phoneNumberError != null,
                 errorMessage = phoneNumberError
             )
@@ -115,6 +119,7 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
                     passwordError = UserValidation.validateRegisterPassword(it).errorMessage
                 },
                 label = "Password",
+                isRequired = true,
                 isPassword = true,
                 isError = passwordError != null,
                 errorMessage = passwordError
@@ -129,6 +134,7 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
                     passwordMatch = UserValidation.validatePasswordMatch(password, it).errorMessage
                 },
                 label = "Confirm Password",
+                isRequired = true,
                 isPassword = true,
                 isError = passwordMatch != null,
                 errorMessage = passwordMatch
