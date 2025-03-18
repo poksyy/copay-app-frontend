@@ -16,22 +16,54 @@ import com.copay.app.ui.components.BackButtonTop
 import com.copay.app.ui.components.InputField
 import com.copay.app.ui.components.PrimaryButton
 import com.copay.app.validation.UserValidation
+import com.copay.app.viewmodel.AuthState
 import com.copay.app.viewmodel.AuthViewModel
 
 @Composable
 fun RegisterScreen(navController: NavController, userRepository: UserRepository) {
     val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
     val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
+    val authState by authViewModel.authState.collectAsState()
+    val context = LocalContext.current
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+
+    var usernameError by remember { mutableStateOf<String?>(null) }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var phoneNumberError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+    var passwordMatchError by remember { mutableStateOf<String?>(null) }
+
+    var apiErrorMessage by remember { mutableStateOf<String?>(null) }
+
+    // Effect triggered when the authentication state changes.
+    LaunchedEffect(authState) {
+        apiErrorMessage = when (authState) {
+            is AuthState.Success -> null
+            is AuthState.Error -> (authState as AuthState.Error).message
+            else -> apiErrorMessage
+        }
+    }
+
+    // Function to validate all inputs.
+    fun validateInputs() {
+        usernameError = UserValidation.validateRegisterUsername(username).errorMessage
+        emailError = UserValidation.validateEmail(email).errorMessage
+        phoneNumberError = UserValidation.validateRegisterPhoneNumber(phoneNumber).errorMessage
+        passwordError = UserValidation.validateRegisterPassword(password).errorMessage
+        passwordMatchError = UserValidation.validatePasswordMatch(password, confirmPassword).errorMessage
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
         // Back button in the top-left corner
         Box(modifier = Modifier.padding(top = 16.dp)) {
             BackButtonTop(navController)
         }
 
-        // Content with padding
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -39,33 +71,12 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-
             Spacer(modifier = Modifier.height(64.dp))
 
             Text("Welcome to Copay!", style = MaterialTheme.typography.titleLarge)
             Text("Let's set up your account.", style = MaterialTheme.typography.titleMedium)
 
             Spacer(modifier = Modifier.height(32.dp))
-
-            var username by remember { mutableStateOf("") }
-            var email by remember { mutableStateOf("") }
-            var phoneNumber by remember { mutableStateOf("") }
-            var password by remember { mutableStateOf("") }
-            var confirmPassword by remember { mutableStateOf("") }
-            var usernameError by remember { mutableStateOf<String?>(null) }
-            var emailError by remember { mutableStateOf<String?>(null) }
-            var phoneNumberError by remember { mutableStateOf<String?>(null) }
-            var passwordError by remember { mutableStateOf<String?>(null) }
-            var passwordMatch by remember { mutableStateOf<String?>(null) }
-
-            // Function to validate all inputs
-            fun validateInputs() {
-                usernameError = UserValidation.validateRegisterUsername(username).errorMessage
-                emailError = UserValidation.validateEmail(email).errorMessage
-                phoneNumberError = UserValidation.validateRegisterPhoneNumber(phoneNumber).errorMessage
-                passwordError = UserValidation.validateRegisterPassword(password).errorMessage
-                passwordMatch = UserValidation.validatePasswordMatch(password, confirmPassword).errorMessage
-            }
 
             InputField(
                 value = username,
@@ -91,12 +102,7 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
                 isError = emailError != null,
                 errorMessage = emailError
             )
-
             Spacer(modifier = Modifier.height(12.dp))
-
-            /*
-            We will implement Phone Number in a single screen.
-            */
 
             InputField(
                 value = phoneNumber,
@@ -109,7 +115,6 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
                 isError = phoneNumberError != null,
                 errorMessage = phoneNumberError
             )
-
             Spacer(modifier = Modifier.height(12.dp))
 
             InputField(
@@ -124,39 +129,43 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
                 isError = passwordError != null,
                 errorMessage = passwordError
             )
-
             Spacer(modifier = Modifier.height(12.dp))
 
             InputField(
                 value = confirmPassword,
                 onValueChange = {
                     confirmPassword = it
-                    passwordMatch = UserValidation.validatePasswordMatch(password, it).errorMessage
+                    passwordMatchError = UserValidation.validatePasswordMatch(password, it).errorMessage
                 },
                 label = "Confirm Password",
                 isRequired = true,
                 isPassword = true,
-                isError = passwordMatch != null,
-                errorMessage = passwordMatch
+                isError = passwordMatchError != null,
+                errorMessage = passwordMatchError
             )
-
             Spacer(modifier = Modifier.height(24.dp))
 
-            val context = LocalContext.current
+            val isLoading = authState is AuthState.Loading
 
             PrimaryButton(
-                text = "Done",
+                text = if (isLoading) "Registering..." else "Done",
+                enabled = !isLoading,
                 onClick = {
                     validateInputs()
-
-                    if (listOf(usernameError, emailError, passwordError, passwordMatch).all { it == null }) {
-                        Log.d("RegisterScreen", "Login button clicked. Sending data -> Phone: $username, Password: $password")
+                    if (listOf(usernameError, emailError, phoneNumberError, passwordError, passwordMatchError).all { it == null }) {
                         authViewModel.register(context, username, email, phoneNumber, password, confirmPassword)
-                    } else {
-                        Log.e("RegisterScreen", "Validation errors: PhoneError=$usernameError, PasswordError=$passwordError")
                     }
                 }
             )
+
+            apiErrorMessage?.let {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }
