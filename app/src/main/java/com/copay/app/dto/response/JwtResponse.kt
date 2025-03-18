@@ -5,7 +5,8 @@ package com.copay.app.dto.response
  */
 
 data class JwtResponse(
-    val token: String,      // JWT Token.
-    val expiresIn: Int,     // Token expiration in seconds.
-    val type: String        // Token type Bearer.
+    val token: String? = null,      // JWT Token.
+    val expiresIn: Int? = null,     // Token expiration in seconds.
+    val type: String? = null,        // Token type Bearer.
+    val message: String? = null
 )
