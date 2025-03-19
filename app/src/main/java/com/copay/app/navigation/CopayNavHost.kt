@@ -27,7 +27,8 @@ fun CopayNavHost(
     val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
     val userRepository = remember { UserRepository(RetrofitInstance.api) }
 
-    LaunchedEffect(isDataLoaded.value) {
+    LaunchedEffect(isDataLoaded.value)
+    {
         if (isDataLoaded.value) {
             navController.navigate(NavRoutes.HubScreen.route) {
                 popUpTo(NavRoutes.SplashScreen.route) { inclusive = true }
@@ -37,21 +38,18 @@ fun CopayNavHost(
 
     // Set up the navigation graph
     NavHost(
-        navController = navController,
-        startDestination = startDestination,
-        modifier = modifier
+        navController = navController, startDestination = startDestination, modifier = modifier
     ) {
         // SplashScreen
         composable(NavRoutes.SplashScreen.route) {
-            SplashScreen(navController)
+            SplashScreen(automaticRedirection = { navController.navigate(NavRoutes.HubScreen.route) })
         }
 
         // HubScreen
         composable(NavRoutes.HubScreen.route) {
             HubScreen(
                 onSignUpClick = { navController.navigate(NavRoutes.RegisterScreen.route) },
-                onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) }
-            )
+                onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) })
         }
 
         // RegisterScreen
