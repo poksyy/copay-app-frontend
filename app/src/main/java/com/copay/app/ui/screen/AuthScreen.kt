@@ -16,7 +16,7 @@ import com.copay.app.ui.components.SecondaryButton
 import com.copay.app.ui.components.SignInWithGoogleButton
 
 @Composable
-fun HubScreen(
+fun AuthScreen(
     // Redirection to RegisterScreen.
     onSignUpClick: () -> Unit = {},
     // Redirection to LoginScreen.

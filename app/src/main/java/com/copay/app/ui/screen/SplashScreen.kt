@@ -21,17 +21,18 @@ import com.copay.app.navigation.NavRoutes
 import com.copay.app.viewmodel.SplashViewModel
 
 @Composable
-fun SplashScreen(navController: NavController, viewModel: SplashViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun SplashScreen(
+    // Redirection to AuthScreen.
+    automaticRedirection: () -> Unit = {},
+    viewModel: SplashViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
     val isDataLoaded by viewModel.isDataLoaded.collectAsState()
 
     LaunchedEffect(isDataLoaded) {
         if (isDataLoaded) {
-            navController.navigate(NavRoutes.HubScreen.route) {
-                popUpTo(NavRoutes.SplashScreen.route) { inclusive = true }
-            }
+            automaticRedirection()
         }
     }
-
     SplashScreenContent()
 }
 

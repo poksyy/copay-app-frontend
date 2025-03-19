@@ -10,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.copay.app.ui.screen.auth.RegisterScreen
 import com.copay.app.ui.screen.auth.LoginScreen
-import com.copay.app.ui.screen.HubScreen
+import com.copay.app.ui.screen.AuthScreen
 import com.copay.app.ui.screen.SplashScreen
 import com.copay.app.viewmodel.SplashViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,9 +27,10 @@ fun CopayNavHost(
     val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
     val userRepository = remember { UserRepository(RetrofitInstance.api) }
 
-    LaunchedEffect(isDataLoaded.value) {
+    LaunchedEffect(isDataLoaded.value)
+    {
         if (isDataLoaded.value) {
-            navController.navigate(NavRoutes.HubScreen.route) {
+            navController.navigate(NavRoutes.AuthScreen.route) {
                 popUpTo(NavRoutes.SplashScreen.route) { inclusive = true }
             }
         }
@@ -37,21 +38,18 @@ fun CopayNavHost(
 
     // Set up the navigation graph
     NavHost(
-        navController = navController,
-        startDestination = startDestination,
-        modifier = modifier
+        navController = navController, startDestination = startDestination, modifier = modifier
     ) {
         // SplashScreen
         composable(NavRoutes.SplashScreen.route) {
-            SplashScreen(navController)
+            SplashScreen(automaticRedirection = { navController.navigate(NavRoutes.AuthScreen.route) })
         }
 
-        // HubScreen
-        composable(NavRoutes.HubScreen.route) {
-            HubScreen(
+        // AuthScreen
+        composable(NavRoutes.AuthScreen.route) {
+            AuthScreen(
                 onSignUpClick = { navController.navigate(NavRoutes.RegisterScreen.route) },
-                onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) }
-            )
+                onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) })
         }
 
         // RegisterScreen
