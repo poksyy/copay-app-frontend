@@ -22,7 +22,7 @@ import com.copay.app.viewmodel.SplashViewModel
 
 @Composable
 fun SplashScreen(
-    // Redirection to HubScreen.
+    // Redirection to AuthScreen.
     automaticRedirection: () -> Unit = {},
     viewModel: SplashViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
