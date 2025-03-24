@@ -20,7 +20,11 @@ import com.copay.app.viewmodel.AuthState
 import com.copay.app.viewmodel.AuthViewModel
 
 @Composable
-fun RegisterScreen(navController: NavController, userRepository: UserRepository) {
+fun RegisterScreen(
+    navController: NavController,
+    userRepository: UserRepository,
+    onRegisterSuccess: () -> Unit = {}
+) {
     val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
     val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
     val authState by authViewModel.authState.collectAsState()
@@ -42,10 +46,17 @@ fun RegisterScreen(navController: NavController, userRepository: UserRepository)
 
     // Effect triggered when the authentication state changes.
     LaunchedEffect(authState) {
-        apiErrorMessage = when (authState) {
-            is AuthState.Success -> null
-            is AuthState.Error -> (authState as AuthState.Error).message
-            else -> apiErrorMessage
+        when (authState) {
+            is AuthState.Success -> {
+                // Redirection to HubScreen if the authentication is successful.
+                onRegisterSuccess()
+            }
+            is AuthState.Error -> {
+                apiErrorMessage = (authState as AuthState.Error).message
+            }
+            else -> {
+                apiErrorMessage = null
+            }
         }
     }
 
