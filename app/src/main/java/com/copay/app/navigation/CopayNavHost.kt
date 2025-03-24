@@ -8,14 +8,15 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.copay.app.ui.screen.auth.RegisterScreen
 import com.copay.app.ui.screen.auth.LoginScreen
-import com.copay.app.ui.screen.AuthScreen
 import com.copay.app.ui.screen.SplashScreen
 import com.copay.app.viewmodel.SplashViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.repository.UserRepository
 import com.copay.app.config.RetrofitInstance
+import com.copay.app.ui.screen.AuthScreen
+import com.copay.app.ui.screen.auth.RegisterStepOneScreen
+import com.copay.app.ui.screen.auth.RegisterStepTwoScreen
 
 @Composable
 fun CopayNavHost(
@@ -27,8 +28,7 @@ fun CopayNavHost(
     val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
     val userRepository = remember { UserRepository(RetrofitInstance.api) }
 
-    LaunchedEffect(isDataLoaded.value)
-    {
+    LaunchedEffect(isDataLoaded.value) {
         if (isDataLoaded.value) {
             navController.navigate(NavRoutes.AuthScreen.route) {
                 popUpTo(NavRoutes.SplashScreen.route) { inclusive = true }
@@ -36,7 +36,7 @@ fun CopayNavHost(
         }
     }
 
-    // Set up the navigation graph
+    // Set up the navigation graph.
     NavHost(
         navController = navController, startDestination = startDestination, modifier = modifier
     ) {
@@ -47,14 +47,18 @@ fun CopayNavHost(
 
         // AuthScreen
         composable(NavRoutes.AuthScreen.route) {
-            AuthScreen(
-                onSignUpClick = { navController.navigate(NavRoutes.RegisterScreen.route) },
+            AuthScreen(onSignUpClick = { navController.navigate(NavRoutes.RegisterStepOneScreen.route) },
                 onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) })
         }
 
-        // RegisterScreen
-        composable(NavRoutes.RegisterScreen.route) {
-            RegisterScreen(navController, userRepository)
+        // RegisterStepOneScreen
+        composable(NavRoutes.RegisterStepOneScreen.route) {
+            RegisterStepOneScreen(navController, userRepository)
+        }
+
+        // RegisterStepTwoScreen
+        composable(NavRoutes.RegisterStepTwoScreen.route) {
+            RegisterStepTwoScreen(userRepository)
         }
 
         // LoginScreen
