@@ -10,7 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.copay.app.ui.screen.auth.RegisterScreen
 import com.copay.app.ui.screen.auth.LoginScreen
-import com.copay.app.ui.screen.AuthScreen
+import com.copay.app.ui.screen.auth.AuthScreen
+import com.copay.app.ui.screen.HubScreen
 import com.copay.app.ui.screen.SplashScreen
 import com.copay.app.viewmodel.SplashViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,8 +28,7 @@ fun CopayNavHost(
     val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
     val userRepository = remember { UserRepository(RetrofitInstance.api) }
 
-    LaunchedEffect(isDataLoaded.value)
-    {
+    LaunchedEffect(isDataLoaded.value) {
         if (isDataLoaded.value) {
             navController.navigate(NavRoutes.AuthScreen.route) {
                 popUpTo(NavRoutes.SplashScreen.route) { inclusive = true }
@@ -47,19 +47,37 @@ fun CopayNavHost(
 
         // AuthScreen
         composable(NavRoutes.AuthScreen.route) {
-            AuthScreen(
-                onSignUpClick = { navController.navigate(NavRoutes.RegisterScreen.route) },
+            AuthScreen(onSignUpClick = { navController.navigate(NavRoutes.RegisterScreen.route) },
                 onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) })
         }
-
         // RegisterScreen
         composable(NavRoutes.RegisterScreen.route) {
-            RegisterScreen(navController, userRepository)
+            RegisterScreen(navController = navController,
+                userRepository = userRepository,
+                onRegisterSuccess = {
+                    navController.navigate(NavRoutes.HubScreen.route) {
+                        popUpTo(NavRoutes.AuthScreen.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         // LoginScreen
         composable(NavRoutes.LoginScreen.route) {
-            LoginScreen(navController, userRepository)
+            LoginScreen(
+                navController = navController,
+                userRepository = userRepository,
+                onLoginSuccess = {
+                    navController.navigate(NavRoutes.HubScreen.route) {
+                        popUpTo(NavRoutes.LoginScreen.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // HubScreen
+        composable(NavRoutes.HubScreen.route) {
+            HubScreen(navController = navController)
         }
     }
 }
