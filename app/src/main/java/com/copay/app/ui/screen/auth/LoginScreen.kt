@@ -16,12 +16,27 @@ import com.copay.app.ui.components.BackButtonTop
 import com.copay.app.ui.components.InputField
 import com.copay.app.ui.components.PrimaryButton
 import com.copay.app.validation.UserValidation
+import com.copay.app.viewmodel.AuthState
 import com.copay.app.viewmodel.AuthViewModel
 
 @Composable
-fun LoginScreen(navController: NavController, userRepository: UserRepository) {
+fun LoginScreen(
+    navController: NavController,
+    userRepository: UserRepository,
+    onLoginSuccess: () -> Unit = {}
+) {
     val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
     val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
+    val authState by authViewModel.authState.collectAsState()
+
+
+    // Tracks the state
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Success) {
+            // Redirection to HubScreen if the authentication is successful.
+            onLoginSuccess()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
