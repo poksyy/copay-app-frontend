@@ -1,4 +1,4 @@
-package com.copay.app.ui.screen
+package com.copay.app.ui.screen.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -45,7 +45,6 @@ fun AuthScreen(
         PrimaryButton(
             text = "Sign up",
             onClick = onSignUpClick,
-
         )
 
         // Space between the buttons.
