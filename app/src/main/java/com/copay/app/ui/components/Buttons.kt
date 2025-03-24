@@ -128,17 +128,17 @@ fun LogoutButton(
     }
 }
 
-@Composable
-fun BackButtonTop(navController: NavController, modifier: Modifier = Modifier) {
-    IconButton(
-        onClick = { navController.popBackStack() },
-        modifier = modifier
-            .size(80.dp)
-            .statusBarsPadding()
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_back),
-            contentDescription = "Back"
-        )
+    @Composable
+    fun BackButtonTop(navController: NavController, modifier: Modifier = Modifier) {
+        IconButton(
+            onClick = { navController.popBackStack() },
+            modifier = modifier
+                .size(80.dp)
+                .statusBarsPadding()
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_back),
+                contentDescription = "Back"
+            )
+        }
     }
-}
