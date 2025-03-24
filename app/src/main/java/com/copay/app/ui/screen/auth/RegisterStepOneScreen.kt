@@ -19,8 +19,10 @@ import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthState
 import com.copay.app.viewmodel.AuthViewModel
 
+// TODO: ADD THE CALLBACK TO REGISTERSTEPTWO REDIRECTION
 @Composable
 fun RegisterStepOneScreen(navController: NavController, userRepository: UserRepository) {
+    
     val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
     val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
     val authState by authViewModel.authState.collectAsState()
@@ -38,6 +40,8 @@ fun RegisterStepOneScreen(navController: NavController, userRepository: UserRepo
 
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
 
+    // TODO: CHANGE THE WAY TO NAVIGATE TROUGH CALLBACKS
+    
     // Effect triggered when the authentication state changes.
     LaunchedEffect(authState) {
         when (authState) {

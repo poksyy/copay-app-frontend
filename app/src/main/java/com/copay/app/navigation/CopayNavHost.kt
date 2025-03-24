@@ -9,6 +9,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.copay.app.ui.screen.auth.LoginScreen
+import com.copay.app.ui.screen.auth.AuthScreen
+import com.copay.app.ui.screen.HubScreen
 import com.copay.app.ui.screen.SplashScreen
 import com.copay.app.viewmodel.SplashViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,12 +60,32 @@ fun CopayNavHost(
 
         // RegisterStepTwoScreen
         composable(NavRoutes.RegisterStepTwoScreen.route) {
-            RegisterStepTwoScreen(userRepository)
+            RegisterStepTwoScreen(navController = navController,
+                userRepository = userRepository,
+                onRegisterSuccess = {
+                    navController.navigate(NavRoutes.HubScreen.route) {
+                        popUpTo(NavRoutes.RegisterStepOneScreen.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         // LoginScreen
         composable(NavRoutes.LoginScreen.route) {
-            LoginScreen(navController, userRepository)
+            LoginScreen(
+                navController = navController,
+                userRepository = userRepository,
+                onLoginSuccess = {
+                    navController.navigate(NavRoutes.HubScreen.route) {
+                        popUpTo(NavRoutes.LoginScreen.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // HubScreen
+        composable(NavRoutes.HubScreen.route) {
+            HubScreen(navController = navController)
         }
     }
 }
