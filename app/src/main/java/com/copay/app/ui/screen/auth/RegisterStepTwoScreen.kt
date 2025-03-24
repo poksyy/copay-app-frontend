@@ -17,7 +17,11 @@ import com.copay.app.viewmodel.AuthState
 import com.copay.app.viewmodel.AuthViewModel
 
 @Composable
-fun RegisterStepTwoScreen(userRepository: UserRepository) {
+fun RegisterStepTwoScreen(
+    userRepository: UserRepository,
+    onRegisterSuccess: () -> Unit = {}
+    ) {
+
     val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
     val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
     val authState by authViewModel.authState.collectAsState()
@@ -37,7 +41,8 @@ fun RegisterStepTwoScreen(userRepository: UserRepository) {
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
-                // TODO: Handle success (navigate to home screen)
+                // Redirection to HubScren.
+                onRegisterSuccess();
             }
             is AuthState.Error -> {
                 apiErrorMessage = (authState as AuthState.Error).message
