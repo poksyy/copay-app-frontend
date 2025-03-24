@@ -9,7 +9,6 @@ sealed class NavRoutes(val route: String) {
     data object RegisterStepTwoScreen : NavRoutes("api/register/step-two")
 
     data object LoginScreen : NavRoutes("api/login")
-    data object LoginScreen : NavRoutes("api/login")
 
     data object HubScreen : NavRoutes("api/hub")
     data object HomeScreen : NavRoutes("api/home")
