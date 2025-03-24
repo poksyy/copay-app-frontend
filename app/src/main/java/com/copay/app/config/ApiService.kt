@@ -1,12 +1,14 @@
 package com.copay.app.config
 
-import com.copay.app.dto.request.LoginRequest
-import com.copay.app.dto.request.RegisterRequest
+import com.copay.app.dto.request.UserLoginRequestDTO
+import com.copay.app.dto.request.UserRegisterStepTwoDTO
+import com.copay.app.dto.request.UserRegisterStepOneDTO
 import com.copay.app.dto.response.JwtResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface ApiService {
@@ -21,9 +23,16 @@ interface ApiService {
 
     // Login API Call
     @POST("${BASE_PATH}auth/login")
-    suspend fun loginUser(@Body request: LoginRequest): Response<JwtResponse>
+    suspend fun loginUser(@Body request: UserLoginRequestDTO): Response<JwtResponse>
 
-    // Register API Call
-    @POST("${BASE_PATH}auth/register")
-    suspend fun registerUser(@Body request: RegisterRequest): Response<JwtResponse>
+    // Register Step One API Call
+    @POST("${BASE_PATH}auth/register/step-one")
+    suspend fun registerStepOne(@Body request: UserRegisterStepOneDTO): Response<JwtResponse>
+
+    // Register Step Two API Call
+    @POST("${BASE_PATH}auth/register/step-two")
+    suspend fun registerStepTwo(
+        @Body request: UserRegisterStepTwoDTO,
+        @Header("Authorization") token: String
+    ): Response<JwtResponse>
 }
