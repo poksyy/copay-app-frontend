@@ -1,13 +1,12 @@
 package com.copay.app.dto.request
 
 /**
- * Data class representing the request body for user registration.
+ * Data class representing the request body for user registration in STEP ONE.
  */
 
-data class RegisterRequest(
+data class UserRegisterStepOneDTO(
     val username: String,
     val email: String,
-    val phoneNumber: String,
     val password: String,
     val confirmPassword: String
 )

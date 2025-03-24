@@ -22,14 +22,7 @@ object UserValidation {
     }
 
     /** Validations for Register **/
-    // Validate if the phone number is not empty and has a valid length.
-    fun validateRegisterPhoneNumber(phoneNumber: String): ValidationResult {
-        return when {
-            phoneNumber.isBlank() -> ValidationResult(false, "PhoneNumber cannot be empty")
-            else -> ValidationResult(true)
-        }
-    }
-
+    /** STEP ONE **/
     // Validate if the username is not empty and has a valid length.
     fun validateRegisterUsername(username: String): ValidationResult {
         return when {
@@ -62,6 +55,15 @@ object UserValidation {
         return when {
             confirmPassword.isBlank() -> ValidationResult(false, "Passwords must match")
             password != confirmPassword -> ValidationResult(false, "Passwords must match")
+            else -> ValidationResult(true)
+        }
+    }
+
+    /** STEP TWO **/
+    // Validate if the phone number is not empty and has a valid length.
+    fun validateRegisterPhoneNumber(phoneNumber: String): ValidationResult {
+        return when {
+            phoneNumber.isBlank() -> ValidationResult(false, "PhoneNumber cannot be empty")
             else -> ValidationResult(true)
         }
     }
