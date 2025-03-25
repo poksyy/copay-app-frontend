@@ -12,8 +12,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.repository.UserRepository
 import com.copay.app.ui.components.InputField
 import com.copay.app.ui.components.PrimaryButton
+import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
-import com.copay.app.viewmodel.AuthState
 import com.copay.app.viewmodel.AuthViewModel
 
 @Composable
