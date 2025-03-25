@@ -10,18 +10,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.copay.app.navigation.NavRoutes
 import com.copay.app.repository.UserRepository
 import com.copay.app.ui.components.BackButtonTop
 import com.copay.app.ui.components.InputField
 import com.copay.app.ui.components.PrimaryButton
+import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
-import com.copay.app.viewmodel.AuthState
 import com.copay.app.viewmodel.AuthViewModel
 
 // TODO: ADD THE CALLBACK TO REGISTERSTEPTWO REDIRECTION
 @Composable
-fun RegisterStepOneScreen(navController: NavController, userRepository: UserRepository) {
+fun RegisterStepOneScreen(
+    navController: NavController,
+    userRepository: UserRepository,
+    onRegisterSuccess: () -> Unit = {}
+    ) {
     
     val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
     val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
@@ -39,14 +42,13 @@ fun RegisterStepOneScreen(navController: NavController, userRepository: UserRepo
     var passwordMatchError by remember { mutableStateOf<String?>(null) }
 
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
-
-    // TODO: CHANGE THE WAY TO NAVIGATE TROUGH CALLBACKS
     
     // Effect triggered when the authentication state changes.
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
-                navController.navigate(NavRoutes.RegisterStepTwoScreen.route)
+                // Redirection to RegisterStepTwoScreen.
+                onRegisterSuccess();
             }
             is AuthState.Error -> {
                 apiErrorMessage = (authState as AuthState.Error).message
