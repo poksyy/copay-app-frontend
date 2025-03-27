@@ -1,5 +1,6 @@
 package com.copay.app.config
 
+import com.copay.app.dto.request.ForgotPasswordDTO
 import com.copay.app.dto.request.UserLoginRequestDTO
 import com.copay.app.dto.request.UserRegisterStepTwoDTO
 import com.copay.app.dto.request.UserRegisterStepOneDTO
@@ -35,4 +36,11 @@ interface ApiService {
         @Body request: UserRegisterStepTwoDTO,
         @Header("Authorization") token: String
     ): Response<JwtResponse>
+
+    //
+    @POST("${BASE_PATH}forgot-password")
+    suspend fun forgotPassword(
+        @Body request: ForgotPasswordDTO
+    ): Response<Unit>
+
 }
