@@ -37,10 +37,8 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<JwtResponse>
 
-    //
+    // Forgot Password API Call
     @POST("${BASE_PATH}forgot-password")
-    suspend fun forgotPassword(
-        @Body request: ForgotPasswordDTO
-    ): Response<Unit>
+    suspend fun forgotPassword(@Body request: ForgotPasswordDTO): Response<Unit>
 
 }
