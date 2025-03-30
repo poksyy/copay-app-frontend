@@ -1,14 +1,14 @@
 package com.copay.app.navigation
 
-sealed class Screen(val route: String) {
+sealed class SpaScreens(val route: String) {
 
     // HomeScreen navigation routes.
-    data object Home : Screen("home")
-    data object JoinGroup : Screen("join_group")
-    data object CreateGroup : Screen("create_group")
+    data object Home : SpaScreens("home")
+    data object JoinGroup : SpaScreens("join_group")
+    data object CreateGroup : SpaScreens("create_group")
 
-    data object Plannings : Screen("plannings")
-    data object Friends : Screen("friends")
-    data object Profile : Screen("profile")
+    data object Plannings : SpaScreens("plannings")
+    data object Friends : SpaScreens("friends")
+    data object Profile : SpaScreens("profile")
 
 }
