@@ -16,6 +16,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -46,7 +47,7 @@ fun PrimaryButton(
         Text(
             text = text,
             color = White,
-            style =  AppTypography.displayMedium
+            style = AppTypography.displayMedium
         )
     }
 }
@@ -128,17 +129,33 @@ fun LogoutButton(
     }
 }
 
-    @Composable
-    fun BackButtonTop(navController: NavController, modifier: Modifier = Modifier) {
-        IconButton(
-            onClick = { navController.popBackStack() },
-            modifier = modifier
-                .size(80.dp)
-                .statusBarsPadding()
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = "Back"
-            )
-        }
+// Back Button for the traditional Screens.
+@Composable
+fun BackButtonTop(navController: NavController, modifier: Modifier = Modifier) {
+    IconButton(
+        onClick = { navController.popBackStack() },
+        modifier = modifier
+            .size(80.dp)
+            .statusBarsPadding()
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_back),
+            contentDescription = "Back"
+        )
     }
+}
+
+// Back Button for the SPA Screens.
+@Composable
+fun BackButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(
+        onClick = { onBackClick() },
+        modifier = modifier
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_back),
+            contentDescription = "Back",
+            tint = Color.Black
+        )
+    }
+}
