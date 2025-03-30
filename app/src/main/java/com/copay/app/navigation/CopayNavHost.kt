@@ -16,6 +16,7 @@ import com.copay.app.viewmodel.SplashViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.repository.UserRepository
 import com.copay.app.config.RetrofitInstance
+import com.copay.app.ui.screen.HomeScreen
 import com.copay.app.ui.screen.auth.RegisterStepOneScreen
 import com.copay.app.ui.screen.auth.RegisterStepTwoScreen
 
@@ -88,6 +89,11 @@ fun CopayNavHost(
         // HubScreen.
         composable(NavRoutes.HubScreen.route) {
             HubScreen()
+        }
+
+        // HomeScreen.
+        composable(NavRoutes.HomeScreen.route) {
+            HomeScreen()
         }
     }
 }
