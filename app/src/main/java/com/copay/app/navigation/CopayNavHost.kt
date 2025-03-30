@@ -69,9 +69,7 @@ fun CopayNavHost(
             RegisterStepTwoScreen(
                 userRepository,
                 onRegisterSuccess = {
-                    navController.navigate(NavRoutes.HubScreen.route) {
-                        popUpTo(NavRoutes.RegisterStepOneScreen.route) { inclusive = true }
-                    }
+                    navController.navigate(NavRoutes.HubScreen.route)
                 }
             )
         }
@@ -82,16 +80,14 @@ fun CopayNavHost(
                 navController = navController,
                 userRepository = userRepository,
                 onLoginSuccess = {
-                    navController.navigate(NavRoutes.HubScreen.route) {
-                        popUpTo(NavRoutes.LoginScreen.route) { inclusive = true }
-                    }
+                    navController.navigate(NavRoutes.HubScreen.route)
                 }
             )
         }
 
         // HubScreen.
         composable(NavRoutes.HubScreen.route) {
-            HubScreen(navController = navController)
+            HubScreen()
         }
     }
 }
