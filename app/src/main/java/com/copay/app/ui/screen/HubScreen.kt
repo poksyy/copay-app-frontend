@@ -36,10 +36,23 @@ fun HubScreen() {
         Column(modifier = Modifier.padding(paddingValues)) {
             when (currentScreen) {
                 // Pass navigation state to HomeScreen and handle reset.
-                Screen.Home -> HomeScreen()
+                Screen.Home -> HomeScreen(
+                    onNavigateFromBottomBar = navigatingFromBottomBar,
+                    onNavigationComplete = { navigatingFromBottomBar = false }
+                )
                 Screen.Plannings -> {}
                 Screen.Friends -> {}
                 Screen.Profile -> {}
+
+                // These screens are handled within HomeScreen's navigation
+                Screen.JoinGroup, Screen.CreateGroup -> {
+                    // Redirect to Home if these screens are somehow reached directly.
+                    currentScreen = Screen.Home
+                    HomeScreen(
+                        onNavigateFromBottomBar = navigatingFromBottomBar,
+                        onNavigationComplete = { navigatingFromBottomBar = false }
+                    )
+                }
             }
         }
     }
