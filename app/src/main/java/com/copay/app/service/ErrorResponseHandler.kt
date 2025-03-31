@@ -1,9 +1,9 @@
 package com.copay.app.service
 
 import android.util.Log
-import com.copay.app.dto.response.RegisterStepOneDTO
+import com.copay.app.dto.response.RegisterStepOneResponseDTO
 import com.copay.app.dto.response.LoginResponseDTO
-import com.copay.app.dto.response.RegisterStepTwoDTO
+import com.copay.app.dto.response.RegisterStepTwoResponseDTO
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import retrofit2.Response
@@ -42,7 +42,7 @@ object ErrorResponseHandler {
     inline fun <reified T> createDefaultErrorResponse(message: String = "An error occurred"): T {
         return when (T::class) {
 
-            RegisterStepOneDTO::class -> RegisterStepOneDTO(
+            RegisterStepOneResponseDTO::class -> RegisterStepOneResponseDTO(
                 message = message,
                 token = null,
                 expiresIn = null,
@@ -51,7 +51,7 @@ object ErrorResponseHandler {
                 email = null
             ) as T
 
-            RegisterStepTwoDTO::class -> RegisterStepTwoDTO(
+            RegisterStepTwoResponseDTO::class -> RegisterStepTwoResponseDTO(
                 message = message,
                 token = null,
                 type = null,
