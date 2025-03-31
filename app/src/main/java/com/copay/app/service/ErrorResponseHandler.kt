@@ -1,8 +1,9 @@
 package com.copay.app.service
 
 import android.util.Log
-import com.copay.app.dto.response.JwtResponse
+import com.copay.app.dto.response.RegisterStepOneDTO
 import com.copay.app.dto.response.LoginResponseDTO
+import com.copay.app.dto.response.RegisterStepTwoDTO
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import retrofit2.Response
@@ -36,15 +37,28 @@ object ErrorResponseHandler {
         }
     }
 
-    // Creates a default error response for known DTOs.
+    // The message field is provided from the backend in case of an error.
+    // If no message is provided, the default message "An error occurred" will be used.
     inline fun <reified T> createDefaultErrorResponse(message: String = "An error occurred"): T {
         return when (T::class) {
 
-            JwtResponse::class -> JwtResponse(
+            RegisterStepOneDTO::class -> RegisterStepOneDTO(
                 message = message,
                 token = null,
                 expiresIn = null,
-                type = null
+                type = null,
+                username = null,
+                email = null
+            ) as T
+
+            RegisterStepTwoDTO::class -> RegisterStepTwoDTO(
+                message = message,
+                token = null,
+                type = null,
+                expiresIn = null,
+                phoneNumber = null,
+                username = null,
+                email = null
             ) as T
 
             LoginResponseDTO::class -> LoginResponseDTO(
@@ -53,7 +67,9 @@ object ErrorResponseHandler {
                 type = null,
                 expiresIn = null,
                 username = null,
-                email = null
+                email = null,
+                phoneNumber = null,
+                isLogin = null
             ) as T
 
             else -> throw IllegalArgumentException("Unsupported response type: ${T::class}")
