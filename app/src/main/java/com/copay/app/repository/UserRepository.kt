@@ -5,8 +5,9 @@ import com.copay.app.config.ApiService
 import com.copay.app.dto.request.UserLoginRequestDTO
 import com.copay.app.dto.request.UserRegisterStepOneDTO
 import com.copay.app.dto.request.UserRegisterStepTwoDTO
-import com.copay.app.dto.response.JwtResponse
+import com.copay.app.dto.response.RegisterStepOneResponseDTO
 import com.copay.app.dto.response.LoginResponseDTO
+import com.copay.app.dto.response.RegisterStepTwoResponseDTO
 import com.copay.app.service.ErrorResponseHandler
 import com.copay.app.utils.DataStoreManager
 import com.google.gson.Gson
@@ -33,7 +34,7 @@ class UserRepository(private val apiService: ApiService) {
     }
 
     // Function to handle the first step of the registration process.
-    suspend fun registerStepOne(username: String, email: String, password: String, confirmPassword: String): Response<JwtResponse> {
+    suspend fun registerStepOne(username: String, email: String, password: String, confirmPassword: String): Response<RegisterStepOneResponseDTO> {
 
         // Call API for step one of registration with the provided details of our DTO.
             return handleApiCall {
@@ -49,7 +50,7 @@ class UserRepository(private val apiService: ApiService) {
     }
 
     // Function to handle the second step of the registration process, which includes sending the phone number.
-    suspend fun registerStepTwo(context: Context, phoneNumber: String): Response<JwtResponse> {
+    suspend fun registerStepTwo(context: Context, phoneNumber: String): Response<RegisterStepTwoResponseDTO> {
 
         // Retrieve the token from DataStore (firstOrNull to avoid null value).
         val token = DataStoreManager.getToken(context).firstOrNull()
