@@ -1,10 +1,13 @@
 package com.copay.app.config
 
+
 import com.copay.app.dto.request.ForgotPasswordDTO
 import com.copay.app.dto.request.UserLoginRequestDTO
 import com.copay.app.dto.request.UserRegisterStepTwoDTO
 import com.copay.app.dto.request.UserRegisterStepOneDTO
-import com.copay.app.dto.response.JwtResponse
+import com.copay.app.dto.response.RegisterStepOneResponseDTO
+import com.copay.app.dto.response.LoginResponseDTO
+import com.copay.app.dto.response.RegisterStepTwoResponseDTO
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -22,23 +25,23 @@ interface ApiService {
     @GET("${BASE_PATH}response")
     suspend fun getConnectionResponse(): Response<ResponseBody>
 
-    // Login API Call
+    // Login API Call.
     @POST("${BASE_PATH}auth/login")
-    suspend fun loginUser(@Body request: UserLoginRequestDTO): Response<JwtResponse>
 
-    // Register Step One API Call
+    suspend fun loginUser(@Body request: UserLoginRequestDTO): Response<LoginResponseDTO>
+
+    // Register Step One API Call.
     @POST("${BASE_PATH}auth/register/step-one")
-    suspend fun registerStepOne(@Body request: UserRegisterStepOneDTO): Response<JwtResponse>
+    suspend fun registerStepOne(@Body request: UserRegisterStepOneDTO): Response<RegisterStepOneResponseDTO>
 
-    // Register Step Two API Call
+    // Register Step Two API Call.
     @POST("${BASE_PATH}auth/register/step-two")
     suspend fun registerStepTwo(
         @Body request: UserRegisterStepTwoDTO,
         @Header("Authorization") token: String
-    ): Response<JwtResponse>
+    ): Response<RegisterStepTwoResponseDTO>
 
     // Forgot Password API Call
     @POST("${BASE_PATH}forgot-password")
     suspend fun forgotPassword(@Body request: ForgotPasswordDTO): Response<Unit>
-
 }
