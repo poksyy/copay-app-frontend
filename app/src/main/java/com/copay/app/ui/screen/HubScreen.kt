@@ -5,13 +5,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.copay.app.navigation.Screen
+import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BottomNavigationBar
 
 @Composable
 fun HubScreen() {
     // Tracks the current screen in the bottom navigation.
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
+    var currentScreen by remember { mutableStateOf<SpaScreens>(SpaScreens.Home) }
     // Flag to handle navigation state from bottom bar clicks.
     var navigatingFromBottomBar by remember { mutableStateOf(false) }
 
@@ -23,11 +23,11 @@ fun HubScreen() {
                     // Set flag when navigation occurs from bottom bar.
                     navigatingFromBottomBar = true
                     currentScreen = when (newRoute) {
-                        "home" -> Screen.Home
-                        "plannings" -> Screen.Plannings
-                        "friends" -> Screen.Friends
-                        "profile" -> Screen.Profile
-                        else -> Screen.Home
+                        "home" -> SpaScreens.Home
+                        "plannings" -> SpaScreens.Plannings
+                        "friends" -> SpaScreens.Friends
+                        "profile" -> SpaScreens.Profile
+                        else -> SpaScreens.Home
                     }
                 }
             )
@@ -36,18 +36,18 @@ fun HubScreen() {
         Column(modifier = Modifier.padding(paddingValues)) {
             when (currentScreen) {
                 // Pass navigation state to HomeScreen and handle reset.
-                Screen.Home -> HomeScreen(
+                SpaScreens.Home -> HomeScreen(
                     onNavigateFromBottomBar = navigatingFromBottomBar,
                     onNavigationComplete = { navigatingFromBottomBar = false }
                 )
-                Screen.Plannings -> {}
-                Screen.Friends -> {}
-                Screen.Profile -> {}
+                SpaScreens.Plannings -> {}
+                SpaScreens.Friends -> {}
+                SpaScreens.Profile -> {}
 
                 // These screens are handled within HomeScreen's navigation
-                Screen.JoinGroup, Screen.CreateGroup -> {
+                SpaScreens.JoinGroup, SpaScreens.CreateGroup -> {
                     // Redirect to Home if these screens are somehow reached directly.
-                    currentScreen = Screen.Home
+                    currentScreen = SpaScreens.Home
                     HomeScreen(
                         onNavigateFromBottomBar = navigatingFromBottomBar,
                         onNavigationComplete = { navigatingFromBottomBar = false }
