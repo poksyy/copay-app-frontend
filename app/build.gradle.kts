@@ -50,6 +50,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation (libs.material3)
     implementation (libs.androidx.material.icons.extended)
+    implementation (libs.androidx.foundation)
+    implementation(libs.coil.compose)
 
     // Allows to work with coroutines in the ViewModel.
     implementation (libs.kotlinx.coroutines.android)
