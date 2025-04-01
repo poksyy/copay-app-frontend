@@ -15,6 +15,12 @@ import com.copay.app.ui.screen.HubScreen
 import com.copay.app.ui.screen.SplashScreen
 import com.copay.app.ui.screen.auth.*
 import com.copay.app.viewmodel.SplashViewModel
+import com.copay.app.repository.UserRepository
+import com.copay.app.config.RetrofitInstance
+import com.copay.app.ui.screen.HomeScreen
+import com.copay.app.ui.screen.auth.RegisterStepOneScreen
+import com.copay.app.ui.screen.auth.RegisterStepTwoScreen
+
 
 @Composable
 fun CopayNavHost(
@@ -66,9 +72,7 @@ fun CopayNavHost(
             RegisterStepTwoScreen(
                 userRepository,
                 onRegisterSuccess = {
-                    navController.navigate(NavRoutes.HubScreen.route) {
-                        popUpTo(NavRoutes.RegisterStepOneScreen.route) { inclusive = true }
-                    }
+                    navController.navigate(NavRoutes.HubScreen.route)
                 }
             )
         }
@@ -79,14 +83,13 @@ fun CopayNavHost(
                 navController = navController,
                 userRepository = userRepository,
                 onLoginSuccess = {
-                    navController.navigate(NavRoutes.HubScreen.route) {
-                        popUpTo(NavRoutes.LoginScreen.route) { inclusive = true }
-                    }
+                    navController.navigate(NavRoutes.HubScreen.route)
                 },
                 onForgotPasswordClick = {
                     navController.navigate(NavRoutes.ForgotPasswordScreen.route) {
                         popUpTo(NavRoutes.LoginScreen.route) { inclusive = true }
                     }
+
                 }
             )
         }
@@ -98,7 +101,12 @@ fun CopayNavHost(
 
         // HubScreen.
         composable(NavRoutes.HubScreen.route) {
-            HubScreen(navController = navController)
+            HubScreen()
+        }
+
+        // HomeScreen.
+        composable(NavRoutes.HomeScreen.route) {
+            HomeScreen()
         }
     }
 }
