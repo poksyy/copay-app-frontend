@@ -23,7 +23,8 @@ import com.copay.app.viewmodel.AuthViewModel
 fun LoginScreen(
     navController: NavController,
     userRepository: UserRepository,
-    onLoginSuccess: () -> Unit = {}
+    onLoginSuccess: () -> Unit = {},
+    onForgotPasswordClick: () -> Unit = {}
 ) {
     val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
     val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
@@ -113,12 +114,15 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Text(
-                text = "Forgot your password?",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
+            TextButton(
+                onClick = {
+                    onForgotPasswordClick()
+                    Log.d("LoginScreen", "Forgot Password clicked")
+                },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
+            ) {
+                Text(text = "Forgot your password?")
+            }
         }
     }
 }

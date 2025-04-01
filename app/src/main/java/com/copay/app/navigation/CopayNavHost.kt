@@ -5,20 +5,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.copay.app.ui.screen.auth.LoginScreen
-import com.copay.app.ui.screen.auth.AuthScreen
+import com.copay.app.config.RetrofitInstance
+import com.copay.app.repository.UserRepository
 import com.copay.app.ui.screen.HubScreen
 import com.copay.app.ui.screen.SplashScreen
+import com.copay.app.ui.screen.auth.*
 import com.copay.app.viewmodel.SplashViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.repository.UserRepository
 import com.copay.app.config.RetrofitInstance
 import com.copay.app.ui.screen.HomeScreen
 import com.copay.app.ui.screen.auth.RegisterStepOneScreen
 import com.copay.app.ui.screen.auth.RegisterStepTwoScreen
+
 
 @Composable
 fun CopayNavHost(
@@ -82,8 +84,19 @@ fun CopayNavHost(
                 userRepository = userRepository,
                 onLoginSuccess = {
                     navController.navigate(NavRoutes.HubScreen.route)
+                },
+                onForgotPasswordClick = {
+                    navController.navigate(NavRoutes.ForgotPasswordScreen.route) {
+                        popUpTo(NavRoutes.LoginScreen.route) { inclusive = true }
+                    }
+
                 }
             )
+        }
+
+        // ForgotPasswordScreen.
+        composable(NavRoutes.ForgotPasswordScreen.route) {
+            ForgotPasswordScreen(navController = navController)
         }
 
         // HubScreen.
