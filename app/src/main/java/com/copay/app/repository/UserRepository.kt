@@ -1,83 +1,135 @@
 package com.copay.app.repository
 
+import AuthService
 import android.content.Context
+import android.util.Log
 import com.copay.app.config.ApiService
 import com.copay.app.dto.request.UserLoginRequestDTO
 import com.copay.app.dto.request.UserRegisterStepOneDTO
 import com.copay.app.dto.request.UserRegisterStepTwoDTO
-import com.copay.app.dto.response.RegisterStepOneResponseDTO
-import com.copay.app.dto.response.LoginResponseDTO
-import com.copay.app.dto.response.RegisterStepTwoResponseDTO
-import com.copay.app.service.ErrorResponseHandler
 import com.copay.app.utils.DataStoreManager
+import com.copay.app.utils.state.AuthState
 import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.withContext
-import okhttp3.ResponseBody.Companion.toResponseBody
+import com.google.gson.JsonObject
+import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
-// Repository that handles user authentication and registration with the API.
-class UserRepository(private val apiService: ApiService) {
+/*
+UserRepository is responsible for managing user authentication operations by interacting with the AuthService.
+It makes API calls for login, registration steps, and handles responses by processing success and error cases.
+It also extracts the authentication token from the response and securely stores it using the DataStoreManager.
+This class encapsulates the logic of managing user authentication state and storing the token, which is crucial for maintaining user sessions.
+*/
+class UserRepository(private val authService: AuthService) {
 
-    // Function to handle user login. It sends the phone number and password to the API.
-    suspend fun login(phoneNumber: String, password: String): Response<LoginResponseDTO> {
+    // Login method.
+    suspend fun login(context: Context, phoneNumber: String, password: String): AuthState {
+        val request = UserLoginRequestDTO(phoneNumber, password)
+        return handleApiResponse(context) { authService.login(request) }
+    }
 
-        return handleApiCall {
-            apiService.loginUser(
-                UserLoginRequestDTO(
-                    phoneNumber,
-                    password
-                )
-            )
+    // Registration step one method
+    suspend fun registerStepOne(
+        context: Context,
+        username: String,
+        email: String,
+        password: String,
+        confirmPassword: String
+    ): AuthState {
+
+        val request = UserRegisterStepOneDTO(username, email, password, confirmPassword)
+        return handleApiResponse(context) { authService.registerStepOne(request) }
+    }
+
+    // Registration step two method.
+    suspend fun registerStepTwo(context: Context, phoneNumber: String): AuthState {
+
+        // Get the token generated in registerStepOne thanks to DataStoreManager.
+        val token = DataStoreManager.getToken(context).first()
+        Log.d("UserRepository", "Token sent to registerStepTwo: $token")
+        // Verifies if token is null.
+        if (token.isNullOrEmpty()) {
+            return AuthState.Error("Token not found.")
+        }
+
+        // Send the token with "Bearer " since the backend needs that format.
+        val formattedToken = "Bearer $token"
+
+        val request = UserRegisterStepTwoDTO(phoneNumber)
+
+        return handleApiResponse(context) {
+            authService.registerStepTwo(request, formattedToken)
         }
     }
 
-    // Function to handle the first step of the registration process.
-    suspend fun registerStepOne(username: String, email: String, password: String, confirmPassword: String): Response<RegisterStepOneResponseDTO> {
-
-        // Call API for step one of registration with the provided details of our DTO.
-            return handleApiCall {
-                apiService.registerStepOne(
-                    UserRegisterStepOneDTO(
-                        username,
-                        email,
-                        password,
-                        confirmPassword
-                    )
-                )
-            }
-    }
-
-    // Function to handle the second step of the registration process, which includes sending the phone number.
-    suspend fun registerStepTwo(context: Context, phoneNumber: String): Response<RegisterStepTwoResponseDTO> {
-
-        // Retrieve the token from DataStore (firstOrNull to avoid null value).
-        val token = DataStoreManager.getToken(context).firstOrNull()
-            ?: throw IllegalStateException("No authentication token found.")
-
-        // Call API for step two of registration, passing the phone number and the token in the header.
-        return handleApiCall {
-            apiService.registerStepTwo(
-                UserRegisterStepTwoDTO(
-                    phoneNumber
-                ), "Bearer $token"
-            )
-        }
-    }
-
-    private suspend fun <T> handleApiCall(call: suspend () -> Response<T>): Response<T> {
-
-        return withContext(Dispatchers.IO) {
-            val response = call.invoke()
-
-            // Returns response if successful, otherwise handles error.
+    // Logic to manage the API Response.
+    private suspend fun <T> handleApiResponse(context: Context, apiCall: suspend () -> Response<T>): AuthState {
+        return try {
+            val response = apiCall()
             if (response.isSuccessful) {
-                response
+                val body = response.body()
+
+                if (body != null) {
+                    val token = extractToken(body)
+
+                    if (token != null) {
+                        // Log the token.
+                        Log.d("UserRepository", "Token extracted: $token")
+
+                        // Save the token if it exists.
+                        DataStoreManager.saveToken(context, token)
+                    } else {
+                        Log.d("UserRepository", "No token found in response")
+                    }
+
+                    // Returns success if the response from the backend is valid.
+                    AuthState.Success(body)
+                } else {
+                    AuthState.Error("Empty response")
+                }
             } else {
-                val errorBody = Gson().toJson(ErrorResponseHandler.handleErrorResponse(response)).toResponseBody()
-                Response.error(response.code(), errorBody)
+                val errorBody = response.errorBody()?.string()
+                val message = extractErrorMessage(errorBody)
+                Log.d("UserRepository","ERROR STRUCTURE: $errorBody")
+                AuthState.Error(message ?: "Unknown error")
             }
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Connection error: ${e.message}")
+            AuthState.Error("Connection error: ${e.message}")
+        }
+    }
+
+    // Method to extract the token from the response.
+    private fun <T> extractToken(responseBody: T?): String? {
+        return try {
+            // Verify if body response is not null.
+            responseBody?.let {
+                val field = it.javaClass.getDeclaredField("token")
+                field.isAccessible = true
+                field.get(it) as? String
+            }
+            // Returns null if body is null.
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private fun extractErrorMessage(errorJson: String?): String? {
+
+        // Returns if message is null.
+        if (errorJson.isNullOrEmpty()) return null
+
+        val gson = Gson()
+
+        return try {
+            // Converts to JsonObject thanks to Gson.
+            val jsonObject = gson.fromJson(errorJson, JsonObject::class.java)
+
+            // Extracts the 'message' field from the Json.
+            jsonObject.get("message")?.asString
+        } catch (e: Exception) {
+            // Returns null if the parse fails.
+            null
         }
     }
 }
