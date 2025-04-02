@@ -1,9 +1,11 @@
 package com.copay.app.config
 
+import AuthService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 object RetrofitInstance {
 
@@ -23,7 +25,7 @@ object RetrofitInstance {
     }
 
     // Retrofit instance with base URL, Gson converter, and OkHttpClient.
-    val api: ApiService by lazy {
+    private val retrofit by lazy {
         Retrofit.Builder()
             // Set the base URL for Retrofit.
             .baseUrl(BASE_URL)
@@ -32,8 +34,21 @@ object RetrofitInstance {
             // Use the OkHttpClient with Logcat.
             .client(client)
             .build()
+    }
 
-            // Create ApiService interface for API endpoints.
-            .create(ApiService::class.java)
+    // Create the ApiService instance.
+    val api: ApiService by lazy {
+        retrofit.create(ApiService::class.java)
+    }
+
+
+    // Create AuthService instance by passing the ApiService.
+    val authService: AuthService by lazy {
+        AuthService(apiService)
+    }
+
+    // Create the ApiService instance.
+    private val apiService: ApiService by lazy {
+        retrofit.create(ApiService::class.java)
     }
 }

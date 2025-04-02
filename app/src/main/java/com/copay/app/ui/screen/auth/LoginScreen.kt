@@ -30,12 +30,21 @@ fun LoginScreen(
     val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
     val authState by authViewModel.authState.collectAsState()
 
+    // Display errors on UI.
+    var apiErrorMessage by remember { mutableStateOf<String?>(null) }
+
 
     // Tracks the state
     LaunchedEffect(authState) {
-        if (authState is AuthState.Success) {
-            // Redirection to HubScreen if the authentication is successful.
-            onLoginSuccess()
+        when (authState) {
+            is AuthState.Success -> {
+                // Redirection to HubScreen if the authentication is successful.
+                onLoginSuccess()
+            }
+            is AuthState.Error -> {
+                apiErrorMessage = (authState as AuthState.Error).message
+            }
+            else -> {}
         }
     }
 
@@ -122,6 +131,16 @@ fun LoginScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text(text = "Forgot your password?")
+            }
+
+            // Show error message if API fails.
+            apiErrorMessage?.let {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }

@@ -18,7 +18,6 @@ import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthViewModel
 
-// TODO: ADD THE CALLBACK TO REGISTERSTEPTWO REDIRECTION
 @Composable
 fun RegisterStepOneScreen(
     navController: NavController,

@@ -46,6 +46,7 @@ object UserValidation {
         return when {
             password.isBlank() -> ValidationResult(false, "Password cannot be empty")
             password.length < 8 -> ValidationResult(false, "Password must be at least 8 characters long")
+            !password.any { it.isUpperCase() } -> ValidationResult(false, "Password must contain at least one uppercase letter")
             else -> ValidationResult(true)
         }
     }
