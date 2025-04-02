@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.copay.app.repository.UserRepository
 import com.copay.app.utils.DataStoreManager
-import com.copay.app.service.AuthService
 import com.copay.app.utils.state.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,21 +18,17 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     // Handles user login by calling the repository and processing the response.
     fun login(context: Context, phoneNumber: String, password: String) {
-
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            val response = userRepository.login(phoneNumber, password)
-            _authState.value = AuthService.handleResponse(context, response)
+            _authState.value = userRepository.login(context, phoneNumber, password)
         }
     }
 
     // Handles the first step of user registration.
     fun registerStepOne(context: Context, username: String, email: String, password: String, confirmPassword: String) {
-
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            val response = userRepository.registerStepOne(username, email, password, confirmPassword)
-            _authState.value = AuthService.handleResponse(context, response)
+            _authState.value = userRepository.registerStepOne(context, username, email, password, confirmPassword)
         }
     }
 
@@ -42,8 +37,7 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
 
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            val response = userRepository.registerStepTwo(context, phoneNumber)
-            _authState.value = AuthService.handleResponse(context, response)
+            _authState.value = userRepository.registerStepTwo(context, phoneNumber)
         }
     }
 
