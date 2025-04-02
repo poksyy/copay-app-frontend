@@ -1,18 +1,20 @@
 package com.copay.app.utils.state
 
+import com.copay.app.model.User
+
 /**
  * Different authentication states for UI handling
  */
 sealed class AuthState {
 
     // Initial state when no action is performed
-    object Idle : AuthState()
+    data object Idle : AuthState()
 
     // Ongoing authentication process
-    object Loading : AuthState()
+    data object  Loading : AuthState()
 
     // Successful authentication
-    object Success : AuthState()
+    data class Success(val user: User) : AuthState()
 
     data class Error(val message: String) : AuthState()
 }
