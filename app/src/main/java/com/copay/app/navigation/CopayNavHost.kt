@@ -28,7 +28,7 @@ fun CopayNavHost(
 ) {
     val splashViewModel: SplashViewModel = viewModel()
     val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
-    val userRepository = remember { UserRepository(RetrofitInstance.api) }
+    val userRepository = remember { UserRepository(RetrofitInstance.authService) }
 
     LaunchedEffect(isDataLoaded.value) {
         if (isDataLoaded.value) {
