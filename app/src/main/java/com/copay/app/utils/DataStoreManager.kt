@@ -1,6 +1,7 @@
 package com.copay.app.utils
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -20,6 +21,7 @@ object DataStoreManager {
 
     // Save JWT token when the user logs in.
     suspend fun saveToken(context: Context, token: String) {
+        Log.d("DataStoreManager", "Saving token: $token")
         context.dataStore.edit { preferences ->
             preferences[TOKEN_KEY] = token
         }
