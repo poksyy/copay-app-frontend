@@ -1,15 +1,11 @@
 package com.copay.app.service
 
-package com.copay.app.service
-
 import android.content.Context
 import android.util.Log
-import com.copay.app.dto.response.LoginResponseDTO
 import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.AuthState
 import retrofit2.Response
 import com.copay.app.model.User
-import com.copay.app.viewmodel.UserViewModel
 
 /**
  * AuthService is responsible for managing authentication-related API calls.

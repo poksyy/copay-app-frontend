@@ -9,8 +9,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.copay.app.config.RetrofitInstance
-import com.copay.app.repository.UserRepository
 import com.copay.app.ui.screen.HubScreen
 import com.copay.app.ui.screen.SplashScreen
 import com.copay.app.ui.screen.auth.*
@@ -108,5 +106,6 @@ fun CopayNavHost(
         composable(NavRoutes.HomeScreen.route) {
             HomeScreen()
         }
+
     }
 }
