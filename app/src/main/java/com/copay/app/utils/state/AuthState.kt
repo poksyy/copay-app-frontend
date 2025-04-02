@@ -1,7 +1,5 @@
 package com.copay.app.utils.state
 
-import com.copay.app.model.User
-
 /**
  * Different authentication states for UI handling
  */
@@ -14,7 +12,7 @@ sealed class AuthState {
     data object  Loading : AuthState()
 
     // Successful authentication
-    data class Success(val user: User) : AuthState()
+    data class Success(val user: Any?) : AuthState()
 
     data class Error(val message: String) : AuthState()
 }
