@@ -1,5 +1,6 @@
 package com.copay.app.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.copay.app.model.User
+import com.copay.app.dto.response.LoginResponseDTO
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.viewmodel.UserViewModel
 
@@ -31,7 +32,7 @@ fun HomeScreen(
     userViewModel: UserViewModel = viewModel()
 ) {
     // Get the username value trough the userViewModel.
-    val user = userViewModel.user.value
+    val userState = userViewModel.user.collectAsState()
 
     // Manages the current view state within HomeScreen.
     var currentView by remember { mutableStateOf<SpaScreens>(SpaScreens.Home) }
@@ -44,6 +45,10 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(userState.value) {
+        Log.d("UserState", "User state: ${userState.value}")
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         when (currentView) {
             // Displays the Home content screen.
@@ -53,7 +58,7 @@ fun HomeScreen(
                 // Navigation to CreateGroup.
                 onCreateClick = { currentView = SpaScreens.CreateGroup },
                 // Sends the username of the logged user.
-                user = user
+                user = userState.value
             )
             // Displays the JoinGroup screen and allows navigating back to Home.
             SpaScreens.JoinGroup -> JoinGroupScreen(
@@ -67,7 +72,7 @@ fun HomeScreen(
             else -> HomeContent(
                 onJoinClick = { currentView = SpaScreens.JoinGroup },
                 onCreateClick = { currentView = SpaScreens.CreateGroup },
-                user = user
+                user = userState.value
             )
         }
     }
@@ -78,7 +83,7 @@ private fun HomeContent(
     // Receives the callbacks from HomeViewModel.
     onJoinClick: () -> Unit,
     onCreateClick: () -> Unit,
-    user: User?
+    user: LoginResponseDTO?
 ) {
     Column(
         modifier = Modifier
