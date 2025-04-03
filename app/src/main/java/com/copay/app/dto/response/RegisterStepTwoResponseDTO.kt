@@ -11,7 +11,7 @@ data class RegisterStepTwoResponseDTO(
     val expiresIn: Int? = null,
 
     // Registered user details.
-    val userId: String? = null,
+    val userId: Long? = null,
     val phoneNumber: String? =null,
     val username: String? = null,
     val email: String? = null,
