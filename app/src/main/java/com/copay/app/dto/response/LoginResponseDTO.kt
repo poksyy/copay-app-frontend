@@ -9,11 +9,10 @@ data class LoginResponseDTO(
     val token: String? = null,
     // Token expiration in seconds.
     val expiresIn: Int? = null,
-    // Token should be always Bearer.
-    val type: String? = null,
 
 
     // Logged user details.
+    val userId: Long? = null,
     val username: String? = null,
     val phoneNumber: String? = null,
     val email: String? = null,
