@@ -27,7 +27,6 @@ interface ApiService {
 
     // Login API Call.
     @POST("${BASE_PATH}auth/login")
-
     suspend fun loginUser(@Body request: UserLoginRequestDTO): Response<LoginResponseDTO>
 
     // Register Step One API Call.
