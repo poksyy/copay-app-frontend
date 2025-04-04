@@ -1,6 +1,7 @@
 package com.copay.app.ui.screen.auth
 
 import AuthViewModelFactory
+import UserService
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,10 +23,11 @@ import com.copay.app.viewmodel.AuthViewModel
 fun RegisterStepOneScreen(
     navController: NavController,
     userRepository: UserRepository,
+    userService: UserService,
     onRegisterSuccess: () -> Unit = {}
     ) {
     
-    val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
+    val viewModelFactory = remember { AuthViewModelFactory(userRepository, userService) }
     val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
     val authState by authViewModel.authState.collectAsState()
     val context = LocalContext.current

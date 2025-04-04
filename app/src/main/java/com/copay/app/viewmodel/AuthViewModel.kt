@@ -1,5 +1,6 @@
 package com.copay.app.viewmodel
 
+import UserService
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,17 +11,30 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
+class AuthViewModel(
+    private val userRepository: UserRepository,
+    private val userService: UserService
+) : ViewModel() {
 
     // Holds the current authentication state.
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState
 
+    private var backendResponse: AuthState? = null
     // Handles user login by calling the repository and processing the response.
     fun login(context: Context, phoneNumber: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            _authState.value = userRepository.login(context, phoneNumber, password)
+            backendResponse = userRepository.login(context, phoneNumber, password)
+
+            // Assign the UserRepository response trough the backendResponse variable.
+            _authState.value = backendResponse as AuthState;
+
+            backendResponse?.let {
+                if (it is AuthState.Success) {
+                    userService.handleBackendResponse(it)
+                }
+            }
         }
     }
 

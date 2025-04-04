@@ -1,5 +1,6 @@
 package com.copay.app.navigation
 
+import UserService
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,6 +19,7 @@ import com.copay.app.config.RetrofitInstance
 import com.copay.app.ui.screen.HomeScreen
 import com.copay.app.ui.screen.auth.RegisterStepOneScreen
 import com.copay.app.ui.screen.auth.RegisterStepTwoScreen
+import com.copay.app.viewmodel.UserViewModel
 
 
 @Composable
@@ -27,8 +29,10 @@ fun CopayNavHost(
     startDestination: String = NavRoutes.SplashScreen.route
 ) {
     val splashViewModel: SplashViewModel = viewModel()
+    val userViewModel: UserViewModel = viewModel()
     val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
     val userRepository = remember { UserRepository(RetrofitInstance.authService) }
+    val userService = remember { UserService(userViewModel) }
 
     LaunchedEffect(isDataLoaded.value) {
         if (isDataLoaded.value) {
@@ -58,6 +62,7 @@ fun CopayNavHost(
             RegisterStepOneScreen(
                 navController,
                 userRepository,
+                userService = userService,
                 onRegisterSuccess = {
                     navController.navigate(NavRoutes.RegisterStepTwoScreen.route) {
                     }
@@ -69,17 +74,21 @@ fun CopayNavHost(
         composable(NavRoutes.RegisterStepTwoScreen.route) {
             RegisterStepTwoScreen(
                 userRepository,
+                userService = userService,
                 onRegisterSuccess = {
                     navController.navigate(NavRoutes.HubScreen.route)
-                }
+                },
+
             )
         }
 
         // LoginScreen.
         composable(NavRoutes.LoginScreen.route) {
+
             LoginScreen(
                 navController = navController,
                 userRepository = userRepository,
+                userService = userService,
                 onLoginSuccess = {
                     navController.navigate(NavRoutes.HubScreen.route)
                 },
@@ -88,7 +97,8 @@ fun CopayNavHost(
                         popUpTo(NavRoutes.LoginScreen.route) { inclusive = true }
                     }
 
-                }
+                },
+
             )
         }
 
@@ -97,15 +107,9 @@ fun CopayNavHost(
             ForgotPasswordScreen(navController = navController)
         }
 
-        // HubScreen.
+        // HubScreen to manage the SPA flow.
         composable(NavRoutes.HubScreen.route) {
             HubScreen()
         }
-
-        // HomeScreen.
-        composable(NavRoutes.HomeScreen.route) {
-            HomeScreen()
-        }
-
     }
 }

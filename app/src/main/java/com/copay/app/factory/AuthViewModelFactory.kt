@@ -8,12 +8,12 @@ import com.copay.app.viewmodel.AuthViewModel
  * Ensures that UserRepository is properly injected into AuthViewModel.
  */
 
-class AuthViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
+class AuthViewModelFactory(private val userRepository: UserRepository, private val userService: UserService) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         // Check if the requested ViewModel is type AuthViewModel.
         if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
             // Create and return an instance of AuthViewModel with UserRepository injected.
-            return AuthViewModel(userRepository) as T
+            return AuthViewModel(userRepository, userService) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

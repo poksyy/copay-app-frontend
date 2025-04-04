@@ -1,6 +1,7 @@
 package com.copay.app.ui.screen.auth
 
 import AuthViewModelFactory
+import UserService
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -23,10 +24,11 @@ import com.copay.app.viewmodel.AuthViewModel
 fun LoginScreen(
     navController: NavController,
     userRepository: UserRepository,
+    userService: UserService,
     onLoginSuccess: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {}
 ) {
-    val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
+    val viewModelFactory = remember { AuthViewModelFactory(userRepository, userService) }
     val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
     val authState by authViewModel.authState.collectAsState()
 
