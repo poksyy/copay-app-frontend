@@ -6,7 +6,8 @@ package com.copay.app.model
  */
 
 data class User(
-    val id: String? = null,
+
+    val userId: Long? = null,
     val username: String? = null,
     val email: String? = null,
     val password: String? = null,
