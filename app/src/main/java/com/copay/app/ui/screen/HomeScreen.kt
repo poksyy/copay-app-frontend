@@ -31,8 +31,13 @@ fun HomeScreen(
     onNavigationComplete: () -> Unit = {},
     userViewModel: UserViewModel = viewModel()
 ) {
-    // Get the username value trough the userViewModel.
-    val userState = userViewModel.user.collectAsState()
+
+    val user by userViewModel.user.collectAsState()
+    Log.d("HomeScreen", "User in HomeScreen: $user")
+    val username = user?.username ?: "Username"
+    // Log para verificar si 'user' tiene un valor
+
+    Log.d("HomeScreen", "User: $user, Username: $username")
 
     // Manages the current view state within HomeScreen.
     var currentView by remember { mutableStateOf<SpaScreens>(SpaScreens.Home) }
@@ -45,9 +50,6 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(userState.value) {
-        Log.d("UserState", "User state: ${userState.value}")
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (currentView) {
@@ -58,7 +60,8 @@ fun HomeScreen(
                 // Navigation to CreateGroup.
                 onCreateClick = { currentView = SpaScreens.CreateGroup },
                 // Sends the username of the logged user.
-                user = userState.value
+                username = username
+
             )
             // Displays the JoinGroup screen and allows navigating back to Home.
             SpaScreens.JoinGroup -> JoinGroupScreen(
@@ -72,7 +75,7 @@ fun HomeScreen(
             else -> HomeContent(
                 onJoinClick = { currentView = SpaScreens.JoinGroup },
                 onCreateClick = { currentView = SpaScreens.CreateGroup },
-                user = userState.value
+                username = username
             )
         }
     }
@@ -83,7 +86,7 @@ private fun HomeContent(
     // Receives the callbacks from HomeViewModel.
     onJoinClick: () -> Unit,
     onCreateClick: () -> Unit,
-    user: LoginResponseDTO?
+    username: String
 ) {
     Column(
         modifier = Modifier
@@ -92,7 +95,7 @@ private fun HomeContent(
     ) {
         Text(
             // Shows the username of the logged user.
-            text = "Welcome ${user?.username ?: "User"}!",
+            text = "Welcome $username!",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
