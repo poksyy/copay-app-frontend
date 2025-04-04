@@ -27,7 +27,6 @@ interface ApiService {
 
     // Login API Call.
     @POST("${BASE_PATH}auth/login")
-
     suspend fun loginUser(@Body request: UserLoginRequestDTO): Response<LoginResponseDTO>
 
     // Register Step One API Call.
@@ -40,6 +39,12 @@ interface ApiService {
         @Body request: UserRegisterStepTwoDTO,
         @Header("Authorization") token: String
     ): Response<RegisterStepTwoResponseDTO>
+
+    // Logout API Call.
+    @POST("${BASE_PATH}auth/logout")
+    suspend fun logout(
+        @Header("Authorization") token: String
+    ): Response<Unit>
 
     // Forgot Password API Call
     @POST("${BASE_PATH}forgot-password")
