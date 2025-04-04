@@ -18,6 +18,7 @@ import com.copay.app.config.RetrofitInstance
 import com.copay.app.ui.screen.HomeScreen
 import com.copay.app.ui.screen.auth.RegisterStepOneScreen
 import com.copay.app.ui.screen.auth.RegisterStepTwoScreen
+import com.copay.app.ui.screen.ProfileScreen
 
 
 @Composable
@@ -99,7 +100,11 @@ fun CopayNavHost(
 
         // HubScreen.
         composable(NavRoutes.HubScreen.route) {
-            HubScreen()
+            HubScreen(
+                onLogoutSuccess = {
+                    navController.navigate(NavRoutes.AuthScreen.route)
+                }
+            )
         }
 
         // HomeScreen.
@@ -107,5 +112,9 @@ fun CopayNavHost(
             HomeScreen()
         }
 
+        // ProfileScreen.
+        composable(NavRoutes.ProfileScreen.route) {
+            ProfileScreen()
+        }
     }
 }

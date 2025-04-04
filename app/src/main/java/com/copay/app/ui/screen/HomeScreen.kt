@@ -17,59 +17,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.copay.app.model.User
 import com.copay.app.navigation.SpaScreens
+import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
 
-/**
- * HomeScreen composable that handles the main view and sub-views.
- * @param onNavigateFromBottomBar Flag indicating if navigation came from bottom bar.
- * @param onNavigationComplete Callback to reset navigation state after handling.
- */
 @Composable
 fun HomeScreen(
-    onNavigateFromBottomBar: Boolean = false,
-    onNavigationComplete: () -> Unit = {},
+    navigationViewModel: NavigationViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel()
 ) {
-    // Get the username value trough the userViewModel.
+    // Get the username value through the userViewModel.
     val user = userViewModel.user.value
 
-    // Manages the current view state within HomeScreen.
-    var currentView by remember { mutableStateOf<SpaScreens>(SpaScreens.Home) }
-
-    // Reset to Home view when navigating from bottom bar and notify completion.
-    LaunchedEffect(onNavigateFromBottomBar) {
-        if (onNavigateFromBottomBar) {
-            currentView = SpaScreens.Home
-            onNavigationComplete()
-        }
-    }
-
     Box(modifier = Modifier.fillMaxSize()) {
-        when (currentView) {
-            // Displays the Home content screen.
-            SpaScreens.Home -> HomeContent(
-                // Navigation to JoinGroup.
-                onJoinClick = { currentView = SpaScreens.JoinGroup },
-                // Navigation to CreateGroup.
-                onCreateClick = { currentView = SpaScreens.CreateGroup },
-                // Sends the username of the logged user.
-                user = user
-            )
-            // Displays the JoinGroup screen and allows navigating back to Home.
-            SpaScreens.JoinGroup -> JoinGroupScreen(
-                onBackClick = { currentView = SpaScreens.Home }
-            )
-            // Displays the CreateGroup screen and allows navigating back to Home.
-            SpaScreens.CreateGroup -> CreateGroupScreen(
-                onBackClick = { currentView = SpaScreens.Home }
-            )
-            // Default case: if no screen matches, display Home content screen.
-            else -> HomeContent(
-                onJoinClick = { currentView = SpaScreens.JoinGroup },
-                onCreateClick = { currentView = SpaScreens.CreateGroup },
-                user = user
-            )
-        }
+        HomeContent(
+            onJoinClick = { navigationViewModel.navigateTo(SpaScreens.JoinGroup) },
+            onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
+            user = user
+        )
     }
 }
 

@@ -23,7 +23,12 @@ This class encapsulates the logic of managing user authentication state and stor
 class UserRepository(private val authService: AuthService) {
 
     // Login method.
-    suspend fun login(context: Context, phoneNumber: String, password: String): AuthState {
+    suspend fun login(
+        context: Context,
+        phoneNumber: String,
+        password: String
+    ): AuthState {
+
         val request = UserLoginRequestDTO(phoneNumber, password)
         return handleApiResponse(context) { authService.login(request) }
     }
@@ -62,35 +67,45 @@ class UserRepository(private val authService: AuthService) {
         }
     }
 
+    suspend fun logout(
+        context: Context,
+        token: String
+    ): AuthState {
+        return handleApiResponse(context, handleToken = false) {
+            authService.logout("Bearer $token")
+        }.also { state ->
+            if (state is AuthState.Success) {
+                DataStoreManager.clearToken(context)
+            }
+        }
+    }
+
     // Logic to manage the API Response.
-    private suspend fun <T> handleApiResponse(context: Context, apiCall: suspend () -> Response<T>): AuthState {
+    private suspend fun <T> handleApiResponse(
+        context: Context,
+        handleToken: Boolean = true,
+        apiCall: suspend () -> Response<T>
+    ): AuthState {
         return try {
             val response = apiCall()
             if (response.isSuccessful) {
                 val body = response.body()
 
-                if (body != null) {
-                    val token = extractToken(body)
-
-                    if (token != null) {
-                        // Log the token.
-                        Log.d("UserRepository", "Token extracted: $token")
-
-                        // Save the token if it exists.
-                        DataStoreManager.saveToken(context, token)
-                    } else {
-                        Log.d("UserRepository", "No token found in response")
+                // Extract and save token only if enabled.
+                if (handleToken) {
+                    body?.let {
+                        extractToken(it)?.let { token ->
+                            DataStoreManager.saveToken(context, token)
+                            Log.d("UserRepository", "Token saved: $token")
+                        }
                     }
-
-                    // Returns success if the response from the backend is valid.
-                    AuthState.Success(body)
-                } else {
-                    AuthState.Error("Empty response")
                 }
+
+                AuthState.Success(body)
             } else {
                 val errorBody = response.errorBody()?.string()
                 val message = extractErrorMessage(errorBody)
-                Log.d("UserRepository","ERROR STRUCTURE: $errorBody")
+                Log.d("UserRepository", "ERROR STRUCTURE: $errorBody")
                 AuthState.Error(message ?: "Unknown error")
             }
         } catch (e: Exception) {

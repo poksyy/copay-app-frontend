@@ -7,9 +7,12 @@ import com.copay.app.dto.response.LoginResponseDTO
 import com.copay.app.dto.response.RegisterStepOneResponseDTO
 import com.copay.app.dto.response.RegisterStepTwoResponseDTO
 import retrofit2.Response
-import retrofit2.http.Header
 
 class AuthService(private val api: ApiService) {
+
+    suspend fun login(request: UserLoginRequestDTO): Response<LoginResponseDTO> {
+        return api.loginUser(request)
+    }
 
     suspend fun registerStepOne(request: UserRegisterStepOneDTO): Response<RegisterStepOneResponseDTO> {
         return api.registerStepOne(request)
@@ -20,7 +23,7 @@ class AuthService(private val api: ApiService) {
         return api.registerStepTwo(request, token)
     }
 
-    suspend fun login(request: UserLoginRequestDTO): Response<LoginResponseDTO> {
-        return api.loginUser(request)
+    suspend fun logout(token: String): Response<Unit> {
+        return api.logout(token)
     }
 }

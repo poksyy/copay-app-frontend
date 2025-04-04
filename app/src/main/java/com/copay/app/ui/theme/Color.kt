@@ -19,7 +19,7 @@ val SecondaryButtonFill = Color(0xFFFFFFFF) // White button
 val SecondaryButtonBorder = Color(0xFF000000) // Black border
 
 // Logout Button
-val LogoutButtonBackground = Color(0xFF000000) // Red button
+val LogoutButtonBackground = Color(0xFFFF0000) // Red button
 
 // Link and Interactive Colors
 val LinkColor = Color(0xFF007BFF) // Blue for links

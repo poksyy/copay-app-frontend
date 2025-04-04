@@ -8,6 +8,7 @@ import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
@@ -25,10 +26,13 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
     }
 
     // Handles the first step of user registration.
-    fun registerStepOne(context: Context, username: String, email: String, password: String, confirmPassword: String) {
+    fun registerStepOne(
+        context: Context, username: String, email: String, password: String, confirmPassword: String
+    ) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            _authState.value = userRepository.registerStepOne(context, username, email, password, confirmPassword)
+            _authState.value =
+                userRepository.registerStepOne(context, username, email, password, confirmPassword)
         }
     }
 
@@ -43,10 +47,13 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     // Logs out the user by clearing the stored authentication token.
     fun logout(context: Context) {
-
         viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            DataStoreManager.getToken(context).first()?.let { token ->
+                userRepository.logout(context, token)
+            }
             DataStoreManager.clearToken(context)
-            _authState.value = AuthState.Idle
+            _authState.value = AuthState.Success(null)
         }
     }
 }
