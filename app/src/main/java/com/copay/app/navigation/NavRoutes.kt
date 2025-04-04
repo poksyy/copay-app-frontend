@@ -11,9 +11,7 @@ sealed class NavRoutes(val route: String) {
     data object LoginScreen : NavRoutes("api/login")
     data object ForgotPasswordScreen : NavRoutes("api/forgot-password")
 
+    // Main SpaScreen
     data object HubScreen : NavRoutes("api/hub")
-    data object HomeScreen : NavRoutes("api/home")
-    data object PlanningScreen : NavRoutes("api/planning")
-    data object FriendScreen : NavRoutes("api/friend")
-    data object ProfileScreen : NavRoutes("api/profile")
+
 }
