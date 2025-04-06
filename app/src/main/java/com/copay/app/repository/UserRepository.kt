@@ -1,12 +1,12 @@
 package com.copay.app.repository
 
-import AuthService
 import android.content.Context
 import android.util.Log
 import com.copay.app.config.ApiService
 import com.copay.app.dto.request.UserLoginRequestDTO
 import com.copay.app.dto.request.UserRegisterStepOneDTO
 import com.copay.app.dto.request.UserRegisterStepTwoDTO
+import com.copay.app.service.AuthService
 import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.AuthState
 import com.google.gson.Gson
@@ -23,7 +23,12 @@ This class encapsulates the logic of managing user authentication state and stor
 class UserRepository(private val authService: AuthService) {
 
     // Login method.
-    suspend fun login(context: Context, phoneNumber: String, password: String): AuthState {
+    suspend fun login(
+        context: Context,
+        phoneNumber: String,
+        password: String
+    ): AuthState {
+
         val request = UserLoginRequestDTO(phoneNumber, password)
         return handleApiResponse(context) { authService.login(request) }
     }
@@ -42,11 +47,15 @@ class UserRepository(private val authService: AuthService) {
     }
 
     // Registration step two method.
-    suspend fun registerStepTwo(context: Context, phoneNumber: String): AuthState {
+    suspend fun registerStepTwo(
+        context: Context,
+        phoneNumber: String
+    ): AuthState {
 
         // Get the token generated in registerStepOne thanks to DataStoreManager.
         val token = DataStoreManager.getToken(context).first()
         Log.d("UserRepository", "Token sent to registerStepTwo: $token")
+
         // Verifies if token is null.
         if (token.isNullOrEmpty()) {
             return AuthState.Error("Token not found.")
@@ -63,34 +72,48 @@ class UserRepository(private val authService: AuthService) {
     }
 
     // Logic to manage the API Response.
-    private suspend fun <T> handleApiResponse(context: Context, apiCall: suspend () -> Response<T>): AuthState {
+    private suspend fun <T> handleApiResponse(
+        context: Context,
+        apiCall: suspend () -> Response<T>
+    ): AuthState {
+
         return try {
             val response = apiCall()
+
+            // Triggers if backend HTTP response is successful (200/201/300...)
             if (response.isSuccessful) {
                 val body = response.body()
 
+                // Triggers if the backend response is not null.
                 if (body != null) {
+                    // Extract the token from the backend response.
                     val token = extractToken(body)
 
+                    // Triggers when backend response has a token and stores it trough DataStore.
                     if (token != null) {
                         // Log the token.
                         Log.d("UserRepository", "Token extracted: $token")
 
                         // Save the token if it exists.
                         DataStoreManager.saveToken(context, token)
+
                     } else {
                         Log.d("UserRepository", "No token found in response")
                     }
 
                     // Returns success if the response from the backend is valid.
                     AuthState.Success(body)
+
                 } else {
                     AuthState.Error("Empty response")
                 }
+            // Triggers when the response is not successful.
             } else {
+                // Extract the message field trough the extractErrorMessage() method.
                 val errorBody = response.errorBody()?.string()
                 val message = extractErrorMessage(errorBody)
                 Log.d("UserRepository","ERROR STRUCTURE: $errorBody")
+                // Updates the UI with an error message.
                 AuthState.Error(message ?: "Unknown error")
             }
         } catch (e: Exception) {

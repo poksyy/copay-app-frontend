@@ -1,5 +1,6 @@
 package com.copay.app.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,9 +14,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.copay.app.model.User
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.viewmodel.UserViewModel
 
@@ -28,10 +28,14 @@ import com.copay.app.viewmodel.UserViewModel
 fun HomeScreen(
     onNavigateFromBottomBar: Boolean = false,
     onNavigationComplete: () -> Unit = {},
-    userViewModel: UserViewModel = viewModel()
+    userViewModel: UserViewModel = hiltViewModel()
 ) {
-    // Get the username value trough the userViewModel.
-    val user = userViewModel.user.value
+
+    val user by userViewModel.user.collectAsState()
+    Log.d("HomeScreen", "User in HomeScreen: $user")
+    val username = user?.username ?: "Username"
+    // Log para verificar si 'user' tiene un valor
+    Log.d("HomeScreen", "User: $user, Username: $username")
 
     // Manages the current view state within HomeScreen.
     var currentView by remember { mutableStateOf<SpaScreens>(SpaScreens.Home) }
@@ -53,7 +57,8 @@ fun HomeScreen(
                 // Navigation to CreateGroup.
                 onCreateClick = { currentView = SpaScreens.CreateGroup },
                 // Sends the username of the logged user.
-                user = user
+                username = username
+
             )
             // Displays the JoinGroup screen and allows navigating back to Home.
             SpaScreens.JoinGroup -> JoinGroupScreen(
@@ -67,7 +72,7 @@ fun HomeScreen(
             else -> HomeContent(
                 onJoinClick = { currentView = SpaScreens.JoinGroup },
                 onCreateClick = { currentView = SpaScreens.CreateGroup },
-                user = user
+                username = username
             )
         }
     }
@@ -78,7 +83,7 @@ private fun HomeContent(
     // Receives the callbacks from HomeViewModel.
     onJoinClick: () -> Unit,
     onCreateClick: () -> Unit,
-    user: User?
+    username: String
 ) {
     Column(
         modifier = Modifier
@@ -87,7 +92,7 @@ private fun HomeContent(
     ) {
         Text(
             // Shows the username of the logged user.
-            text = "Welcome ${user?.username ?: "User"}!",
+            text = "Welcome $username!",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,

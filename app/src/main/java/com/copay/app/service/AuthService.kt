@@ -1,3 +1,5 @@
+package com.copay.app.service
+
 import android.util.Log
 import com.copay.app.config.ApiService
 import com.copay.app.dto.request.UserLoginRequestDTO
@@ -7,7 +9,6 @@ import com.copay.app.dto.response.LoginResponseDTO
 import com.copay.app.dto.response.RegisterStepOneResponseDTO
 import com.copay.app.dto.response.RegisterStepTwoResponseDTO
 import retrofit2.Response
-import retrofit2.http.Header
 
 class AuthService(private val api: ApiService) {
 

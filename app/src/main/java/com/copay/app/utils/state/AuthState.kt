@@ -5,14 +5,15 @@ package com.copay.app.utils.state
  */
 sealed class AuthState {
 
-    // Initial state when no action is performed
+    // Initial state when no action is performed.
     data object Idle : AuthState()
 
-    // Ongoing authentication process
+    // Ongoing authentication process.
     data object  Loading : AuthState()
 
-    // Successful authentication
+    // Successful authentication.
     data class Success(val user: Any?) : AuthState()
 
+    // Error message in the ui.
     data class Error(val message: String) : AuthState()
 }

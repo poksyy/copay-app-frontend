@@ -9,8 +9,6 @@ data class RegisterStepOneResponseDTO(
     val token: String? = null,
     // Token expiration in seconds.
     val expiresIn: Int? = null,
-    // Token should be always Bearer.
-    val type: String? = null,
 
     // Registered (temporally) user details.
     val username: String? = null,
