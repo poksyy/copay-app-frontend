@@ -3,8 +3,8 @@ package com.copay.app.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,13 +13,9 @@ import com.copay.app.ui.screen.HubScreen
 import com.copay.app.ui.screen.SplashScreen
 import com.copay.app.ui.screen.auth.*
 import com.copay.app.viewmodel.SplashViewModel
-import com.copay.app.repository.UserRepository
-import com.copay.app.config.RetrofitInstance
-import com.copay.app.ui.screen.HomeScreen
 import com.copay.app.ui.screen.auth.RegisterStepOneScreen
 import com.copay.app.ui.screen.auth.RegisterStepTwoScreen
-import com.copay.app.ui.screen.ProfileScreen
-
+import com.copay.app.viewmodel.AuthViewModel
 
 @Composable
 fun CopayNavHost(
@@ -27,9 +23,8 @@ fun CopayNavHost(
     modifier: Modifier = Modifier,
     startDestination: String = NavRoutes.SplashScreen.route
 ) {
-    val splashViewModel: SplashViewModel = viewModel()
+    val splashViewModel: SplashViewModel = hiltViewModel()
     val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
-    val userRepository = remember { UserRepository(RetrofitInstance.authService) }
 
     LaunchedEffect(isDataLoaded.value) {
         if (isDataLoaded.value) {
@@ -58,7 +53,6 @@ fun CopayNavHost(
         composable(NavRoutes.RegisterStepOneScreen.route) {
             RegisterStepOneScreen(
                 navController,
-                userRepository,
                 onRegisterSuccess = {
                     navController.navigate(NavRoutes.RegisterStepTwoScreen.route) {
                     }
@@ -69,18 +63,18 @@ fun CopayNavHost(
         // RegisterStepTwoScreen.
         composable(NavRoutes.RegisterStepTwoScreen.route) {
             RegisterStepTwoScreen(
-                userRepository,
                 onRegisterSuccess = {
                     navController.navigate(NavRoutes.HubScreen.route)
-                }
+                },
+
             )
         }
 
         // LoginScreen.
         composable(NavRoutes.LoginScreen.route) {
+
             LoginScreen(
                 navController = navController,
-                userRepository = userRepository,
                 onLoginSuccess = {
                     navController.navigate(NavRoutes.HubScreen.route)
                 },
@@ -89,7 +83,8 @@ fun CopayNavHost(
                         popUpTo(NavRoutes.LoginScreen.route) { inclusive = true }
                     }
 
-                }
+                },
+
             )
         }
 
@@ -103,18 +98,6 @@ fun CopayNavHost(
             HubScreen(
                 onLogoutSuccess = {
                     navController.navigate(NavRoutes.AuthScreen.route)
-                }
-            )
-        }
-
-        // HomeScreen.
-        composable(NavRoutes.HomeScreen.route) {
-            HomeScreen()
-        }
-
-        // ProfileScreen.
-        composable(NavRoutes.ProfileScreen.route) {
-            ProfileScreen()
-        }
-    }
-}
+           }
+       )
+   }

@@ -1,3 +1,5 @@
+package com.copay.app.service
+
 import android.util.Log
 import com.copay.app.config.ApiService
 import com.copay.app.dto.request.UserLoginRequestDTO

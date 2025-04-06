@@ -10,13 +10,14 @@ import com.copay.app.navigation.CopayNavHost
 import com.copay.app.ui.theme.CopayTheme
 import com.copay.app.utils.ConnectionManager
 import com.copay.app.utils.DataStoreManager
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

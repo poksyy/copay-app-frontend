@@ -1,19 +1,21 @@
 package com.copay.app.viewmodel
 
-import android.app.Application
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.copay.app.config.ApiService
 import com.copay.app.model.User
+import com.copay.app.utils.state.UserSession
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class UserViewModel : ViewModel() {
+@HiltViewModel
+class UserViewModel @Inject constructor(
+    private val userSession: UserSession
+) : ViewModel() {
 
-    // Use of mutableStateOf for controlling the user state.
-    private val _user = mutableStateOf<User?>(null)
-    val user = _user
+    val user: StateFlow<User?> = userSession.user
 
-    // Method in case the username changes.
-    fun updateUser(user: User) {
-        _user.value = user
+    fun clearUser() {
+        userSession.clearUser()
     }
 }
+

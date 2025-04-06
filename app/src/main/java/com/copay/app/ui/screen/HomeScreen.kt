@@ -23,16 +23,21 @@ import com.copay.app.viewmodel.UserViewModel
 @Composable
 fun HomeScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
-    userViewModel: UserViewModel = viewModel()
+    userViewModel: UserViewModel = hiltViewModel()
 ) {
     // Get the username value through the userViewModel.
-    val user = userViewModel.user.value
+    val user by userViewModel.user.collectAsState()
+    Log.d("HomeScreen", "User in HomeScreen: $user")
+    val username = user?.username ?: "Username"
+    // Log para verificar si 'user' tiene un valor
+    Log.d("HomeScreen", "User: $user, Username: $username")
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         HomeContent(
             onJoinClick = { navigationViewModel.navigateTo(SpaScreens.JoinGroup) },
             onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
-            user = user
+            username = username
         )
     }
 }
@@ -42,7 +47,7 @@ private fun HomeContent(
     // Receives the callbacks from HomeViewModel.
     onJoinClick: () -> Unit,
     onCreateClick: () -> Unit,
-    user: User?
+    username: String
 ) {
     Column(
         modifier = Modifier
@@ -51,7 +56,7 @@ private fun HomeContent(
     ) {
         Text(
             // Shows the username of the logged user.
-            text = "Welcome ${user?.username ?: "User"}!",
+            text = "Welcome $username!",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
