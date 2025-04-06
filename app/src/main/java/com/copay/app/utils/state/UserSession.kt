@@ -23,10 +23,9 @@ class UserSession @Inject constructor() {
                 phoneNumber = phoneNumber
             )
         }
+    }
 
-        // TODO: Use this method when the user disconnects to clear user data.
-        fun clearUser() {
-            _user.value = null
-        }
+    fun clearUser() {
+        _user.value = null
     }
 }
