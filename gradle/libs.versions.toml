@@ -49,9 +49,13 @@ logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", ver
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+dagger-hilt = { module = "com.google.dagger:hilt-android", version = "2.52" }
+dagger-kapt = { module = 'com.google.dagger:hilt-android-compiler', version = "2.52" }
+hilt-compose-navigation = { module = "androidx.hilt:hilt-navigation-compose", version = "1.2.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+dagger = { id = "com.google.dagger.hilt.android", version = "2.51.1" }
 
