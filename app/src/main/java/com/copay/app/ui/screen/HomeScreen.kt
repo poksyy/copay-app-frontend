@@ -14,9 +14,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.copay.app.dto.response.LoginResponseDTO
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.viewmodel.UserViewModel
 
@@ -29,14 +28,13 @@ import com.copay.app.viewmodel.UserViewModel
 fun HomeScreen(
     onNavigateFromBottomBar: Boolean = false,
     onNavigationComplete: () -> Unit = {},
-    userViewModel: UserViewModel = viewModel()
+    userViewModel: UserViewModel = hiltViewModel()
 ) {
 
     val user by userViewModel.user.collectAsState()
     Log.d("HomeScreen", "User in HomeScreen: $user")
     val username = user?.username ?: "Username"
     // Log para verificar si 'user' tiene un valor
-
     Log.d("HomeScreen", "User: $user, Username: $username")
 
     // Manages the current view state within HomeScreen.
@@ -49,7 +47,6 @@ fun HomeScreen(
             onNavigationComplete()
         }
     }
-
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (currentView) {
