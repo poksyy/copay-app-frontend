@@ -1,7 +1,5 @@
 package com.copay.app.ui.screen.auth
 
-import AuthViewModelFactory
-import UserService
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -10,9 +8,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.copay.app.repository.UserRepository
 import com.copay.app.ui.components.BackButtonTop
 import com.copay.app.ui.components.InputField
 import com.copay.app.ui.components.PrimaryButton
@@ -23,18 +20,15 @@ import com.copay.app.viewmodel.AuthViewModel
 @Composable
 fun LoginScreen(
     navController: NavController,
-    userRepository: UserRepository,
-    userService: UserService,
     onLoginSuccess: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {}
 ) {
-    val viewModelFactory = remember { AuthViewModelFactory(userRepository, userService) }
-    val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
+    // Use hiltViewModel to obtain the injected AuthViewModel with userRepository and userService.
+    val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.authState.collectAsState()
 
     // Display errors on UI.
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
-
 
     // Tracks the state
     LaunchedEffect(authState) {
