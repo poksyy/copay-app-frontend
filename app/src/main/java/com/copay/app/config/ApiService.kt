@@ -40,6 +40,12 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<RegisterStepTwoResponseDTO>
 
+    // Logout API Call.
+    @POST("${BASE_PATH}auth/logout")
+    suspend fun logout(
+        @Header("Authorization") token: String
+    ): Response<Unit>
+
     // Forgot Password API Call
     @POST("${BASE_PATH}forgot-password")
     suspend fun forgotPassword(@Body request: ForgotPasswordDTO): Response<Unit>

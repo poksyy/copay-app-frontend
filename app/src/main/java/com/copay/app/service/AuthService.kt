@@ -12,6 +12,10 @@ import retrofit2.Response
 
 class AuthService(private val api: ApiService) {
 
+    suspend fun login(request: UserLoginRequestDTO): Response<LoginResponseDTO> {
+        return api.loginUser(request)
+    }
+
     suspend fun registerStepOne(request: UserRegisterStepOneDTO): Response<RegisterStepOneResponseDTO> {
         return api.registerStepOne(request)
     }
@@ -21,7 +25,7 @@ class AuthService(private val api: ApiService) {
         return api.registerStepTwo(request, token)
     }
 
-    suspend fun login(request: UserLoginRequestDTO): Response<LoginResponseDTO> {
-        return api.loginUser(request)
+    suspend fun logout(token: String): Response<Unit> {
+        return api.logout(token)
     }
 }

@@ -10,19 +10,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.PrimaryButton
 import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.viewmodel.NavigationViewModel
 
 @Composable
 fun CreateGroupScreen(
-    onBackClick: () -> Unit
+    navigationViewModel: NavigationViewModel = viewModel()
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         // Back button in the top-left corner.
         BackButtonTop(
-            onBackClick = onBackClick,
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.Home) },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)
@@ -68,9 +71,7 @@ fun CreateGroupScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             PrimaryButton(
-                text = "Create",
-                onClick = { },
-                modifier = Modifier.padding(horizontal = 10.dp)
+                text = "Create", onClick = { }, modifier = Modifier.padding(horizontal = 10.dp)
             )
         }
     }

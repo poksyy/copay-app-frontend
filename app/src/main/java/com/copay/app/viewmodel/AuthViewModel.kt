@@ -82,10 +82,13 @@ class AuthViewModel @Inject constructor(
 
     // Logs out the user by clearing the stored authentication token.
     fun logout(context: Context) {
-
         viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            DataStoreManager.getToken(context).first()?.let { token ->
+                userRepository.logout(context, token)
+            }
             DataStoreManager.clearToken(context)
-            _authState.value = AuthState.Idle
+            _authState.value = AuthState.Success(null)
         }
     }
 }

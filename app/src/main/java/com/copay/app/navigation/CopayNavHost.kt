@@ -93,9 +93,11 @@ fun CopayNavHost(
             ForgotPasswordScreen(navController = navController)
         }
 
-        // HubScreen to manage the SPA flow.
+        // HubScreen.
         composable(NavRoutes.HubScreen.route) {
-            HubScreen()
-        }
-    }
-}
+            HubScreen(
+                onLogoutSuccess = {
+                    navController.navigate(NavRoutes.AuthScreen.route)
+           }
+       )
+   }

@@ -70,58 +70,61 @@ class UserRepository(private val authService: AuthService) {
             authService.registerStepTwo(request, formattedToken)
         }
     }
-
-    // Logic to manage the API Response.
-    private suspend fun <T> handleApiResponse(
+    
+    // Logout method.
+    suspend fun logout(
         context: Context,
-        apiCall: suspend () -> Response<T>
+        token: String
     ): AuthState {
-
-        return try {
-            val response = apiCall()
-
-            // Triggers if backend HTTP response is successful (200/201/300...)
-            if (response.isSuccessful) {
-                val body = response.body()
-
-                // Triggers if the backend response is not null.
-                if (body != null) {
-                    // Extract the token from the backend response.
-                    val token = extractToken(body)
-
-                    // Triggers when backend response has a token and stores it trough DataStore.
-                    if (token != null) {
-                        // Log the token.
-                        Log.d("UserRepository", "Token extracted: $token")
-
-                        // Save the token if it exists.
-                        DataStoreManager.saveToken(context, token)
-
-                    } else {
-                        Log.d("UserRepository", "No token found in response")
-                    }
-
-                    // Returns success if the response from the backend is valid.
-                    AuthState.Success(body)
-
-                } else {
-                    AuthState.Error("Empty response")
-                }
-            // Triggers when the response is not successful.
-            } else {
-                // Extract the message field trough the extractErrorMessage() method.
-                val errorBody = response.errorBody()?.string()
-                val message = extractErrorMessage(errorBody)
-                Log.d("UserRepository","ERROR STRUCTURE: $errorBody")
-                // Updates the UI with an error message.
-                AuthState.Error(message ?: "Unknown error")
+      
+        return handleApiResponse(context, handleToken = false) {
+            authService.logout("Bearer $token")
+        }.also { state ->
+            if (state is AuthState.Success) {
+                DataStoreManager.clearToken(context)
             }
-        } catch (e: Exception) {
-            Log.e("UserRepository", "Connection error: ${e.message}")
-            AuthState.Error("Connection error: ${e.message}")
         }
     }
 
+  // Handles API response with optional token extraction and saving.
+  private suspend fun <T> handleApiResponse(
+        context: Context,
+        handleToken: Boolean = true,
+        apiCall: suspend () -> Response<T>
+    ): AuthState {
+
+      return try {
+          val response = apiCall()
+
+          // If response is successful, process body.
+          if (response.isSuccessful) {
+              val body = response.body()
+
+              // Extract and save token if enabled.
+              if (handleToken) {
+                  body?.let {
+                      extractToken(it)?.let { token ->
+                          DataStoreManager.saveToken(context, token)
+                          Log.d("UserRepository", "Token saved: $token")
+                      }
+                  }
+              }
+
+              // Return success state with body.
+              AuthState.Success(body)
+          } else {
+              // Parse error message from error body.
+              val errorBody = response.errorBody()?.string()
+              val message = extractErrorMessage(errorBody)
+              Log.d("UserRepository", "ERROR STRUCTURE: $errorBody")
+              AuthState.Error(message ?: "Unknown error")
+          }
+      } catch (e: Exception) {
+          // Handle exceptions such as network errors.
+          Log.e("UserRepository", "Connection error: ${e.message}")
+          AuthState.Error("Connection error: ${e.message}")
+      }
+  }
     // Method to extract the token from the response.
     private fun <T> extractToken(responseBody: T?): String? {
         return try {
