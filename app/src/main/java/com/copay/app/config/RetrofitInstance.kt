@@ -1,6 +1,6 @@
 package com.copay.app.config
 
-import AuthService
+import com.copay.app.service.AuthService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -36,19 +36,8 @@ object RetrofitInstance {
             .build()
     }
 
-    // Create the ApiService instance.
+    // Create the ApiService instance trough retrofit.
     val api: ApiService by lazy {
-        retrofit.create(ApiService::class.java)
-    }
-
-
-    // Create AuthService instance by passing the ApiService.
-    val authService: AuthService by lazy {
-        AuthService(apiService)
-    }
-
-    // Create the ApiService instance.
-    private val apiService: ApiService by lazy {
         retrofit.create(ApiService::class.java)
     }
 }
