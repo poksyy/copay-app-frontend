@@ -1,6 +1,5 @@
 package com.copay.app.ui.screen
 
-import AuthViewModelFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -16,18 +15,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.copay.app.R
-import com.copay.app.config.RetrofitInstance
 import com.copay.app.ui.components.LogoutButton
-import com.copay.app.repository.UserRepository
 import com.copay.app.viewmodel.AuthViewModel
 
 @Composable
 fun ProfileScreen() {
-    val userRepository = remember { UserRepository(RetrofitInstance.authService) }
-    val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
-    val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
+    val authViewModel: AuthViewModel = hiltViewModel()
 
     ProfileContent(authViewModel = authViewModel)
 }

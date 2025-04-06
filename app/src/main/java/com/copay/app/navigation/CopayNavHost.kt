@@ -67,7 +67,7 @@ fun CopayNavHost(
                     navController.navigate(NavRoutes.HubScreen.route)
                 },
 
-            )
+                )
         }
 
         // LoginScreen.
@@ -85,7 +85,7 @@ fun CopayNavHost(
 
                 },
 
-            )
+                )
         }
 
         // ForgotPasswordScreen.
@@ -98,6 +98,8 @@ fun CopayNavHost(
             HubScreen(
                 onLogoutSuccess = {
                     navController.navigate(NavRoutes.AuthScreen.route)
-           }
-       )
-   }
+                }
+            )
+        }
+    }
+}
