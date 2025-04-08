@@ -5,7 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,7 +14,6 @@ import com.copay.app.ui.screen.auth.*
 import com.copay.app.viewmodel.SplashViewModel
 import com.copay.app.ui.screen.auth.RegisterStepOneScreen
 import com.copay.app.ui.screen.auth.RegisterStepTwoScreen
-import com.copay.app.viewmodel.AuthViewModel
 
 @Composable
 fun CopayNavHost(
