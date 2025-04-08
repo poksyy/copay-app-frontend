@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.PrimaryButton
@@ -20,6 +21,8 @@ import com.copay.app.viewmodel.NavigationViewModel
 fun JoinGroupScreen(
     navigationViewModel: NavigationViewModel = viewModel()
 ) {
+    var groupCode by remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -29,6 +32,7 @@ fun JoinGroupScreen(
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)
+                .zIndex(1f)
         )
 
         // Screen content.
@@ -54,8 +58,8 @@ fun JoinGroupScreen(
             )
 
             OutlinedTextField(
-                value = "",
-                onValueChange = { },
+                value = groupCode,
+                onValueChange = { groupCode = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
@@ -67,7 +71,9 @@ fun JoinGroupScreen(
 
             PrimaryButton(
                 text = "Join",
-                onClick = { },
+                onClick = {
+                    // TODO:  BACKEND LOGIC.
+                },
                 modifier = Modifier.padding(horizontal = 10.dp)
             )
         }
