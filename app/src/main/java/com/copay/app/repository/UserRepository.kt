@@ -2,7 +2,6 @@ package com.copay.app.repository
 
 import android.content.Context
 import android.util.Log
-import com.copay.app.config.ApiService
 import com.copay.app.dto.request.UserLoginRequestDTO
 import com.copay.app.dto.request.UserRegisterStepOneDTO
 import com.copay.app.dto.request.UserRegisterStepTwoDTO
