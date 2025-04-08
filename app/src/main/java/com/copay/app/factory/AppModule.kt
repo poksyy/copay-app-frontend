@@ -3,8 +3,6 @@ package com.copay.app.factory
 import com.copay.app.config.RetrofitInstance
 import com.copay.app.repository.UserRepository
 import com.copay.app.service.AuthService
-import com.copay.app.service.UserService
-import com.copay.app.utils.state.UserSession
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,18 +43,4 @@ object AppModule {
         // Instantiates and returns UserRepository with injected AuthService.
         return UserRepository(authService)
     }
-
-    // Singleton to create only 1 instance of UserService.
-    @Singleton
-    fun provideUserService(): UserService {
-        // Instantiates and returns UserSession.
-        return UserService()
     }
-
-    // Singleton to create only 1 instance of UserSession.
-    @Singleton
-    fun provideUserSession(): UserSession {
-        // Instantiates and returns UserSession.
-        return UserSession()
-    }
-}
