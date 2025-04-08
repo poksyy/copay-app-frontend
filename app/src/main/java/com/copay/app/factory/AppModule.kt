@@ -43,4 +43,4 @@ object AppModule {
         // Instantiates and returns UserRepository with injected AuthService.
         return UserRepository(authService)
     }
-    }
+}
