@@ -7,7 +7,9 @@ import com.copay.app.dto.response.RegisterStepTwoResponseDTO
 import com.copay.app.model.User
 import com.copay.app.utils.state.AuthState
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UserService @Inject constructor() {
 
     // Receives the Success response with all the backend Json information.
