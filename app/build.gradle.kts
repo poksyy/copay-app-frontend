@@ -71,6 +71,8 @@ dependencies {
     implementation(libs.logging.interceptor)
     // DataStore Preferences for storing key-value pairs in a modern and safe way.
     implementation (libs.androidx.datastore.preferences)
+    // Country Code Picker for phone number.
+    implementation(libs.jetpack.compose.country.code.picker)
 
     implementation(libs.dagger.hilt)
     implementation(libs.hilt.compose.navigation)
