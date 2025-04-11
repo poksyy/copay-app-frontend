@@ -12,4 +12,10 @@ sealed class SpaScreens(val route: String) {
     data object JoinGroup : SpaScreens("join_group")
     data object CreateGroup : SpaScreens("create_group")
 
+    // ProfileScreen subpages inside the SPA.
+    data object EditProfile : SpaScreens("profile/edit")
+    data object EditUsername : SpaScreens("profile/edit/email")
+    data object EditEmail : SpaScreens("profile/edit/email")
+    data object EditPhoneNumber : SpaScreens("profile/edit/phone")
+
 }
