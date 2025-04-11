@@ -64,7 +64,7 @@ object UserValidation {
     // Validate if the phone number is not empty and has a valid length.
     fun validateRegisterPhoneNumber(phoneNumber: String): ValidationResult {
         return when {
-            phoneNumber.isBlank() -> ValidationResult(false, "PhoneNumber cannot be empty")
+            phoneNumber.isBlank() -> ValidationResult(false, "Phone number cannot be empty")
             else -> ValidationResult(true)
         }
     }
