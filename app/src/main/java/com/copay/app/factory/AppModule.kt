@@ -1,8 +1,10 @@
 package com.copay.app.factory
 
 import com.copay.app.config.RetrofitInstance
+import com.copay.app.repository.ProfileRepository
 import com.copay.app.repository.UserRepository
 import com.copay.app.service.AuthService
+import com.copay.app.service.ProfileService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,5 +44,21 @@ object AppModule {
     fun provideUserRepository(authService: AuthService): UserRepository {
         // Instantiates and returns UserRepository with injected AuthService.
         return UserRepository(authService)
+    }
+
+    // Provides the ProfileService dependency. A single instance will be used throughout the app.
+    @Provides
+    @Singleton
+    fun provideProfileService(): ProfileService {
+        // Instantiates and returns ProfileService using RetrofitInstance.
+        return ProfileService(RetrofitInstance.api)
+    }
+
+    // Provides the ProfileRepository dependency. A single instance will be used throughout the app.
+    @Provides
+    @Singleton
+    fun provideProfileRepository(profileService: ProfileService): ProfileRepository {
+        // Instantiates and returns ProfileRepository with injected ProfileService.
+        return ProfileRepository(profileService)
     }
 }
