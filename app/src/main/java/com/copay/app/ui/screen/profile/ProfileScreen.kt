@@ -1,4 +1,4 @@
-package com.copay.app.ui.screen
+package com.copay.app.ui.screen.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -16,18 +16,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.R
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.LogoutButton
 import com.copay.app.viewmodel.AuthViewModel
+import com.copay.app.viewmodel.NavigationViewModel
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    navigationViewModel: NavigationViewModel = viewModel()
+) {
     val authViewModel: AuthViewModel = hiltViewModel()
     var showLogoutDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     ProfileContent(
+        onEditProfileClick = { navigationViewModel.navigateTo(SpaScreens.EditProfile) },
         onLogoutClick = { showLogoutDialog = true }
     )
 
@@ -40,7 +45,10 @@ fun ProfileScreen() {
 }
 
 @Composable
-private fun ProfileContent(onLogoutClick: () -> Unit) {
+private fun ProfileContent(
+    onEditProfileClick: () -> Unit,
+    onLogoutClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -56,6 +64,17 @@ private fun ProfileContent(onLogoutClick: () -> Unit) {
                 .size(100.dp)
                 .clip(CircleShape)
         )
+
+        TextButton(
+            onClick = onEditProfileClick,
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            Text(
+                text = "Edit Profile",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
