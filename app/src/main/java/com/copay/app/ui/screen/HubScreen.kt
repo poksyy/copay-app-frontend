@@ -7,10 +7,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.copay.app.config.RetrofitInstance
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.repository.UserRepository
 import com.copay.app.ui.components.BottomNavigationBar
+import com.copay.app.ui.screen.profile.EditProfileScreen
+import com.copay.app.ui.screen.profile.ProfileScreen
+import com.copay.app.ui.screen.profile.edit.EditEmailScreen
+import com.copay.app.ui.screen.profile.edit.EditPhoneNumberScreen
+import com.copay.app.ui.screen.profile.edit.EditUsernameScreen
 import com.copay.app.utils.state.AuthState
 import com.copay.app.viewmodel.AuthViewModel
 import com.copay.app.viewmodel.NavigationViewModel
@@ -59,12 +62,21 @@ fun HubScreen(
             // Render current screen based on navigation state.
             when (currentScreen) {
 
+                // Main pages.
                 SpaScreens.Home -> HomeScreen()
-                SpaScreens.JoinGroup -> JoinGroupScreen()
-                SpaScreens.CreateGroup -> CreateGroupScreen()
                 SpaScreens.Plannings -> {} // TODO
                 SpaScreens.Friends -> {} // TODO
                 SpaScreens.Profile -> ProfileScreen()
+
+                // Home subpages.
+                SpaScreens.JoinGroup -> JoinGroupScreen()
+                SpaScreens.CreateGroup -> CreateGroupScreen()
+
+                // Profile subpages.
+                SpaScreens.EditProfile -> EditProfileScreen()
+                SpaScreens.EditEmail -> EditEmailScreen()
+                SpaScreens.EditPhoneNumber -> EditPhoneNumberScreen()
+                SpaScreens.EditUsername -> EditUsernameScreen()
             }
         }
     }
