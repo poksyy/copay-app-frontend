@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.copay.app.ui.components.PhoneNumberField
 import com.copay.app.ui.components.PrimaryButton
-import com.copay.app.ui.components.Country
 import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthViewModel
@@ -42,8 +41,7 @@ fun RegisterStepTwoScreen(
 
     // Function to validate the number in international format.
     fun validateInputs() {
-        val e164Number = getE164PhoneNumber()
-        phoneNumberError = UserValidation.validateRegisterPhoneNumber(e164Number).errorMessage
+        phoneNumberError = UserValidation.validatePhoneNumber(phoneNumber).errorMessage
     }
 
     // Effect triggered when the authentication state changes.
