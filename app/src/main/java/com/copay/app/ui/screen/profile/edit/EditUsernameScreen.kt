@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BackButtonTop
 import com.copay.app.utils.state.ProfileState
+import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.ProfileViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -29,9 +30,10 @@ fun EditUsernameScreen(
     val context = LocalContext.current
     val user by userViewModel.user.collectAsState()
     val profileState by profileViewModel.profileState.collectAsState()
-    var username by remember(user?.username) {
-        mutableStateOf(user?.username ?: "")
-    }
+
+    // Local states for managing the username value and errors
+    var username by remember(user?.username) { mutableStateOf(user?.username?: "") }
+    var usernameError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(profileState) {
         when (profileState) {
@@ -39,8 +41,14 @@ fun EditUsernameScreen(
                 navigationViewModel.navigateTo(SpaScreens.EditProfile)
                 profileViewModel.resetProfileState()
             }
+
             else -> {}
         }
+    }
+
+    // Function to validate inputs.
+    fun validateInputs() {
+        usernameError = UserValidation.validateUsername(username).errorMessage
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -54,7 +62,10 @@ fun EditUsernameScreen(
 
         TextButton(
             onClick = {
-                profileViewModel.updateUsername(context, user?.userId ?: 0, username)
+                validateInputs()
+                if (usernameError == null ) {
+                    profileViewModel.updateUsername(context, user?.userId ?: 0, username)
+                }
             },
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -81,13 +92,26 @@ fun EditUsernameScreen(
 
             OutlinedTextField(
                 value = username,
-                onValueChange = { username = it },
+                onValueChange = {
+                    username = it
+                    validateInputs()
+                },
                 label = { Text("Username") },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = usernameError != null
             )
+
+            // Show username error if any.
+            usernameError?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
             Text(
                 text = "Your username is how people will identify you on the platform." +

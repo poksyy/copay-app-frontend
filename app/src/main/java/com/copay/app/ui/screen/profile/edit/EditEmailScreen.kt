@@ -1,6 +1,5 @@
 package com.copay.app.ui.screen.profile.edit
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -17,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BackButtonTop
 import com.copay.app.utils.state.ProfileState
+import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.ProfileViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -30,12 +30,11 @@ fun EditEmailScreen(
     val context = LocalContext.current
     val user by userViewModel.user.collectAsState()
     val profileState by profileViewModel.profileState.collectAsState()
-    var email by remember(user?.email) {
-        mutableStateOf(user?.email ?: "")
-    }
 
-    // Display errors on UI.
+    // Local states for managing the email value and errors
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
+    var email by remember(user?.email) { mutableStateOf(user?.email ?: "") }
+    var emailError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(profileState) {
         when (profileState) {
@@ -43,19 +42,25 @@ fun EditEmailScreen(
                 navigationViewModel.navigateTo(SpaScreens.EditProfile)
                 profileViewModel.resetProfileState()
             }
+
             is ProfileState.Error -> {
                 apiErrorMessage = (profileState as ProfileState.Error).message
                 profileViewModel.resetProfileState()
             }
+
             else -> {}
         }
+    }
+
+    // Function to validate inputs.
+    fun validateInputs() {
+        emailError = UserValidation.validateEmail(email).errorMessage
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.EditProfile)
-            },
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.EditProfile) },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)
@@ -63,9 +68,11 @@ fun EditEmailScreen(
 
         TextButton(
             onClick = {
-                profileViewModel.updateEmail(context, user?.userId ?: 0, email)
-            },
-            modifier = Modifier
+                validateInputs()
+                if (emailError == null ) {
+                    profileViewModel.updateEmail(context, user?.userId ?: 0, email)
+                }
+            }, modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
         ) {
@@ -76,7 +83,7 @@ fun EditEmailScreen(
             )
         }
 
-        // Contenido principal
+        // Screen content.
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -89,29 +96,36 @@ fun EditEmailScreen(
                 color = Color.Black
             )
 
-            // Campo de texto para el email
+            // Text field for email.
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    email = it
+                    validateInputs()
+                    apiErrorMessage = null
+                },
                 label = { Text("Email") },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Email
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = emailError != null
             )
 
-            // Show error message if API fails.
-            apiErrorMessage?.let {
+            // Show error message if API fails or wrong email format.
+            listOfNotNull(emailError, apiErrorMessage).forEach { errorMsg ->
                 Text(
-                    text = it,
+                    text = errorMsg,
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
 
-            // Explicación sobre el email
+            // Email's description.
             Text(
-                "Your email is used to send notifications, updates, and important information related to your account. It should be a valid and accessible email address that you check regularly.",
+                "Your email is used to send notifications, updates, and important information " +
+                        "related to your account. It should be a valid and accessible email " +
+                        "address that you check regularly.",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 8.dp)
