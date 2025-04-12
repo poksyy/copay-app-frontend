@@ -15,6 +15,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.components.countriesList
+import com.copay.app.utils.getE164PhoneNumber
 import com.copay.app.utils.state.ProfileState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.NavigationViewModel
@@ -31,10 +33,20 @@ fun EditPhoneNumberScreen(
     val user by userViewModel.user.collectAsState()
     val profileState by profileViewModel.profileState.collectAsState()
 
+    // Extract country prefix and local number
+    val fullPhone = user?.phoneNumber ?: ""
+    val country = countriesList.find { fullPhone.startsWith(it.dialCode) } ?: countriesList.first()
+    val localNumber = fullPhone.removePrefix(country.dialCode)
+
     // Local states for managing the phone number value and errors
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
-    var phoneNumber by remember(user?.phoneNumber) { mutableStateOf(user?.phoneNumber ?: "") }
     var phoneNumberError by remember { mutableStateOf<String?>(null) }
+
+    var phoneNumber by remember { mutableStateOf(localNumber) }
+    val selectedCountry by remember { mutableStateOf(country) }
+
+    // Combines the country code with the number for E.164 format.
+    val completePhoneNumber = getE164PhoneNumber(selectedCountry, phoneNumber)
 
     LaunchedEffect(profileState) {
         when (profileState) {
@@ -69,8 +81,8 @@ fun EditPhoneNumberScreen(
         TextButton(
             onClick = {
                 validateInputs()
-                if (listOf(phoneNumberError).all { it == null }) {
-                    profileViewModel.updatePhoneNumber(context, user?.userId ?: 0, phoneNumber)
+                if (phoneNumberError == null ) {
+                    profileViewModel.updatePhoneNumber(context, user?.userId ?: 0, completePhoneNumber)
                 }
             }, modifier = Modifier
                 .align(Alignment.TopEnd)

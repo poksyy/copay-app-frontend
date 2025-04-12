@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.copay.app.ui.components.PhoneNumberField
 import com.copay.app.ui.components.PrimaryButton
+import com.copay.app.utils.getE164PhoneNumber
 import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthViewModel
@@ -31,13 +32,8 @@ fun RegisterStepTwoScreen(
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
-    // This function combines the country code with the number for E.164 format.
-    fun getE164PhoneNumber(): String {
-        // Remove unnecessary characters and spaces.
-        val cleanNumber = phoneNumber.replace(Regex("[^0-9]"), "")
-        // E.164 format should have the + sign followed by country code and number.
-        return "${selectedCountry.dialCode}$cleanNumber"
-    }
+    // Combines the country code with the number for E.164 format.
+    val completePhoneNumber = getE164PhoneNumber(selectedCountry, phoneNumber)
 
     // Function to validate the number in international format.
     fun validateInputs() {
@@ -97,8 +93,6 @@ fun RegisterStepTwoScreen(
                 validateInputs()
                 if (phoneNumberError == null) {
                     isLoading = true
-                    // Send the complete E.164 formatted phone number to the backend.
-                    val completePhoneNumber = getE164PhoneNumber()
                     authViewModel.registerStepTwo(context, completePhoneNumber)
                 }
             }
