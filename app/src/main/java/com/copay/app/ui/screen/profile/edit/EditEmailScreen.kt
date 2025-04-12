@@ -69,7 +69,7 @@ fun EditEmailScreen(
         TextButton(
             onClick = {
                 validateInputs()
-                if (listOf(emailError).all { it == null }) {
+                if (emailError == null ) {
                     profileViewModel.updateEmail(context, user?.userId ?: 0, email)
                 }
             }, modifier = Modifier

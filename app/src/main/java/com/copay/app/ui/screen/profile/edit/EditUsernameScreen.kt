@@ -63,7 +63,7 @@ fun EditUsernameScreen(
         TextButton(
             onClick = {
                 validateInputs()
-                if (listOf(usernameError).all { it == null }) {
+                if (usernameError == null ) {
                     profileViewModel.updateUsername(context, user?.userId ?: 0, username)
                 }
             },
