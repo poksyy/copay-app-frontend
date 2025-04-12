@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BackButtonTop
 import com.copay.app.utils.state.ProfileState
+import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.ProfileViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -29,26 +30,31 @@ fun EditPhoneNumberScreen(
     val context = LocalContext.current
     val user by userViewModel.user.collectAsState()
     val profileState by profileViewModel.profileState.collectAsState()
-    var phoneNumber by remember(user?.phoneNumber) {
-        mutableStateOf(user?.phoneNumber ?: "")
-    }
 
-    // Display errors on UI.
+    // Local states for managing the phone number value and errors
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
+    var phoneNumber by remember(user?.phoneNumber) { mutableStateOf(user?.phoneNumber ?: "") }
+    var phoneNumberError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(profileState) {
-
         when (profileState) {
             is ProfileState.Success.PhoneUpdated -> {
                 navigationViewModel.navigateTo(SpaScreens.EditProfile)
                 profileViewModel.resetProfileState()
             }
+
             is ProfileState.Error -> {
                 apiErrorMessage = (profileState as ProfileState.Error).message
                 profileViewModel.resetProfileState()
             }
+
             else -> {}
         }
+    }
+
+    // Function to validate inputs.
+    fun validateInputs() {
+        phoneNumberError = UserValidation.validatePhoneNumber(phoneNumber).errorMessage
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -62,9 +68,11 @@ fun EditPhoneNumberScreen(
 
         TextButton(
             onClick = {
-                profileViewModel.updatePhoneNumber(context, user?.userId ?: 0, phoneNumber)
-            },
-            modifier = Modifier
+                validateInputs()
+                if (listOf(phoneNumberError).all { it == null }) {
+                    profileViewModel.updatePhoneNumber(context, user?.userId ?: 0, phoneNumber)
+                }
+            }, modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
         ) {
@@ -91,26 +99,33 @@ fun EditPhoneNumberScreen(
             // Text field for phone number
             OutlinedTextField(
                 value = phoneNumber,
-                onValueChange = { phoneNumber = it },
-                label = { Text("Phone Number") },
+                onValueChange = {
+                    phoneNumber = it
+                    validateInputs()
+                    apiErrorMessage = null
+                },
+                label = { Text("Email") },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Phone
+                    keyboardType = KeyboardType.Email
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = phoneNumberError != null
             )
 
-            // Show error message if API fails.
-            apiErrorMessage?.let {
+            // Show error message if API fails or wrong phone number format.
+            listOfNotNull(phoneNumberError, apiErrorMessage).forEach { errorMsg ->
                 Text(
-                    text = it,
+                    text = errorMsg,
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
 
             // Phone number's description
             Text(
-                "Your phone number is used for account verification, recovery, and notifications. Make sure it's a valid and active number that you can be reached at.",
+                "Your phone number is used for account verification, recovery, " +
+                        "and notifications. Make sure it's a valid and active number " +
+                        "that you can be reached at.",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 8.dp)
