@@ -21,6 +21,7 @@ fun RegisterStepOneScreen(
     navController: NavController,
     onRegisterSuccess: () -> Unit = {}
     ) {
+
     // Use hiltViewModel to obtain the injected AuthViewModel with userRepository and userService.
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.authState.collectAsState()
