@@ -1,8 +1,10 @@
 package com.copay.app.factory
 
 import com.copay.app.config.RetrofitInstance
+import com.copay.app.repository.GroupRepository
 import com.copay.app.repository.UserRepository
 import com.copay.app.service.AuthService
+import com.copay.app.service.GroupService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,6 +30,20 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    /*    ========================================================================
+          ============================= SERVICES ===============================
+          ========================================================================
+
+          These are the services responsible for the application's core functionalities
+          like authentication and group management. They are provided as singletons
+          to ensure there is only one instance of each service in the entire app.
+
+          ========================================================================
+          ========================================================================
+          ========================================================================
+    */
+
+
     // Provides the AuthService dependency. A single instance will be used throughout the app.
     @Provides
     @Singleton
@@ -36,11 +52,41 @@ object AppModule {
         return AuthService(RetrofitInstance.api)
     }
 
+    // Provides the GroupService dependency. A single instance will be used throughout the app.
+    @Provides
+    @Singleton
+    fun provideGroupService(): GroupService {
+        // Instantiates and returns GroupService using RetrofitInstance.
+        return GroupService(RetrofitInstance.api)
+    }
+
+
+    /*    ========================================================================
+          =========================== REPOSITORIES =============================
+          ========================================================================
+
+          These repositories manage the interaction with the data layer, such as
+          user information and groups. Each repository is provided as a singleton
+          and is injected with the necessary service dependencies.
+
+          ========================================================================
+          ========================================================================
+          ========================================================================
+    */
+
     // Provides the UserRepository dependency. A single instance will be used throughout the app.
     @Provides
     @Singleton
     fun provideUserRepository(authService: AuthService): UserRepository {
         // Instantiates and returns UserRepository with injected AuthService.
         return UserRepository(authService)
+    }
+
+    // Provides the GroupRepository dependency. A single instance will be used throughout the app.
+    @Provides
+    @Singleton
+    fun provideGroupRepository(groupService: GroupService): GroupRepository {
+        // Instantiates and returns UserRepository with injected AuthService.
+        return GroupRepository(groupService)
     }
 }
