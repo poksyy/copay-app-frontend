@@ -52,6 +52,6 @@ interface ApiService {
     suspend fun forgotPassword(@Body request: ForgotPasswordDTO): Response<Unit>
 
     // Retrieve groups by user ID (for HomeScreen display)
-    @GET("${BASE_PATH}groups/{userId}")
-    suspend fun getGroupsByUser(@Path("userId") userId: Long): Response<List<GroupResponseDTO>>
+//    @GET("${BASE_PATH}groups/{userId}")
+//    suspend fun getGroupsByUser(@Path("userId") userId: Long): Response<List<GroupResponseDTO>>
 }
