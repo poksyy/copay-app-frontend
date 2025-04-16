@@ -5,6 +5,7 @@ import com.copay.app.dto.request.ForgotPasswordDTO
 import com.copay.app.dto.request.UserLoginRequestDTO
 import com.copay.app.dto.request.UserRegisterStepTwoDTO
 import com.copay.app.dto.request.UserRegisterStepOneDTO
+import com.copay.app.dto.request.groups.CreateGroupDTO
 import com.copay.app.dto.request.profile.UpdateEmailDTO
 import com.copay.app.dto.request.profile.UpdatePhoneNumberDTO
 import com.copay.app.dto.request.profile.UpdateUsernameDTO
@@ -58,6 +59,10 @@ interface ApiService {
     @POST("${BASE_PATH}forgot-password")
     suspend fun forgotPassword(@Body request: ForgotPasswordDTO): Response<Unit>
 
+    // Retrieve groups by user ID (for HomeScreen display)
+//    @GET("${BASE_PATH}groups/{userId}")
+//    suspend fun getGroupsByUser(@Path("userId") userId: Long): Response<List<GroupResponseDTO>>
+  
     // API Calls to edit profile data
     // Update username
     @PUT("${BASE_PATH}users/edit-username/{id}")
