@@ -72,15 +72,15 @@ fun LoginScreen(
             var passwordError by remember { mutableStateOf<String?>(null) }
 
             fun validateInputs() {
-                phoneError = UserValidation.validateLoginPhoneNumber(phone).errorMessage
-                passwordError = UserValidation.validateLoginPassword(password).errorMessage
+                phoneError = UserValidation.validateNotEmpty(phone, "Phone number").errorMessage
+                passwordError = UserValidation.validateNotEmpty(password, "Password").errorMessage
             }
 
             InputField(
                 value = phone,
                 onValueChange = {
                     phone = it
-                    phoneError = UserValidation.validateLoginPhoneNumber(it).errorMessage
+                    phoneError = UserValidation.validateNotEmpty(it, "Phone number").errorMessage
                 },
                 label = "Phone Number",
                 isError = phoneError != null,
@@ -92,7 +92,7 @@ fun LoginScreen(
                 value = password,
                 onValueChange = {
                     password = it
-                    passwordError = UserValidation.validateLoginPassword(it).errorMessage
+                    passwordError = UserValidation.validateNotEmpty(it, "Password").errorMessage
                 },
                 label = "Password",
                 isPassword = true,

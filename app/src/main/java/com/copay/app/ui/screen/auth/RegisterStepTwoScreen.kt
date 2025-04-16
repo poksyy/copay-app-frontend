@@ -8,8 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.copay.app.ui.components.InputField
+import com.copay.app.ui.components.PhoneNumberField
 import com.copay.app.ui.components.PrimaryButton
+import com.copay.app.utils.getE164PhoneNumber
 import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthViewModel
@@ -17,40 +18,49 @@ import com.copay.app.viewmodel.AuthViewModel
 @Composable
 fun RegisterStepTwoScreen(
     onRegisterSuccess: () -> Unit = {}
-    ) {
-
+) {
     // Use hiltViewModel to obtain the injected AuthViewModel with userRepository and userService.
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.authState.collectAsState()
 
     val context = LocalContext.current
+
+    // Keep state of phone number and selected country separately.
     var phoneNumber by remember { mutableStateOf("") }
+    var selectedCountry by remember { mutableStateOf(com.copay.app.ui.components.countriesList.first { it.code == "ES" }) }
     var phoneNumberError by remember { mutableStateOf<String?>(null) }
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
-    // Function to validate inputs.
+    // Combines the country code with the number for E.164 format.
+    val completePhoneNumber = getE164PhoneNumber(selectedCountry, phoneNumber)
+
+    // Function to validate the number in international format.
     fun validateInputs() {
-        phoneNumberError = UserValidation.validateRegisterPhoneNumber(phoneNumber).errorMessage
+        phoneNumberError = UserValidation.validatePhoneNumber(phoneNumber).errorMessage
     }
 
     // Effect triggered when the authentication state changes.
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
-                // Redirection to HubScren.
-                onRegisterSuccess();
+                // Redirection to HubScreen
+                onRegisterSuccess()
             }
+
             is AuthState.Error -> {
                 apiErrorMessage = (authState as AuthState.Error).message
                 isLoading = false
             }
+
             else -> {}
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -58,13 +68,18 @@ fun RegisterStepTwoScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        InputField(
-            value = phoneNumber,
-            onValueChange = {
+        // Country code picker.
+        PhoneNumberField(
+            phoneNumber = phoneNumber,
+            onPhoneNumberChange = {
                 phoneNumber = it
-                phoneNumberError = UserValidation.validateRegisterPhoneNumber(it).errorMessage
+                validateInputs()
             },
-            label = "Phone Number",
+            selectedCountry = selectedCountry,
+            onCountrySelected = {
+                selectedCountry = it
+                validateInputs()
+            },
             isError = phoneNumberError != null,
             errorMessage = phoneNumberError
         )
@@ -72,13 +87,13 @@ fun RegisterStepTwoScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         PrimaryButton(
-            text = if (isLoading) "Loading..." else "Submit",
-            enabled = !isLoading,
+            text = "Submit",  // Removed loading state text here
+            enabled = !isLoading && phoneNumber.isNotEmpty() && phoneNumberError == null,
             onClick = {
                 validateInputs()
                 if (phoneNumberError == null) {
                     isLoading = true
-                    authViewModel.registerStepTwo(context, phoneNumber)
+                    authViewModel.registerStepTwo(context, completePhoneNumber)
                 }
             }
         )

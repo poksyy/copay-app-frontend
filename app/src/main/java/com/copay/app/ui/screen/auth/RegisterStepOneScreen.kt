@@ -44,7 +44,7 @@ fun RegisterStepOneScreen(
         when (authState) {
             is AuthState.Success -> {
                 // Redirection to RegisterStepTwoScreen.
-                onRegisterSuccess();
+                onRegisterSuccess()
             }
             is AuthState.Error -> {
                 apiErrorMessage = (authState as AuthState.Error).message
@@ -55,7 +55,7 @@ fun RegisterStepOneScreen(
 
     // Function to validate all inputs.
     fun validateInputs() {
-        usernameError = UserValidation.validateRegisterUsername(username).errorMessage
+        usernameError = UserValidation.validateUsername(username).errorMessage
         emailError = UserValidation.validateEmail(email).errorMessage
         passwordError = UserValidation.validateRegisterPassword(password).errorMessage
         passwordMatchError = UserValidation.validatePasswordMatch(password, confirmPassword).errorMessage
@@ -85,7 +85,7 @@ fun RegisterStepOneScreen(
                 value = username,
                 onValueChange = {
                     username = it
-                    usernameError = UserValidation.validateRegisterUsername(it).errorMessage
+                    usernameError = UserValidation.validateUsername(it).errorMessage
                 },
                 label = "Username",
                 isRequired = true,
