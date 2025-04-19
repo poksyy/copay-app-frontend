@@ -1,9 +1,11 @@
 package com.copay.app.factory
 
 import com.copay.app.config.RetrofitInstance
+import com.copay.app.repository.GroupRepository
 import com.copay.app.repository.ProfileRepository
 import com.copay.app.repository.UserRepository
 import com.copay.app.service.AuthService
+import com.copay.app.service.GroupService
 import com.copay.app.service.ProfileService
 import dagger.Module
 import dagger.Provides
@@ -30,6 +32,19 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    /*    ========================================================================
+          ============================= SERVICES ===============================
+          ========================================================================
+
+          These are the services responsible for the application's core functionalities
+          like authentication and group management. They are provided as singletons
+          to ensure there is only one instance of each service in the entire app.
+
+          ========================================================================
+          ========================================================================
+          ========================================================================
+    */
+
     // Provides the AuthService dependency. A single instance will be used throughout the app.
     @Provides
     @Singleton
@@ -37,6 +52,35 @@ object AppModule {
         // Instantiates and returns AuthService using RetrofitInstance.
         return AuthService(RetrofitInstance.api)
     }
+
+    // Provides the GroupService dependency. A single instance will be used throughout the app.
+    @Provides
+    @Singleton
+    fun provideGroupService(): GroupService {
+        // Instantiates and returns GroupService using RetrofitInstance.
+        return GroupService(RetrofitInstance.api)
+    }
+    
+    // Provides the ProfileService dependency. A single instance will be used throughout the app.
+    @Provides
+    @Singleton
+    fun provideProfileService(): ProfileService {
+        // Instantiates and returns ProfileService using RetrofitInstance.
+        return ProfileService(RetrofitInstance.api)
+    }
+    
+    /*    ========================================================================
+          =========================== REPOSITORIES =============================
+          ========================================================================
+
+          These repositories manage the interaction with the data layer, such as
+          user information and groups. Each repository is provided as a singleton
+          and is injected with the necessary service dependencies.
+
+          ========================================================================
+          ========================================================================
+          ========================================================================
+    */
 
     // Provides the UserRepository dependency. A single instance will be used throughout the app.
     @Provides
@@ -46,12 +90,12 @@ object AppModule {
         return UserRepository(authService)
     }
 
-    // Provides the ProfileService dependency. A single instance will be used throughout the app.
+    // Provides the GroupRepository dependency. A single instance will be used throughout the app.
     @Provides
     @Singleton
-    fun provideProfileService(): ProfileService {
-        // Instantiates and returns ProfileService using RetrofitInstance.
-        return ProfileService(RetrofitInstance.api)
+    fun provideGroupRepository(groupService: GroupService): GroupRepository {
+        // Instantiates and returns UserRepository with injected AuthService.
+        return GroupRepository(groupService)
     }
 
     // Provides the ProfileRepository dependency. A single instance will be used throughout the app.
