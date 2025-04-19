@@ -5,7 +5,6 @@ import com.copay.app.dto.request.ForgotPasswordDTO
 import com.copay.app.dto.request.UserLoginRequestDTO
 import com.copay.app.dto.request.UserRegisterStepTwoDTO
 import com.copay.app.dto.request.UserRegisterStepOneDTO
-import com.copay.app.dto.request.groups.CreateGroupDTO
 import com.copay.app.dto.request.profile.UpdateEmailDTO
 import com.copay.app.dto.request.profile.UpdatePhoneNumberDTO
 import com.copay.app.dto.request.profile.UpdateUsernameDTO

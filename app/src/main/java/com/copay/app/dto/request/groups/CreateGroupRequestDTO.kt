@@ -3,7 +3,7 @@ package com.copay.app.dto.request.groups
 /**
  * Data class representing the request body for group creation.
  */
-data class CreateGroupDTO(
+data class CreateGroupRequestDTO(
 
     val userId: Long,
     val groupName: String,
