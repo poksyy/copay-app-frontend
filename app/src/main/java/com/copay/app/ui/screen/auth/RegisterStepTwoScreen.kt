@@ -37,7 +37,8 @@ fun RegisterStepTwoScreen(
 
     // Function to validate the number in international format.
     fun validateInputs() {
-        phoneNumberError = UserValidation.validatePhoneNumber(phoneNumber).errorMessage
+        val validationResult = UserValidation.validatePhoneNumber(phoneNumber, selectedCountry.dialCode)
+        phoneNumberError = validationResult.errorMessage
     }
 
     // Effect triggered when the authentication state changes.
@@ -87,7 +88,7 @@ fun RegisterStepTwoScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         PrimaryButton(
-            text = "Submit",  // Removed loading state text here
+            text = "Submit",
             enabled = !isLoading && phoneNumber.isNotEmpty() && phoneNumberError == null,
             onClick = {
                 validateInputs()
