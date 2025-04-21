@@ -116,14 +116,18 @@ fun LogoutButton(
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = LogoutButtonBackground),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = Color.Transparent,
+            contentColor = Color.Red
+        ),
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(56.dp),
+        border = BorderStroke(2.dp, Color.Red)
     ) {
         Text(
             text = text,
-            color = White,
+            color = Color.Red,
             style = AppTypography.displayMedium
         )
     }
