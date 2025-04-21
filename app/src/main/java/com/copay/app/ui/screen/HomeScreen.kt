@@ -31,7 +31,6 @@ fun HomeScreen(
     val user by userViewModel.user.collectAsState()
     Log.d("HomeScreen", "User in HomeScreen: $user")
     val username = user?.username ?: "Username"
-    // Log para verificar si 'user' tiene un valor
     Log.d("HomeScreen", "User: $user, Username: $username")
 
 

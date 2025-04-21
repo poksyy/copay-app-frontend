@@ -66,7 +66,8 @@ fun EditPhoneNumberScreen(
 
     // Function to validate inputs.
     fun validateInputs() {
-        phoneNumberError = UserValidation.validatePhoneNumber(phoneNumber).errorMessage
+        val validationResult = UserValidation.validatePhoneNumber(phoneNumber, selectedCountry.dialCode)
+        phoneNumberError = validationResult.errorMessage
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

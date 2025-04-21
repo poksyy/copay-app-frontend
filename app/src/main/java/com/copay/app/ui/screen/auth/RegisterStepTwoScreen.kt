@@ -32,12 +32,10 @@ fun RegisterStepTwoScreen(
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
-    // Combines the country code with the number for E.164 format.
-    val completePhoneNumber = getE164PhoneNumber(selectedCountry, phoneNumber)
-
     // Function to validate the number in international format.
     fun validateInputs() {
-        phoneNumberError = UserValidation.validatePhoneNumber(phoneNumber).errorMessage
+        val validationResult = UserValidation.validatePhoneNumber(phoneNumber, selectedCountry.dialCode)
+        phoneNumberError = validationResult.errorMessage
     }
 
     // Effect triggered when the authentication state changes.
@@ -87,13 +85,18 @@ fun RegisterStepTwoScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         PrimaryButton(
-            text = "Submit",  // Removed loading state text here
+            text = "Submit",
             enabled = !isLoading && phoneNumber.isNotEmpty() && phoneNumberError == null,
             onClick = {
                 validateInputs()
                 if (phoneNumberError == null) {
                     isLoading = true
-                    authViewModel.registerStepTwo(context, completePhoneNumber)
+
+                    // Save phone prefix and phone number separately
+                    val phonePrefix = selectedCountry.dialCode
+
+                    // Pass the prefix and number separately to the backend API
+                    authViewModel.registerStepTwo(context, phonePrefix, phoneNumber)
                 }
             }
         )

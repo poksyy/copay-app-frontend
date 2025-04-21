@@ -5,5 +5,6 @@ package com.copay.app.dto.request
  */
 
 data class UserRegisterStepTwoDTO(
+    val phonePrefix: String,
     val phoneNumber: String
 )

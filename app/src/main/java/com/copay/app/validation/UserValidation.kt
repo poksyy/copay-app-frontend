@@ -29,19 +29,84 @@ object UserValidation {
     }
 
     // Validate if the phone number is not empty, has a valid length and correct format.
-    fun validatePhoneNumber(phoneNumber: String): ValidationResult {
+    fun validatePhoneNumber(phoneNumber: String, dialCode: String): ValidationResult {
         val emptyCheck = validateNotEmpty(phoneNumber, "Phone number")
         if (!emptyCheck.isValid) return emptyCheck
 
         val onlyDigits = phoneNumber.all { it.isDigit() }
+        if (!onlyDigits) return ValidationResult(false, "Phone number must contain only digits")
 
-        return when {
-            !onlyDigits -> ValidationResult(false, "Phone number must contain only digits")
-            phoneNumber.length != 10 -> ValidationResult(
-                false, "Phone number must be 10 digits"
-            )
-
-            else -> ValidationResult(true)
+        // Rules by country (examples)
+        return when (dialCode) {
+            "+34" -> { // Spain
+                if (phoneNumber.length != 9) ValidationResult(false, "Phone number must be 9 digits")
+                else ValidationResult(true)
+            }
+            "+52" -> { // Mexico
+                if (phoneNumber.length != 10) ValidationResult(false, "Phone number must be 10 digits")
+                else ValidationResult(true)
+            }
+            "+1" -> { // USA/Canada
+                if (phoneNumber.length != 10) ValidationResult(false, "Phone number must be 10 digits")
+                else ValidationResult(true)
+            }
+            "+49" -> { // Germany
+                if (phoneNumber.length != 11) ValidationResult(false, "Phone number must be 11 digits")
+                else ValidationResult(true)
+            }
+            "+54" -> { // Argentina
+                if (phoneNumber.length != 10) ValidationResult(false, "Phone number must be 10 digits")
+                else ValidationResult(true)
+            }
+            "+33" -> { // France
+                if (phoneNumber.length != 9) ValidationResult(false, "Phone number must be 9 digits")
+                else ValidationResult(true)
+            }
+            "+39" -> { // Italy
+                if (phoneNumber.length != 10) ValidationResult(false, "Phone number must be 10 digits")
+                else ValidationResult(true)
+            }
+            "+55" -> { // Brazil
+                if (phoneNumber.length != 11) ValidationResult(false, "Phone number must be 11 digits")
+                else ValidationResult(true)
+            }
+            "+57" -> { // Colombia
+                if (phoneNumber.length != 10) ValidationResult(false, "Phone number must be 10 digits")
+                else ValidationResult(true)
+            }
+            "+56" -> { // Chile
+                if (phoneNumber.length != 9) ValidationResult(false, "Phone number must be 9 digits")
+                else ValidationResult(true)
+            }
+            "+51" -> { // Peru
+                if (phoneNumber.length != 9) ValidationResult(false, "Phone number must be 9 digits")
+                else ValidationResult(true)
+            }
+            "+91" -> { // India
+                if (phoneNumber.length != 10) ValidationResult(false, "Phone number must be 10 digits")
+                else ValidationResult(true)
+            }
+            "+86" -> { // China
+                if (phoneNumber.length != 11) ValidationResult(false, "Phone number must be 11 digits")
+                else ValidationResult(true)
+            }
+            "+81" -> { // Japan
+                if (phoneNumber.length != 11) ValidationResult(false, "Phone number must be 11 digits")
+                else ValidationResult(true)
+            }
+            "+61" -> { // Australia
+                if (phoneNumber.length != 9) ValidationResult(false, "Phone number must be 9 digits")
+                else ValidationResult(true)
+            }
+            "+7" -> { // Russia
+                if (phoneNumber.length != 11) ValidationResult(false, "Phone number must be 11 digits")
+                else ValidationResult(true)
+            }
+            else -> {
+                if (phoneNumber.length < 6 || phoneNumber.length > 15)
+                    ValidationResult(false, "Phone number must be between 6 and 15 digits")
+                else ValidationResult(true)
+            }
         }
     }
 
@@ -70,6 +135,10 @@ object UserValidation {
 
             !password.any { it.isUpperCase() } -> ValidationResult(
                 false, "Password must contain at least one uppercase letter"
+            )
+
+            !password.any { it.isDigit() } -> ValidationResult(
+                false, "Password must contain at least one number"
             )
 
             else -> ValidationResult(true)

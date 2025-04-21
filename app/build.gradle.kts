@@ -76,6 +76,8 @@ dependencies {
     implementation(libs.hilt.compose.navigation)
     kapt(libs.dagger.kapt)
 
+    implementation (libs.coil.compose.v200)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
