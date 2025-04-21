@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.log
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -41,11 +42,11 @@ class AuthViewModel @Inject constructor(
 
             // Only execute if the response is success.
             if (backendResponse is AuthState.Success) {
-                // Extracts the user details trough the userService.
+                // Extracts the user details through the userService.
                 val extractedUser = userService.extractUser(backendResponse)
                 extractedUser?.let {
                     // Set the user information trough userSession.
-                    userSession.setUser(it.phoneNumber, it.userId, it.username, it.email)
+                    userSession.setUser(it.phonePrefix, it.phoneNumber, it.userId, it.username, it.email)
                 }
             }
         }
@@ -61,21 +62,20 @@ class AuthViewModel @Inject constructor(
         }
     }
     // Handles the first step of user registration.
-    fun registerStepTwo(context: Context, phoneNumber: String) {
+    fun registerStepTwo(context: Context, phonePrefix: String, phoneNumber: String) {
         viewModelScope.launch {
-
             _authState.value = AuthState.Loading
             // Stores the response from backend.
-            val backendResponse = userRepository.registerStepTwo(context, phoneNumber)
-            // Updates the UI trough authState.
+            val backendResponse = userRepository.registerStepTwo(context, phonePrefix, phoneNumber)
+            // Updates the UI through authState.
             _authState.value = backendResponse
 
             if (backendResponse is AuthState.Success) {
-                // Extracts the user details trough the userService.
+                // Extracts the user details through the userService.
                 val extractedUser = userService.extractUser(backendResponse)
                 extractedUser?.let {
-                    // Set the user information trough userSession.
-                    userSession.setUser(it.phoneNumber, it.userId, it.username, it.email)
+                    // Set the user information through userSession.
+                    userSession.setUser(it.phonePrefix, it.phoneNumber, it.userId, it.username, it.email)
                 }
             }
         }
