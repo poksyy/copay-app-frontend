@@ -48,6 +48,7 @@ class UserRepository(private val authService: AuthService) {
     // Registration step two method.
     suspend fun registerStepTwo(
         context: Context,
+        phonePrefix: String,
         phoneNumber: String
     ): AuthState {
 
@@ -63,12 +64,14 @@ class UserRepository(private val authService: AuthService) {
         // Send the token with "Bearer " since the backend needs that format.
         val formattedToken = "Bearer $token"
 
-        val request = UserRegisterStepTwoDTO(phoneNumber)
+        // Create the request with both phonePrefix and phoneNumber
+        val request = UserRegisterStepTwoDTO(phonePrefix, phoneNumber)
 
         return handleApiResponse(context) {
             authService.registerStepTwo(request, formattedToken)
         }
     }
+
     
     // Logout method.
     suspend fun logout(
