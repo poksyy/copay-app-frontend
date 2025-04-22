@@ -42,47 +42,51 @@ android {
 }
 
 dependencies {
+// Basic Android dependencies
+    implementation(libs.androidx.core.ktx) // Useful extensions for Android APIs.
+    implementation(libs.androidx.activity.compose) // Activity integration with Compose.
+    implementation(libs.androidx.lifecycle.runtime.ktx) // Extensions to work with the Android lifecycle.
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation (libs.material3)
-    implementation (libs.androidx.material.icons.extended)
-    implementation (libs.androidx.foundation)
-    implementation(libs.coil.compose)
+// Jetpack Compose dependencies
+    implementation(platform(libs.androidx.compose.bom)) // Composable BOM for Compose.
+    implementation(libs.androidx.ui) // Main Jetpack Compose library.
+    implementation(libs.androidx.ui.graphics) // Graphics functionalities for Compose.
+    implementation(libs.androidx.ui.tooling.preview) // Tools to preview Compose UI in the IDE.
+    implementation(libs.material3) // Material Design 3 for Compose.
+    implementation(libs.androidx.material.icons.extended) // Extended Material Design icons.
+    implementation(libs.androidx.foundation) // Basic Compose components like Layouts and Modifiers.
+    implementation(libs.coil.compose) // Library for loading images in Compose.
 
-    // Allows to work with coroutines in the ViewModel.
-    implementation (libs.kotlinx.coroutines.android)
-    // LiveData support in Compose.
-    implementation (libs.androidx.lifecycle.livedata.ktx)
-    // Allows to use ViewModels with Compose.
-    implementation (libs.androidx.lifecycle.viewmodel.compose)
-    // Navigation library.
-    implementation (libs.androidx.navigation.compose)
-    // Retrofit core library for making HTTP requests and handling API communication.
-    implementation(libs.retrofit)
-    // Gson converter for Retrofit, enabling automatic JSON serialization and deserialization.
-    implementation(libs.converter.gson)
-    // OkHttp Logging Interceptor for logging HTTP request and response details, useful for debugging.
-    implementation(libs.logging.interceptor)
-    // DataStore Preferences for storing key-value pairs in a modern and safe way.
-    implementation (libs.androidx.datastore.preferences)
+// ViewModel, LiveData, and Coroutines dependencies
+    implementation(libs.kotlinx.coroutines.android) // Allows working with coroutines in Android.
+    implementation(libs.androidx.lifecycle.livedata.ktx) // Extensions for LiveData in Compose.
+    implementation(libs.androidx.lifecycle.viewmodel.compose) // Integration of ViewModel with Compose.
 
-    implementation(libs.dagger.hilt)
-    implementation(libs.hilt.compose.navigation)
-    kapt(libs.dagger.kapt)
+// Navigation and architecture dependencies
+    implementation(libs.androidx.navigation.compose) // Navigation in Compose.
+    implementation(libs.dagger.hilt) // Hilt for dependency injection.
+    implementation(libs.hilt.compose.navigation) // Hilt integration with Compose navigation.
+    kapt(libs.dagger.kapt) // Hilt annotations for dependency injection.
 
-    implementation (libs.coil.compose.v200)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+// Retrofit and API communication dependencies
+    implementation(libs.retrofit) // Retrofit for making HTTP requests.
+    implementation(libs.converter.gson) // Gson converter for Retrofit.
+    implementation(libs.logging.interceptor) // OkHttp interceptor for logging HTTP requests.
+
+
+// Data storage and preferences dependencies
+    implementation(libs.androidx.datastore.preferences) // DataStore for storing preferences.
+
+// Unit testing and Android testing dependencies
+    testImplementation(libs.junit) // JUnit for unit testing.
+    androidTestImplementation(libs.androidx.junit) // JUnit for Android testing.
+    androidTestImplementation(libs.androidx.espresso.core) // Espresso for UI testing on Android.
+    androidTestImplementation(platform(libs.androidx.compose.bom)) // Composable BOM for testing with Compose.
+    androidTestImplementation(libs.androidx.ui.test.junit4) // Tools for UI testing with Compose.
+
+// Debugging and development tools dependencies
+    debugImplementation(libs.androidx.ui.tooling) // Development tools for working with Compose.
+    debugImplementation(libs.androidx.ui.test.manifest) // Testing tools for handling manifests in Compose.
+
 }
