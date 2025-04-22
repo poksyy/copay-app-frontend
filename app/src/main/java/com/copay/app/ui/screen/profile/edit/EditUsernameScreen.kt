@@ -41,7 +41,7 @@ fun EditUsernameScreen(
     LaunchedEffect(profileState) {
         when (profileState) {
             is ProfileState.Success.UsernameUpdated -> {
-                navigationViewModel.navigateTo(SpaScreens.EditProfile)
+                navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile)
                 profileViewModel.resetProfileState()
             }
 
@@ -57,7 +57,7 @@ fun EditUsernameScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.EditProfile) },
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile) },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)
@@ -120,8 +120,8 @@ fun EditUsernameScreen(
                 text = "Your username is how people will identify you on the platform." +
                         "Make sure it reflects your identity or something you'll be " +
                         "comfortable with others seeing.",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
+                style = CopayTypography.footer,
+                color = CopayColors.surface,
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
