@@ -1,6 +1,8 @@
 package com.copay.app.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.copay.app.R
 import com.copay.app.navigation.NavRoutes
+import com.copay.app.ui.theme.CopayColors
 import com.copay.app.viewmodel.SplashViewModel
 
 @Composable
@@ -41,14 +44,20 @@ fun SplashScreenContent() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CopayColors.background)
     ) {
+
+        val isDarkTheme = isSystemInDarkTheme()
+        val logoRes = if (isDarkTheme) R.drawable.copay_logo_512_white else R.drawable.copay_logo_512_black
+
         Image(
-            painter = painterResource(id = R.drawable.copay_logo_512),
+            painter = painterResource(id = logoRes),
             contentDescription = "Logo",
             modifier = Modifier.padding(bottom = 40.dp)
         )
 
-        CircularProgressIndicator(color = Color.Black)
+        CircularProgressIndicator(color = CopayColors.primary)
     }
 }
