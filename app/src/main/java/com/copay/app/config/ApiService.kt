@@ -5,14 +5,15 @@ import com.copay.app.dto.request.ForgotPasswordDTO
 import com.copay.app.dto.request.UserLoginRequestDTO
 import com.copay.app.dto.request.UserRegisterStepTwoDTO
 import com.copay.app.dto.request.UserRegisterStepOneDTO
-import com.copay.app.dto.request.groups.CreateGroupDTO
 import com.copay.app.dto.request.profile.UpdateEmailDTO
+import com.copay.app.dto.request.profile.UpdatePasswordDTO
 import com.copay.app.dto.request.profile.UpdatePhoneNumberDTO
 import com.copay.app.dto.request.profile.UpdateUsernameDTO
 import com.copay.app.dto.response.RegisterStepOneResponseDTO
 import com.copay.app.dto.response.LoginResponseDTO
 import com.copay.app.dto.response.RegisterStepTwoResponseDTO
 import com.copay.app.dto.response.profile.EmailResponseDTO
+import com.copay.app.dto.response.profile.PasswordResponseDTO
 import com.copay.app.dto.response.profile.PhoneNumberResponseDTO
 import com.copay.app.dto.response.profile.UsernameResponseDTO
 import okhttp3.ResponseBody
@@ -55,7 +56,7 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<Unit>
 
-    // Forgot Password API Call
+    // Forgot Password API Call.
     @POST("${BASE_PATH}forgot-password")
     suspend fun forgotPassword(@Body request: ForgotPasswordDTO): Response<Unit>
 
@@ -63,7 +64,7 @@ interface ApiService {
 //    @GET("${BASE_PATH}groups/{userId}")
 //    suspend fun getGroupsByUser(@Path("userId") userId: Long): Response<List<GroupResponseDTO>>
   
-    // API Calls to edit profile data
+    /** API Calls to edit profile data **/
     // Update username
     @PUT("${BASE_PATH}users/edit-username/{id}")
     suspend fun updateUsername(
@@ -71,17 +72,24 @@ interface ApiService {
         @Body request: UpdateUsernameDTO
     ): Response<UsernameResponseDTO>
 
-    // Update phone number
+    // Update phone number.
     @PUT("${BASE_PATH}users/edit-phone/{id}")
     suspend fun updatePhoneNumber(
         @Path("id") userId: Long,
         @Body request: UpdatePhoneNumberDTO
     ): Response<PhoneNumberResponseDTO>
 
-    // Update email
+    // Update email.
     @PUT("${BASE_PATH}users/edit-email/{id}")
     suspend fun updateEmail(
         @Path("id") userId: Long,
         @Body request: UpdateEmailDTO
     ): Response<EmailResponseDTO>
+
+    // Update password.
+    @PUT("${BASE_PATH}reset-password")
+    suspend fun updatePassword(
+        @Body request: UpdatePasswordDTO,
+        @Header("Authorization") token: String
+    ): Response<PasswordResponseDTO>
 }

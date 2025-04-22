@@ -16,6 +16,7 @@ sealed class ProfileState {
         class EmailUpdated(override val data: Any?) : Success(data)
         class UsernameUpdated(override val data: Any?) : Success(data)
         class PhoneUpdated(override val data: Any?) : Success(data)
+        class PasswordUpdated(override val data: Any?) : Success(data)
     }
 
     // An error occurred while updating profile

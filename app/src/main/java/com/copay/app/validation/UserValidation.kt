@@ -127,7 +127,7 @@ object UserValidation {
     /** SPECIFIC VALIDATIONS **/
     /** Register STEP ONE **/
     // Validate if the password meets security requirements.
-    fun validateRegisterPassword(password: String): ValidationResult {
+    fun validatePassword(password: String): ValidationResult {
         return when {
             password.length < 8 -> ValidationResult(
                 false, "Password must be at least 8 characters long"

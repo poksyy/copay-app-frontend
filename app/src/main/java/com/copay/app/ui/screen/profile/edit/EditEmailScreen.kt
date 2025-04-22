@@ -42,7 +42,7 @@ fun EditEmailScreen(
     LaunchedEffect(profileState) {
         when (profileState) {
             is ProfileState.Success.EmailUpdated -> {
-                navigationViewModel.navigateTo(SpaScreens.EditProfile)
+                navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile)
                 profileViewModel.resetProfileState()
             }
 
@@ -63,7 +63,7 @@ fun EditEmailScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.EditProfile) },
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile) },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)
@@ -129,8 +129,8 @@ fun EditEmailScreen(
                 "Your email is used to send notifications, updates, and important information " +
                         "related to your account. It should be a valid and accessible email " +
                         "address that you check regularly.",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
+                style = CopayTypography.footer,
+                color = CopayColors.surface,
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
