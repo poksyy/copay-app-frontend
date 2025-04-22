@@ -15,6 +15,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.ProfileState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.NavigationViewModel
@@ -92,19 +95,19 @@ fun EditEmailScreen(
         ) {
             Text(
                 "Edit Email",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.Black
+                color = CopayColors.primary,
+                style = CopayTypography.title
             )
 
             // Text field for email.
-            OutlinedTextField(
+            InputField(
                 value = email,
                 onValueChange = {
                     email = it
                     validateInputs()
                     apiErrorMessage = null
                 },
-                label = { Text("Email") },
+                label = "Email",
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Email
                 ),

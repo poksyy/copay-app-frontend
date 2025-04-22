@@ -17,8 +17,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.copay.app.model.User
 import com.copay.app.navigation.SpaScreens
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
 
@@ -53,14 +54,13 @@ private fun HomeContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(24.dp)
     ) {
         Text(
             // Shows the username of the logged user.
             text = "Welcome $username!",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
+            color = CopayColors.primary,
+            style = CopayTypography.title,
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
@@ -122,8 +122,8 @@ private fun HomeContent(
         ) {
             Text(
                 text = "My groups",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                color = CopayColors.primary,
+                style =  CopayTypography.subtitle
             )
             Row {
                 TextButton(onClick = onCreateClick) {

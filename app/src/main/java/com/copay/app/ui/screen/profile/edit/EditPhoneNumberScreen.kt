@@ -16,6 +16,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BackButtonTop
 import com.copay.app.ui.components.countriesList
+import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.getE164PhoneNumber
 import com.copay.app.utils.state.ProfileState
 import com.copay.app.validation.UserValidation
@@ -105,19 +108,19 @@ fun EditPhoneNumberScreen(
         ) {
             Text(
                 "Edit Phone Number",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.Black
+                color = CopayColors.primary,
+                style = CopayTypography.title
             )
 
             // Text field for phone number
-            OutlinedTextField(
+            InputField(
                 value = phoneNumber,
                 onValueChange = {
                     phoneNumber = it
                     validateInputs()
                     apiErrorMessage = null
                 },
-                label = { Text("Email") },
+                label = "Email",
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Email
                 ),

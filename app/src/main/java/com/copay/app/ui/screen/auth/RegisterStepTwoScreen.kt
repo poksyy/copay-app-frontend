@@ -1,5 +1,6 @@
 package com.copay.app.ui.screen.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -10,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.copay.app.ui.components.PhoneNumberField
 import com.copay.app.ui.components.PrimaryButton
+import com.copay.app.ui.theme.CopayColors
 import com.copay.app.utils.getE164PhoneNumber
 import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
@@ -58,6 +60,7 @@ fun RegisterStepTwoScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(CopayColors.background)
             .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally

@@ -1,5 +1,6 @@
 package com.copay.app.ui.screen.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -10,8 +11,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.copay.app.ui.components.BackButtonTop
-import com.copay.app.ui.components.InputField
+import com.copay.app.ui.components.input.InputField
 import com.copay.app.ui.components.PrimaryButton
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthViewModel
@@ -20,7 +23,7 @@ import com.copay.app.viewmodel.AuthViewModel
 fun RegisterStepOneScreen(
     navController: NavController,
     onRegisterSuccess: () -> Unit = {}
-    ) {
+) {
 
     // Use hiltViewModel to obtain the injected AuthViewModel with userRepository and userService.
     val authViewModel: AuthViewModel = hiltViewModel()
@@ -38,7 +41,7 @@ fun RegisterStepOneScreen(
     var passwordMatchError by remember { mutableStateOf<String?>(null) }
 
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
-    
+
     // Effect triggered when the authentication state changes.
     LaunchedEffect(authState) {
         when (authState) {
@@ -46,9 +49,11 @@ fun RegisterStepOneScreen(
                 // Redirection to RegisterStepTwoScreen.
                 onRegisterSuccess()
             }
+
             is AuthState.Error -> {
                 apiErrorMessage = (authState as AuthState.Error).message
             }
+
             else -> {}
         }
     }
@@ -58,10 +63,15 @@ fun RegisterStepOneScreen(
         usernameError = UserValidation.validateUsername(username).errorMessage
         emailError = UserValidation.validateEmail(email).errorMessage
         passwordError = UserValidation.validateRegisterPassword(password).errorMessage
-        passwordMatchError = UserValidation.validatePasswordMatch(password, confirmPassword).errorMessage
+        passwordMatchError =
+            UserValidation.validatePasswordMatch(password, confirmPassword).errorMessage
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CopayColors.background)
+    ) {
         // Back button in the top-left corner
         Box(modifier = Modifier.padding(top = 16.dp)) {
             BackButtonTop(navController)
@@ -76,8 +86,16 @@ fun RegisterStepOneScreen(
         ) {
             Spacer(modifier = Modifier.height(64.dp))
 
-            Text("Welcome to Copay!", style = MaterialTheme.typography.titleLarge)
-            Text("Let's set up your account.", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Welcome to Copay!",
+                style = CopayTypography.title,
+                color = CopayColors.primary
+            )
+            Text(
+                "Let's set up your account.",
+                style = CopayTypography.subtitle,
+                color = CopayColors.primary
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -125,7 +143,8 @@ fun RegisterStepOneScreen(
                 value = confirmPassword,
                 onValueChange = {
                     confirmPassword = it
-                    passwordMatchError = UserValidation.validatePasswordMatch(password, it).errorMessage
+                    passwordMatchError =
+                        UserValidation.validatePasswordMatch(password, it).errorMessage
                 },
                 label = "Confirm Password",
                 isRequired = true,
@@ -139,8 +158,20 @@ fun RegisterStepOneScreen(
                 text = "Continue",
                 onClick = {
                     validateInputs()
-                    if (listOf(usernameError, emailError, passwordError, passwordMatchError).all { it == null }) {
-                        authViewModel.registerStepOne(context, username, email, password, confirmPassword)
+                    if (listOf(
+                            usernameError,
+                            emailError,
+                            passwordError,
+                            passwordMatchError
+                        ).all { it == null }
+                    ) {
+                        authViewModel.registerStepOne(
+                            context,
+                            username,
+                            email,
+                            password,
+                            confirmPassword
+                        )
                     }
                 }
             )

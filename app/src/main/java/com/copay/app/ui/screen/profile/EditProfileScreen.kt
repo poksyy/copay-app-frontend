@@ -13,6 +13,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.ProfileViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -47,8 +49,8 @@ fun EditProfileScreen(
         ) {
             Text(
                 "Edit Profile",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.Black
+                color = CopayColors.primary,
+                style = CopayTypography.title
             )
 
             // TODO Edit profile image
@@ -74,14 +76,14 @@ fun ProfileRow(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black,
-            modifier = Modifier.width(100.dp)
+            modifier = Modifier.width(100.dp),
+            color = CopayColors.primary,
+            style = CopayTypography.body
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black
+            color = CopayColors.primary,
+            style = CopayTypography.body
         )
     }
     Divider()
