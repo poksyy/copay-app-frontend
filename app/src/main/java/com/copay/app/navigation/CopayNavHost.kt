@@ -3,6 +3,10 @@ package com.copay.app.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -18,9 +22,11 @@ import com.copay.app.ui.screen.auth.RegisterStepTwoScreen
 @Composable
 fun CopayNavHost(
     navController: NavHostController,
+    toggleTheme: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = NavRoutes.SplashScreen.route
 ) {
+    var isDarkTheme by remember { mutableStateOf(false) }
     val splashViewModel: SplashViewModel = hiltViewModel()
     val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
 
@@ -43,8 +49,15 @@ fun CopayNavHost(
 
         // AuthScreen.
         composable(NavRoutes.AuthScreen.route) {
-            AuthScreen(onSignUpClick = { navController.navigate(NavRoutes.RegisterStepOneScreen.route) },
-                onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) })
+            AuthScreen(onSignUpClick = {
+                navController.navigate(NavRoutes.RegisterStepOneScreen.route) },
+                onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) },
+                onToggleTheme = {
+                    isDarkTheme = !isDarkTheme
+                    toggleTheme()
+                },
+                isDarkTheme = isDarkTheme
+            )
         }
 
         // RegisterStepOneScreen.

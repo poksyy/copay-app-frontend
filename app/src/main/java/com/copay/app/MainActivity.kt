@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.copay.app.navigation.CopayNavHost
@@ -24,11 +28,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CopayTheme {
+            // State to handle theme.
+            var isDarkTheme by remember { mutableStateOf(false) }
+
+            CopayTheme(darkTheme = isDarkTheme) {
                 // Initialize NavController to handle navigation.
                 val navController = rememberNavController()
                 // Pass the NavController to the CopayNavHost for navigation management.
-                CopayNavHost(navController = navController)
+                CopayNavHost(
+                    navController = navController,
+                    toggleTheme = { isDarkTheme = !isDarkTheme }
+                )
             }
         }
 
