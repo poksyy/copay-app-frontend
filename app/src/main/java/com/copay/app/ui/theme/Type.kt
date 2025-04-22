@@ -6,30 +6,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Typography
 
-// Define typography styles
+// Define typography styles.
 val AppTypography = Typography(
-    // Typography for buttons and interactive elements
+
+    // Typography for buttons and interactive elements.
     displayMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp
     ),
-    // Standard body text
+
+    // Standard body text.
     bodyMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp
     ),
-    // Typography for titles
+
+    // Typography for titles.
     titleLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.W400,
         fontSize = 36.sp
     ),
-    // Typography for subtitles
+
+    // Typography for subtitles.
     titleMedium = TextStyle(
-    fontFamily = FontFamily.SansSerif,
-    fontWeight = FontWeight.W200,
-    fontSize = 24.sp
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.W200,
+        fontSize = 24.sp
+    ),
+
+    // Typography for footer text.
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.sp
     )
 )

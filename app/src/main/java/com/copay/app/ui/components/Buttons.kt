@@ -23,10 +23,9 @@ import androidx.navigation.NavController
 import com.copay.app.R
 import com.copay.app.ui.theme.AppTypography
 import com.copay.app.ui.theme.Black
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.ui.theme.LogoutButtonBackground
-import com.copay.app.ui.theme.MainButtonBackground
-import com.copay.app.ui.theme.SecondaryButtonBorder
-import com.copay.app.ui.theme.SecondaryButtonFill
 import com.copay.app.ui.theme.White
 
 @Composable
@@ -38,7 +37,10 @@ fun PrimaryButton(
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = MainButtonBackground),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = CopayColors.primary,
+            contentColor = CopayColors.onPrimary
+        ),
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
@@ -46,8 +48,7 @@ fun PrimaryButton(
     ) {
         Text(
             text = text,
-            color = White,
-            style = AppTypography.displayMedium
+            style = CopayTypography.button
         )
     }
 }
@@ -60,8 +61,11 @@ fun SecondaryButton(
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = SecondaryButtonFill),
-        border = BorderStroke(1.dp, SecondaryButtonBorder),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = CopayColors.secondary,
+            contentColor = CopayColors.primary
+        ),
+        border = BorderStroke(1.dp, CopayColors.outline),
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
@@ -69,8 +73,7 @@ fun SecondaryButton(
     ) {
         Text(
             text = text,
-            color = Black,
-            style = AppTypography.displayMedium
+            style = CopayTypography.button
         )
     }
 }
@@ -83,8 +86,11 @@ fun SignInWithGoogleButton(
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = SecondaryButtonFill),
-        border = BorderStroke(1.dp, SecondaryButtonBorder),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = CopayColors.secondary,
+            contentColor = CopayColors.primary
+        ),
+        border = BorderStroke(1.dp, CopayColors.outline),
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
@@ -102,8 +108,7 @@ fun SignInWithGoogleButton(
 
         Text(
             text = text,
-            color = Black,
-            style = AppTypography.displayMedium
+            style = CopayTypography.button
         )
     }
 }
@@ -117,7 +122,7 @@ fun LogoutButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = Color.Transparent,
+            containerColor = Color.White,
             contentColor = Color.Red
         ),
         modifier = modifier
@@ -128,7 +133,7 @@ fun LogoutButton(
         Text(
             text = text,
             color = Color.Red,
-            style = AppTypography.displayMedium
+            style = CopayTypography.button
         )
     }
 }
@@ -144,7 +149,8 @@ fun BackButtonTop(navController: NavController, modifier: Modifier = Modifier) {
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_back),
-            contentDescription = "Back"
+            contentDescription = "Back",
+            tint = CopayColors.primary
         )
     }
 }
@@ -159,7 +165,7 @@ fun BackButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier) {
         Icon(
             painter = painterResource(id = R.drawable.ic_back),
             contentDescription = "Back",
-            tint = Color.Black
+            tint = CopayColors.primary
         )
     }
 }

@@ -1,7 +1,6 @@
 package com.copay.app.ui.screen
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.PrimaryButton
 import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.components.input.InputField
 import com.copay.app.viewmodel.NavigationViewModel
 
 @Composable
@@ -39,7 +39,7 @@ fun JoinGroupScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -57,14 +57,10 @@ fun JoinGroupScreen(
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
-            OutlinedTextField(
+            InputField(
                 value = groupCode,
                 onValueChange = { groupCode = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                placeholder = { Text("Enter group code") },
-                shape = RoundedCornerShape(12.dp)
+                label = "Enter group code"
             )
 
             Spacer(modifier = Modifier.height(32.dp))

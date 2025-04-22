@@ -1,6 +1,7 @@
 package com.copay.app.ui.screen.auth
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,8 +12,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.copay.app.ui.components.BackButtonTop
-import com.copay.app.ui.components.InputField
+import com.copay.app.ui.components.input.InputField
 import com.copay.app.ui.components.PrimaryButton
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthViewModel
@@ -45,7 +48,9 @@ fun LoginScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CopayColors.background)
     ) {
         // Back button in the top-left corner
         Box(modifier = Modifier.padding(top = 16.dp)) {
@@ -62,7 +67,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(128.dp))
 
-            Text(text = "Log in", style = MaterialTheme.typography.titleLarge)
+            Text(text = "Log in", style = CopayTypography.title, color = CopayColors.primary)
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -126,7 +131,7 @@ fun LoginScreen(
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(text = "Forgot your password?")
+                Text(text = "Forgot your password?", style = CopayTypography.body, color = CopayColors.primary)
             }
 
             // Show error message if API fails.

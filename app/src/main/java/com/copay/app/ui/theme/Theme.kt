@@ -6,20 +6,28 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-val DarkColorScheme = darkColorScheme(
-    primary = Primary,
-    secondary = Secondary,
-    background = Primary,
-    surface = Secondary,
-    onPrimary = Secondary
+// Light mode theme.
+val LightColorScheme = lightColorScheme(
+    primary = Black,
+    onPrimary = White,
+    secondary = LightBackground,
+    onSecondary = LightSecondaryText,
+    background = LightBackground,
+    onBackground = LightBackgroundText,
+    surface = LightAccent,
+    outline = LightBorders
 )
 
-val LightColorScheme = lightColorScheme(
-    primary = Primary,
-    secondary = Secondary,
-    background = Secondary,
-    surface = Primary,
-    onPrimary = Primary
+// Dark mode theme.
+val DarkColorScheme = darkColorScheme(
+    primary = White,
+    onPrimary = Black,
+    secondary = DarkBackground,
+    onSecondary = DarkSecondaryText,
+    background = DarkBackground,
+    onBackground = DarkBackgroundText,
+    surface = DarkAccent,
+    outline = DarkBorders
 )
 
 @Composable

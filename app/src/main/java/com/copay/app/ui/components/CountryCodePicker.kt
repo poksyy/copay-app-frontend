@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.copay.app.ui.components.input.InputField
 
 data class Country(
     val name: String, val code: String, val dialCode: String, val flag: String
@@ -97,8 +98,7 @@ fun PhoneNumberField(
                 onValueChange = onPhoneNumberChange,
                 label = label,
                 isError = isError,
-                errorMessage = null,
-                modifier = Modifier.weight(1f)
+                errorMessage = null
             )
         }
 

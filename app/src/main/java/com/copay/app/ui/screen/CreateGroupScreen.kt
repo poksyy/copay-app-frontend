@@ -1,6 +1,5 @@
 package com.copay.app.ui.screen
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,9 +9,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,10 +28,15 @@ import kotlinx.coroutines.delay
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.zIndex
-import androidx.compose.foundation.border
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.copay.app.ui.components.input.DynamicInputList
+import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.components.input.PriceInputField
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
+import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.GroupViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -55,7 +56,6 @@ fun CreateGroupScreen(
     var estimatedPriceText by remember { mutableStateOf("") }
 
     var selectedCurrency by remember { mutableStateOf("EUR") }
-    var isCurrencyDropdownExpanded by remember { mutableStateOf(false) }
     val currencyList = listOf("USD", "EUR", "GBP", "JPY", "MXN")
 
     var groupNameError by remember { mutableStateOf<String?>(null) }
@@ -68,6 +68,8 @@ fun CreateGroupScreen(
     var snackbarColor by remember { mutableStateOf(Color.Green) }
 
     var phoneInput by remember { mutableStateOf("") }
+    var selectedCountry by remember { mutableStateOf(com.copay.app.ui.components.countriesList.first { it.code == "ES" }) }
+    var phoneInputError by remember { mutableStateOf<String?>(null) }
     var invitedCopayMembers by remember { mutableStateOf(listOf<String>()) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -81,12 +83,14 @@ fun CreateGroupScreen(
                 showSnackbar = true
                 navigationViewModel.navigateTo(SpaScreens.Home)
             }
+
             is GroupState.Error -> {
                 apiErrorMessage = (groupState as GroupState.Error).message
                 snackbarMessage = apiErrorMessage ?: "Error creating group"
                 snackbarColor = Color.Red
                 showSnackbar = true
             }
+
             else -> {}
         }
     }
@@ -100,8 +104,10 @@ fun CreateGroupScreen(
 
     fun validateInputs() {
         groupNameError = GroupValidation.validateGroupName(groupName).errorMessage
-        estimatedPriceError = GroupValidation.validateEstimatedPrice(estimatedPriceText).errorMessage
-        groupDescriptionError = GroupValidation.validateGroupDescription(groupDescription).errorMessage
+        estimatedPriceError =
+            GroupValidation.validateEstimatedPrice(estimatedPriceText).errorMessage
+        groupDescriptionError =
+            GroupValidation.validateGroupDescription(groupDescription).errorMessage
         currencyError = GroupValidation.validateCurrency(selectedCurrency).errorMessage
     }
 
@@ -118,221 +124,133 @@ fun CreateGroupScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = "Create a new group",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
+                color = CopayColors.primary,
+                style = CopayTypography.title,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            OutlinedTextField(
+            InputField(
                 value = groupName,
                 onValueChange = {
                     groupName = it
                     groupNameError = GroupValidation.validateGroupName(it).errorMessage
                 },
-                label = { Text("Group Name") },
+                label = "Group Name",
+                isRequired = true,
                 isError = groupNameError != null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                placeholder = { Text("Enter group name") }
+                errorMessage = groupNameError
             )
-            if (groupNameError != null) {
-                Text(text = groupNameError!!, color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
+            InputField(
                 value = groupDescription,
                 onValueChange = {
-                    if (it.length <= 50) {
-                        groupDescription = it
-                        groupDescriptionError = GroupValidation.validateGroupDescription(it).errorMessage
-                    }
+                    groupDescription = it
+                    groupDescriptionError =
+                        GroupValidation.validateGroupDescription(it).errorMessage
                 },
-                label = { Text("Description (optional)") },
+                label = "Description",
                 isError = groupDescriptionError != null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                placeholder = { Text("Enter description") },
-                supportingText = {
-                    Text("${groupDescription.length}/50")
-                }
+                errorMessage = groupDescriptionError
             )
 
-            if (groupDescriptionError != null) {
-                Text(text = groupDescriptionError!!, color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
-            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PriceInputField(
+                value = estimatedPriceText,
+                onValueChange = { newValue ->
+                    estimatedPriceText = newValue
+                    estimatedPriceError =
+                        GroupValidation.validateEstimatedPrice(newValue).errorMessage
+                },
+                label = "Estimated Price",
+                selectedCurrency = selectedCurrency,
+                onCurrencyChange = { selectedCurrency = it },
+                currencyList = currencyList,
+                isRequired = true,
+                isError = estimatedPriceError != null,
+                errorMessage = estimatedPriceError,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Box(
+            DynamicInputList(
+                items = invitedExternalMembers,
+                onAddItem = { invitedExternalMembers = invitedExternalMembers + "" },
+                onRemoveItem = { index ->
+                    invitedExternalMembers =
+                        invitedExternalMembers.filterIndexed { i, _ -> i != index }
+                },
+                onItemChange = { index, newValue ->
+                    invitedExternalMembers = invitedExternalMembers.toMutableList().apply {
+                        set(index, newValue)
+                    }
+                },
+                label = "Enter member's name",
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Divider(
+                modifier = Modifier.fillMaxWidth(), thickness = 2.dp, color = CopayColors.surface
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Invite Copay Users",
+                style = CopayTypography.subtitle,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                OutlinedTextField(
-                    value = estimatedPriceText,
-                    onValueChange = { newValue ->
-                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
-                            estimatedPriceText = newValue
-                            estimatedPriceError = GroupValidation.validateEstimatedPrice(newValue).errorMessage
-                        }
-                    },
-                    label = { Text("Estimated Price") },
-                    isError = estimatedPriceError != null,
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Enter estimated price") },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Decimal
-                    ),
-                    trailingIcon = {
-                        Box(
-                            modifier = Modifier
-                                .border(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    shape = RoundedCornerShape(0.dp)
-                                )
-                                .padding(horizontal = 8.dp)
-                                .clickable { isCurrencyDropdownExpanded = true }
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            ) {
-                                Text(text = selectedCurrency)
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = "Select currency"
-                                )
-                            }
+                    .padding(horizontal = 4.dp, vertical = 8.dp)
+            )
 
-                            DropdownMenu(
-                                expanded = isCurrencyDropdownExpanded,
-                                onDismissRequest = { isCurrencyDropdownExpanded = false }
-                            ) {
-                                currencyList.forEach { currency ->
-                                    DropdownMenuItem(
-                                        text = { Text(currency) },
-                                        onClick = {
-                                            selectedCurrency = currency
-                                            isCurrencyDropdownExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                )
-            }
-
-            if (estimatedPriceError != null) {
-                Text(
-                    text = estimatedPriceError!!,
-                    color = MaterialTheme.colorScheme.error,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            invitedExternalMembers.forEachIndexed { index, member ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    OutlinedTextField(
-                        value = member,
-                        onValueChange = { newValue ->
-                            invitedExternalMembers = invitedExternalMembers.toMutableList().apply {
-                                set(index, newValue)
-                            }
-                        },
-                        label = { Text("Enter members name") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true
-                    )
-
-                    if (index == 0) {
-                        IconButton(
-                            onClick = {
-                                invitedExternalMembers = invitedExternalMembers + ""
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Add member",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    } else {
-                        IconButton(
-                            onClick = {
-                                invitedExternalMembers = invitedExternalMembers.filterIndexed { i, _ -> i != index }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Remove,
-                                contentDescription = "Remove member",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
-                }
-
-                if (index < invitedExternalMembers.lastIndex) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            OutlinedTextField(
+            InputField(
                 value = phoneInput,
                 onValueChange = {
                     if (it.all { char -> char.isDigit() }) {
                         phoneInput = it
+                        phoneInputError = UserValidation.validatePhoneNumber(it, selectedCountry.dialCode).errorMessage
                     }
                 },
-                label = { Text("Enter phone of Copay users (optional)") },
-                placeholder = { Text("Enter phone number and press Enter") },
+                label = "Enter phone numbers and press enter",
+                isError = phoneInputError != null,
+                errorMessage = phoneInputError,
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
+                    keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        if (phoneInput.length >= 5) {
-                            val validationResult = GroupValidation.validateMaxInvitedCopayMembers(invitedCopayMembers)
+                keyboardActions = KeyboardActions(onDone = {
 
-                            if (validationResult.isValid) {
-                                invitedCopayMembers = invitedCopayMembers + phoneInput
-                                phoneInput = ""
-                                keyboardController?.hide()
-                            } else {
-                                snackbarMessage = validationResult.errorMessage ?: "Error"
-                                snackbarColor = Color.Red
-                                showSnackbar = true
-                            }
+                    val phoneValidation = UserValidation.validatePhoneNumber(phoneInput, selectedCountry.dialCode)
+
+                    if (phoneValidation.isValid) {
+
+                        val maxMembersValidation =
+                            GroupValidation.validateMaxInvitedCopayMembers(invitedCopayMembers)
+
+                        if (maxMembersValidation.isValid) {
+                            invitedCopayMembers = invitedCopayMembers + phoneInput
+                            phoneInput = ""
+                            keyboardController?.hide()
+                        } else {
+                            snackbarMessage = maxMembersValidation.errorMessage ?: "Error"
+                            snackbarColor = Color.Red
+                            showSnackbar = true
                         }
+                    } else {
+                        phoneInputError = phoneValidation.errorMessage
                     }
-                ),
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                }),
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -368,11 +286,16 @@ fun CreateGroupScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             PrimaryButton(
-                text = "Create",
-                onClick = {
+                text = "Create", onClick = {
                     validateInputs()
 
-                    if (listOf(groupNameError, estimatedPriceError, groupDescriptionError, currencyError).all { it == null }) {
+                    if (listOf(
+                            groupNameError,
+                            estimatedPriceError,
+                            groupDescriptionError,
+                            currencyError
+                        ).all { it == null }
+                    ) {
                         snackbarMessage = "Creating group..."
                         snackbarColor = Color(0xFF2196F3)
                         showSnackbar = true
@@ -388,8 +311,7 @@ fun CreateGroupScreen(
                             invitedCopayMembers
                         )
                     }
-                },
-                modifier = Modifier.padding(horizontal = 10.dp)
+                }, modifier = Modifier.padding(horizontal = 10.dp)
             )
         }
 
