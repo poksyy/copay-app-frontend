@@ -38,7 +38,8 @@ fun ProfileScreen(
     val username = user?.username ?: "Username"
 
     ProfileContent(
-        onEditProfileClick = { navigationViewModel.navigateTo(SpaScreens.EditProfile) },
+        onEditProfileClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile) },
+        onSecurityClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.ChangePassword) },
         onLogoutClick = { showLogoutDialog = true },
         username = username
     )
@@ -54,6 +55,7 @@ fun ProfileScreen(
 @Composable
 private fun ProfileContent(
     onEditProfileClick: () -> Unit,
+    onSecurityClick: () -> Unit,
     onLogoutClick: () -> Unit,
     username: String
 ) {
@@ -61,7 +63,7 @@ private fun ProfileContent(
         "Notifications",
         "Help & Support",
         "Language Settings",
-        "Security",
+        "Password & Security",
         "Privacy Policy",
         "Terms of Service",
         "Account Settings"
@@ -130,7 +132,16 @@ private fun ProfileContent(
         }
 
         items(options) { option ->
-            ProfileOptionItem(option = option)
+            ProfileOptionItem(
+                option = option,
+                onClick = {
+                    when (option) {
+                        "Password & Security" -> onSecurityClick()
+                        // TODO Add other options
+                        else -> {}
+                    }
+                }
+            )
             Spacer(modifier = Modifier.height(8.dp))
         }
 
@@ -143,12 +154,15 @@ private fun ProfileContent(
 }
 
 @Composable
-fun ProfileOptionItem(option: String) {
+fun ProfileOptionItem(
+    option: String,
+    onClick: () -> Unit
+) {
     val optionIcons = mapOf(
         "Notifications" to R.drawable.ic_notifications,
         "Help & Support" to R.drawable.ic_help,
         "Language Settings" to R.drawable.ic_language,
-        "Security" to R.drawable.ic_security,
+        "Password & Security" to R.drawable.ic_security,
         "Privacy Policy" to R.drawable.ic_privacy,
         "Terms of Service" to R.drawable.ic_terms,
         "Account Settings" to R.drawable.ic_account
@@ -160,7 +174,7 @@ fun ProfileOptionItem(option: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 2.dp)
-            .clickable { /* TODO: Add business logic to options */ },
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
     ) {
         Row(

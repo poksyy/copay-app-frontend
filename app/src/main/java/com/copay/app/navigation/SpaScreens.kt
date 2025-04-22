@@ -13,9 +13,14 @@ sealed class SpaScreens(val route: String) {
     data object CreateGroup : SpaScreens("create_group")
 
     // ProfileScreen subpages inside the SPA.
-    data object EditProfile : SpaScreens("profile/edit")
-    data object EditUsername : SpaScreens("profile/edit/email")
-    data object EditEmail : SpaScreens("profile/edit/email")
-    data object EditPhoneNumber : SpaScreens("profile/edit/phone")
+    sealed class ProfileSubscreen(route: String) : SpaScreens(route) {
+        // Profile Editing
+        data object EditProfile : ProfileSubscreen("profile/edit")
+        data object EditUsername : ProfileSubscreen("profile/edit/username")
+        data object EditEmail : ProfileSubscreen("profile/edit/email")
+        data object EditPhoneNumber : ProfileSubscreen("profile/edit/phone")
 
+        // Security
+        data object ChangePassword : ProfileSubscreen("profile/security/password")
+    }
 }

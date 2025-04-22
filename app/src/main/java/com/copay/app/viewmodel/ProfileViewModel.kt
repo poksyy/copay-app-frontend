@@ -42,7 +42,13 @@ class ProfileViewModel @Inject constructor(
             if (backendResponse is ProfileState.Success.UsernameUpdated) {
                 val updatedUser = userSession.user.value?.copy(username = newUsername)
                 updatedUser?.let {
-                    userSession.setUser(it.phonePrefix, it.phoneNumber, it.userId, it.username, it.email)
+                    userSession.setUser(
+                        it.phonePrefix,
+                        it.phoneNumber,
+                        it.userId,
+                        it.username,
+                        it.email
+                    )
                 }
             }
         }
@@ -65,7 +71,13 @@ class ProfileViewModel @Inject constructor(
             if (backendResponse is ProfileState.Success.PhoneUpdated) {
                 val updatedUser = userSession.user.value?.copy(phoneNumber = newPhoneNumber)
                 updatedUser?.let {
-                    userSession.setUser(it.phonePrefix, it.phoneNumber, it.userId, it.username, it.email)
+                    userSession.setUser(
+                        it.phonePrefix,
+                        it.phoneNumber,
+                        it.userId,
+                        it.username,
+                        it.email
+                    )
                 }
             }
         }
@@ -88,9 +100,38 @@ class ProfileViewModel @Inject constructor(
             if (backendResponse is ProfileState.Success.EmailUpdated) {
                 val updatedUser = userSession.user.value?.copy(email = newEmail)
                 updatedUser?.let {
-                    userSession.setUser(it.phonePrefix, it.phoneNumber, it.userId, it.username, it.email)
+                    userSession.setUser(
+                        it.phonePrefix,
+                        it.phoneNumber,
+                        it.userId,
+                        it.username,
+                        it.email
+                    )
                 }
             }
+        }
+    }
+
+    // Updates the user's password.
+    fun updatePassword(
+        context: Context,
+        currentPassword: String,
+        newPassword: String,
+        confirmPassword: String
+    ) {
+        viewModelScope.launch {
+            _profileState.value = ProfileState.Loading
+
+            // Calls the repository to perform the update.
+            val backendResponse = profileRepository.updatePassword(
+                context,
+                currentPassword,
+                newPassword,
+                confirmPassword
+            )
+
+            // Updates the UI through profileState.
+            _profileState.value = backendResponse
         }
     }
 }

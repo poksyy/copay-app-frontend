@@ -14,6 +14,7 @@ import com.copay.app.ui.screen.profile.ProfileScreen
 import com.copay.app.ui.screen.profile.edit.EditEmailScreen
 import com.copay.app.ui.screen.profile.edit.EditPhoneNumberScreen
 import com.copay.app.ui.screen.profile.edit.EditUsernameScreen
+import com.copay.app.ui.screen.profile.security.ChangePasswordScreen
 import com.copay.app.utils.state.AuthState
 import com.copay.app.viewmodel.AuthViewModel
 import com.copay.app.viewmodel.NavigationViewModel
@@ -73,10 +74,19 @@ fun HubScreen(
                 SpaScreens.CreateGroup -> CreateGroupScreen()
 
                 // Profile subpages.
-                SpaScreens.EditProfile -> EditProfileScreen()
-                SpaScreens.EditEmail -> EditEmailScreen()
-                SpaScreens.EditPhoneNumber -> EditPhoneNumberScreen()
-                SpaScreens.EditUsername -> EditUsernameScreen()
+                is SpaScreens.ProfileSubscreen -> when (currentScreen) {
+
+                    // Profile Editing.
+                    SpaScreens.ProfileSubscreen.EditProfile -> EditProfileScreen()
+                    SpaScreens.ProfileSubscreen.EditUsername -> EditUsernameScreen()
+                    SpaScreens.ProfileSubscreen.EditEmail -> EditEmailScreen()
+                    SpaScreens.ProfileSubscreen.EditPhoneNumber -> EditPhoneNumberScreen()
+
+                    // Profile Security.
+                    SpaScreens.ProfileSubscreen.ChangePassword -> ChangePasswordScreen()
+
+                    else -> {}
+                }
             }
         }
     }

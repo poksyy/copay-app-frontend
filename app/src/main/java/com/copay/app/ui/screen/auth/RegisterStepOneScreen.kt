@@ -62,7 +62,7 @@ fun RegisterStepOneScreen(
     fun validateInputs() {
         usernameError = UserValidation.validateUsername(username).errorMessage
         emailError = UserValidation.validateEmail(email).errorMessage
-        passwordError = UserValidation.validateRegisterPassword(password).errorMessage
+        passwordError = UserValidation.validatePassword(password).errorMessage
         passwordMatchError =
             UserValidation.validatePasswordMatch(password, confirmPassword).errorMessage
     }
@@ -129,7 +129,7 @@ fun RegisterStepOneScreen(
                 value = password,
                 onValueChange = {
                     password = it
-                    passwordError = UserValidation.validateRegisterPassword(it).errorMessage
+                    passwordError = UserValidation.validatePassword(it).errorMessage
                 },
                 label = "Password",
                 isRequired = true,

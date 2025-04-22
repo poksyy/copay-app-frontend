@@ -3,12 +3,15 @@ package com.copay.app.repository
 import android.content.Context
 import android.util.Log
 import com.copay.app.dto.request.profile.UpdateEmailDTO
+import com.copay.app.dto.request.profile.UpdatePasswordDTO
 import com.copay.app.dto.request.profile.UpdatePhoneNumberDTO
 import com.copay.app.dto.request.profile.UpdateUsernameDTO
 import com.copay.app.service.ProfileService
+import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.ProfileState
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
 /*
@@ -72,6 +75,37 @@ class ProfileRepository(private val profileService: ProfileService) {
         // Handles the result of the API call and returns the appropriate ProfileState.
         return when (result) {
             is ProfileState.Success -> ProfileState.Success.EmailUpdated(result.data)
+            else -> result
+        }
+    }
+
+    // Updates the password of the user
+    suspend fun updatePassword(
+        context: Context,
+        currentPassword: String,
+        newPassword: String,
+        confirmNewPassword: String
+    ): ProfileState {
+
+        val request = UpdatePasswordDTO(
+            currentPassword = currentPassword,
+            newPassword = newPassword,
+            confirmNewPassword = confirmNewPassword
+        )
+
+        // Get the token generated in registerStepOne thanks to DataStoreManager.
+        val token = DataStoreManager.getToken(context).first()
+
+        // Send the token with "Bearer " since the backend needs that format.
+        val formattedToken = "Bearer $token"
+
+        val result = handleApiResponse(context) {
+            profileService.updatePassword(request, formattedToken)
+        }
+
+        // Handles the result of the API call and returns the appropriate ProfileState.
+        return when (result) {
+            is ProfileState.Success -> ProfileState.Success.PasswordUpdated(result.data)
             else -> result
         }
     }
