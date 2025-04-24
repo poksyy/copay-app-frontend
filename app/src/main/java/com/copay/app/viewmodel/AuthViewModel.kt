@@ -8,14 +8,13 @@ import com.copay.app.repository.UserRepository
 import com.copay.app.service.UserService
 import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.AuthState
-import com.copay.app.utils.state.UserSession
+import com.copay.app.utils.session.UserSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.log
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -52,7 +51,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    // Handles the second step of user registration (phone number verification).
+    // Handles the first step of user registration.
     fun registerStepOne(context: Context, username: String, email: String, password: String, confirmPassword: String) {
         viewModelScope.launch {
 
@@ -61,7 +60,7 @@ class AuthViewModel @Inject constructor(
             _authState.value = userRepository.registerStepOne(context, username, email, password, confirmPassword)
         }
     }
-    // Handles the first step of user registration.
+    // Handles the second step of user registration (phone number verification).
     fun registerStepTwo(context: Context, phonePrefix: String, phoneNumber: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
