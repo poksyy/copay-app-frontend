@@ -1,0 +1,394 @@
+package com.copay.app.ui.screen.group
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
+import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
+import com.copay.app.navigation.SpaScreens
+import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.components.ConfirmationDialog
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
+import com.copay.app.utils.state.GroupState
+import com.copay.app.viewmodel.GroupViewModel
+import com.copay.app.viewmodel.NavigationViewModel
+import kotlinx.coroutines.launch
+
+@Composable
+fun GroupDetailScreen(
+    navigationViewModel: NavigationViewModel = viewModel(),
+    groupViewModel: GroupViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    // Group state.
+    val groupState by groupViewModel.groupState.collectAsState()
+
+    // Values from Group Session.
+    val group by groupViewModel.group.collectAsState()
+
+    // Dialog states
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showLeaveDialog by remember { mutableStateOf(false) }
+    var showAddMemberDialog by remember { mutableStateOf(false) }
+    var newMemberEmail by remember { mutableStateOf("") }
+
+    // Snackbar state
+    var showSnackbar by remember { mutableStateOf(false) }
+    var snackbarMessage by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Load groups when entering the screen
+    LaunchedEffect(Unit) {
+        groupViewModel.getGroupsByUser(context)
+    }
+
+    // Monitor group state changes
+    LaunchedEffect(groupState) {
+        when (groupState) {
+            is GroupState.Success.GroupDeleted -> {
+                snackbarMessage = "Group deleted successfully"
+                showSnackbar = true
+                navigationViewModel.navigateTo(SpaScreens.Home)
+            }
+
+            is GroupState.Success.GroupMemberLeft -> {
+                snackbarMessage = "You left the group successfully"
+                showSnackbar = true
+                navigationViewModel.navigateTo(SpaScreens.Home)
+            }
+
+            is GroupState.Success.GroupMembersUpdated -> {
+                snackbarMessage = "Members updated successfully"
+                showSnackbar = true
+                groupViewModel.getGroupsByUser(context)
+            }
+
+            is GroupState.Error -> {
+                snackbarMessage = (groupState as GroupState.Error).message
+                showSnackbar = true
+            }
+
+            else -> {}
+        }
+    }
+
+    // Show snackbar when needed
+    LaunchedEffect(showSnackbar) {
+        if (showSnackbar) {
+            snackbarHostState.showSnackbar(snackbarMessage)
+            showSnackbar = false
+        }
+    }
+
+    // Show the screen content
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Back button
+        BackButtonTop(
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.Home) },
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.TopStart)
+        )
+
+        // Options button (Done/Delete/Leave)
+        if (group?.isOwner == true) {
+            TextButton(
+                onClick = { showDeleteDialog = true },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+            ) {
+                Text(
+                    "Delete",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        } else {
+            TextButton(
+                onClick = { showLeaveDialog = true },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+            ) {
+                Text(
+                    "Leave",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+
+        // Screen content
+        when {
+            groupState is GroupState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            group != null -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 24.dp, end = 24.dp, top = 72.dp)
+                ) {
+                    // Group Header
+                    item {
+                        Text(
+                            text = group?.name ?: "Group",
+                            color = CopayColors.primary,
+                            style = CopayTypography.title
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Group Image
+                        AsyncImage(
+                            model = group?.imageUrl
+                                ?: "https://example.com/default-group-image.jpg",
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .align(Alignment.Center),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = group?.description ?: "Description",
+                            style = CopayTypography.body,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Price information
+                        Surface(
+                            color = CopayColors.primary.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(
+                                text = "${group?.estimatedPrice} ${group?.currency}",
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                fontWeight = FontWeight.Bold,
+                                color = CopayColors.primary
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Created by: ${group?.ownerName}",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        Spacer(modifier = Modifier.height(32.dp))
+                    }
+
+                    // Members Section Header
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Members ${(group?.registeredMembers?.size ?: 0) + (group?.externalMembers?.size ?: 0)} members",
+                                style = CopayTypography.subtitle
+                            )
+
+                            Button(
+                                onClick = { showAddMemberDialog = true },
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text("Add Member")
+                            }
+                        }
+
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
+
+                    // Members List
+                    items((group?.registeredMembers ?: emptyList()) + (group?.externalMembers ?: emptyList())) { member ->
+                        MemberItem(member = member)
+                    }
+                }
+            }
+
+            else -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                ) {
+                    Text("Group not found or error loading group details")
+                }
+            }
+        }
+
+        // Snackbar host
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
+    }
+
+    // Dialog for confirming group deletion
+    if (showDeleteDialog) {
+        ConfirmationDialog(onDismiss = { showDeleteDialog = false },
+            onConfirm = {
+                coroutineScope.launch {
+                    groupViewModel.deleteGroup(context, group?.groupId ?: 0)
+                }
+                showDeleteDialog = false
+            },
+            title = "Delete Group",
+            text = "Are you sure you want to delete this group? This action cannot be undone."
+        )
+    }
+
+    // Dialog for confirming leaving the group
+    if (showLeaveDialog) {
+        ConfirmationDialog(onDismiss = { showLeaveDialog = false }, onConfirm = {
+            coroutineScope.launch {
+                groupViewModel.leaveGroup(context, group?.groupId ?: 0)
+            }
+            showLeaveDialog = false
+        }, title = "Leave Group", text = "Are you sure you want to leave this group?")
+    }
+
+    // Dialog for adding members
+    if (showAddMemberDialog) {
+        AlertDialog(onDismissRequest = { showAddMemberDialog = false },
+            title = { Text("Add Member") },
+            text = {
+                Column {
+                    Text("Enter email or phone number:")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(value = newMemberEmail,
+                        onValueChange = { newMemberEmail = it },
+                        placeholder = { Text("Email or phone") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    coroutineScope.launch {
+                        if (newMemberEmail.contains("@")) {
+                            // Email - registered user
+                            groupViewModel.updateGroupRegisteredMembers(
+                                context, group?.groupId ?: 0, listOf(newMemberEmail)
+                            )
+                        } else {
+                            // Phone - external member
+                            groupViewModel.updateGroupExternalMembers(
+                                context, group?.groupId ?: 0, listOf(newMemberEmail)
+                            )
+                        }
+                    }
+                    newMemberEmail = ""
+                    showAddMemberDialog = false
+                }) {
+                    Text("Add")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAddMemberDialog = false }) {
+                    Text("Cancel")
+                }
+            })
+    }
+}
+
+@Composable
+private fun MemberItem(member: Any) {
+    val memberName: String
+    val memberType: String
+
+    // Comprobamos si es un miembro registrado o externo
+    when (member) {
+        is RegisteredMemberDTO -> {
+            memberName = member.username
+            memberType = "Registered User"
+        }
+        is ExternalMemberDTO -> {
+            memberName = member.name
+            memberType = "External User"
+        }
+        else -> {
+            memberName = "Unknown"
+            memberType = "Unknown"
+        }
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .height(48.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Avatar placeholder
+            Surface(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape),
+                color = CopayColors.primary.copy(alpha = 0.2f)
+            ) {
+                Text(
+                    text = memberName.first().toString().uppercase(),
+                    modifier = Modifier.wrapContentSize(Alignment.Center),
+                    style = CopayTypography.title,
+                    color = CopayColors.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = memberName, fontWeight = FontWeight.Medium
+                )
+
+                Text(
+                    text = memberType,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
