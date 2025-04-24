@@ -9,6 +9,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BottomNavigationBar
+import com.copay.app.ui.screen.group.CreateGroupScreen
+import com.copay.app.ui.screen.group.GroupDetailScreen
 import com.copay.app.ui.screen.profile.EditProfileScreen
 import com.copay.app.ui.screen.profile.ProfileScreen
 import com.copay.app.ui.screen.profile.edit.EditEmailScreen
@@ -70,8 +72,8 @@ fun HubScreen(
                 SpaScreens.Profile -> ProfileScreen()
 
                 // Home subpages.
-                SpaScreens.JoinGroup -> JoinGroupScreen()
                 SpaScreens.CreateGroup -> CreateGroupScreen()
+                SpaScreens.DetailGroup -> GroupDetailScreen()
 
                 // Profile subpages.
                 is SpaScreens.ProfileSubscreen -> when (currentScreen) {
