@@ -1,4 +1,4 @@
-package com.copay.app.utils.state
+package com.copay.app.utils.session
 
 import com.copay.app.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
