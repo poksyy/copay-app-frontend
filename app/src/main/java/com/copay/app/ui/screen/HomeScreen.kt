@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.copay.app.R
 import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.model.Group
@@ -85,8 +88,7 @@ fun HomeScreen(
 
                     val externalMembers = groupDto.externalMembers.map { member ->
                         ExternalMemberDTO(
-                            externalMembersId = member.externalMembersId,
-                            name = member.name
+                            externalMembersId = member.externalMembersId, name = member.name
                         )
                     }
 
@@ -111,8 +113,13 @@ fun HomeScreen(
                     onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
                     onDetailClick = { group ->
                         groupViewModel.selectGroup(group)
-                        navigationViewModel.navigateTo(SpaScreens.DetailGroup)
-                                    },
+                        navigationViewModel.navigateTo(SpaScreens.BalancesGroup)
+                    },
+                    onEditClick = {
+                        group ->
+                        groupViewModel.selectGroup(group)
+                        navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
+                    },
                     username = username,
                     groups = groups
                 )
@@ -121,7 +128,8 @@ fun HomeScreen(
             else -> {
                 HomeContent(
                     onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
-                    onDetailClick = { navigationViewModel.navigateTo(SpaScreens.DetailGroup) },
+                    onDetailClick = { navigationViewModel.navigateTo(SpaScreens.BalancesGroup) },
+                    onEditClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
                     username = username,
                     groups = emptyList()
                 )
@@ -135,6 +143,7 @@ private fun HomeContent(
     // Receives the callbacks from HomeViewModel.
     onCreateClick: () -> Unit,
     onDetailClick: (Group) -> Unit,
+    onEditClick: (Group) -> Unit,
     username: String,
     groups: List<Group> = emptyList()
 ) {
@@ -142,6 +151,7 @@ private fun HomeContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         Text(
             // Shows the username of the logged user.
@@ -221,7 +231,10 @@ private fun HomeContent(
             groups.forEach { group ->
                 GroupItem(
                     group = group,
-                    onItemClick = { onDetailClick(group) }
+                    onItemClick = { onDetailClick(group) },
+                    onEditClick = { onEditClick(group) },
+                    onDeleteClick = {},
+                    onLeaveClick = {}
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -233,47 +246,93 @@ private fun HomeContent(
 @Composable
 private fun GroupItem(
     group: Group,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
+    onEditClick: (Group) -> Unit = {},
+    onDeleteClick: (Group) -> Unit = {},
+    onLeaveClick: (Group) -> Unit = {}
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable { onItemClick() },
+            .height(120.dp)
+            .padding(vertical = 4.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-                .height(60.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .padding(12.dp),
+            contentAlignment = Alignment.Center
         ) {
-            AsyncImage(
-                model = group.imageUrl ?: "https://example.com/default-group-image.jpg",
-                contentDescription = null,
+            // Main content.
+            Row(
                 modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp)
-            ) {
-                Text(
-                    text = group.name ?: "", fontWeight = FontWeight.Medium
+                    .fillMaxSize()
+                    .clickable { onItemClick() }
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                // Group image.
+                AsyncImage(
+                    model = group.imageUrl ?: R.drawable.copay_banner_white,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(10.dp)),
+                    contentScale = ContentScale.Crop
                 )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Name and members.
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = group.name ?: "", fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "${(group.registeredMembers?.size ?: 0) + (group.externalMembers?.size ?: 0)} members",
+                        color = Color.Gray,
+                        fontSize = 12.sp
+                    )
+                }
+
+                // Estimated price.
                 Text(
-                    text = "${(group.registeredMembers?.size ?: 0) + (group.externalMembers?.size ?: 0)} members",
-                    color = Color.Gray,
-                    fontSize = 12.sp
+                    text = group.estimatedPrice.toString() + " " + group.currency,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 24.dp)
                 )
             }
-            Text(
-                text = group.estimatedPrice.toString() + group.currency,
-                fontWeight = FontWeight.Bold
-            )
+
+            // Botones en la parte inferior derecha
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd),
+                horizontalArrangement = Arrangement.End
+            ) {
+                if (group.isOwner == true) {
+                    TextButton(
+                        onClick = { onEditClick(group) },
+                        modifier = Modifier.padding(start = 1.dp)
+                    ) {
+                        Text("Edit")
+                    }
+                    TextButton(
+                        onClick = { onDeleteClick(group) },
+                        modifier = Modifier.padding(start = 1.dp)
+                    ) {
+                        Text("Delete")
+                    }
+                } else {
+                    TextButton(
+                        onClick = { onLeaveClick(group) },
+                        modifier = Modifier.padding(start = 1.dp)
+                    ) {
+                        Text("Leave")
+                    }
+                }
+            }
         }
     }
 }
