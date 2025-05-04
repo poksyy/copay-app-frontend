@@ -88,7 +88,9 @@ class GroupRepository(private val groupService: GroupService) {
     }
 
     suspend fun updateGroup(
-        context: Context, groupId: Long, fieldChanges: Map<String, Any>
+        context: Context,
+        groupId: Long,
+        fieldChanges: Map<String, @JvmSuppressWildcards Any>
     ): GroupState {
 
         return handleApiResponse(context) {
