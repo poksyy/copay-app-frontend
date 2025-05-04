@@ -46,7 +46,7 @@ fun EditGroupMembersScreen(
         derivedStateOf { group.externalMembers ?: emptyList() }
     }
 
-    // Estados para los diálogos
+    // States dialog
     var showAddMemberDialog by remember { mutableStateOf(false) }
     var registeredMemberToRemove by remember { mutableStateOf<RegisteredMemberDTO?>(null) }
     var externalMemberToRemove by remember { mutableStateOf<ExternalMemberDTO?>(null) }
@@ -61,7 +61,7 @@ fun EditGroupMembersScreen(
                 .align(Alignment.TopStart)
         )
 
-        // Add member button - ahora correctamente colocado como hermano del BackButtonTop
+        // Add member button
         IconButton(
             onClick = { showAddMemberDialog = true },
             modifier = Modifier
@@ -127,7 +127,7 @@ fun EditGroupMembersScreen(
         }
     }
 
-    // Diálogo de confirmación para Leave Group
+    // Leave group confirmation dialog
     if (showLeaveDialog) {
         AlertDialog(
             onDismissRequest = { showLeaveDialog = false },
@@ -150,7 +150,7 @@ fun EditGroupMembersScreen(
         )
     }
 
-    // Diálogo de confirmación para Remove Member
+    // Remove member confirmation dialog
     registeredMemberToRemove?.let { member ->
         AlertDialog(
             onDismissRequest = { registeredMemberToRemove = null },
@@ -175,16 +175,14 @@ fun EditGroupMembersScreen(
         )
     }
 
-    // Diálogo para Add Member
+    // Add member dialog
     if (showAddMemberDialog) {
         AddMemberDialog(
             onDismiss = { showAddMemberDialog = false },
             onAdd = { phoneNumber ->
-                // Añadir el nuevo número de teléfono a la lista de teléfonos registrados
                 val updatedPhoneNumbers = registeredMembers.map { it.phoneNumber }.toMutableList()
                 updatedPhoneNumbers.add(phoneNumber)
 
-                // Enviar la lista actualizada al backend
                 groupViewModel.updateGroupRegisteredMembers(
                     context, groupId, updatedPhoneNumbers
                 )
@@ -286,7 +284,7 @@ fun ExternalMemberItem(
     }
 }
 
-// Dialogo para agregar un miembro
+// Add member dialog
 @Composable
 fun AddMemberDialog(
     onDismiss: () -> Unit,

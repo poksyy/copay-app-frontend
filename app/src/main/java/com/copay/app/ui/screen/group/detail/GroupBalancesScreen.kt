@@ -151,10 +151,10 @@ fun GroupBalancesScreen(
                     .align(Alignment.TopStart)
             )
 
-            // Options button. Edit
+            // Edit button.
             if (group?.isOwner == true) {
                 TextButton(
-                    onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile) },
+                    onClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(16.dp)
