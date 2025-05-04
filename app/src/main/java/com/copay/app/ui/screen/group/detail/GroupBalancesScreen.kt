@@ -22,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.copay.app.R
+import com.copay.app.dto.expense.response.GetExpenseResponseDTO
 import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.navigation.SpaScreens
@@ -30,6 +31,7 @@ import com.copay.app.ui.components.ConfirmationDialog
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
+import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import kotlinx.coroutines.launch
@@ -37,7 +39,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroupBalancesScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
-    groupViewModel: GroupViewModel = hiltViewModel()
+    groupViewModel: GroupViewModel = hiltViewModel(),
+    expenseViewModel: ExpenseViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -47,6 +50,10 @@ fun GroupBalancesScreen(
 
     // Values from Group Session.
     val group by groupViewModel.group.collectAsState()
+
+    // Expense state,
+    val expensesState by expenseViewModel.expenseState.collectAsState()
+    val expenses by expenseViewModel.expenses.collectAsState()
 
     // Dialog states
     var showLeaveDialog by remember { mutableStateOf(false) }
@@ -58,9 +65,11 @@ fun GroupBalancesScreen(
     var snackbarMessage by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
 
+
     // Load groups when entering the screen
     LaunchedEffect(Unit) {
         groupViewModel.getGroupsByUser(context)
+        group?.groupId?.let { expenseViewModel.getExpensesByGroup(context, it) }
     }
 
     // Monitor group state changes
@@ -259,7 +268,13 @@ fun GroupBalancesScreen(
                         (group?.registeredMembers ?: emptyList()) + (group?.externalMembers
                             ?: emptyList())
                     ) { member ->
-                        MemberItem(member = member)
+                        // Calculate expense for each member.
+                        val memberExpense = calculateMemberExpense(member, expenses)
+                        MemberItem(
+                            member = member,
+                            expense = memberExpense,
+                            currency = group?.currency
+                        )
                     }
                 }
             }
@@ -338,11 +353,11 @@ fun GroupBalancesScreen(
 }
 
 @Composable
-private fun MemberItem(member: Any) {
+private fun MemberItem(member: Any, expense: Double, currency: String?) {
     val memberName: String
     val memberPhoneNumber: String
 
-    // Comprobamos si es un miembro registrado o externo
+    // Check if it is a registered or external member.
     when (member) {
         is RegisteredMemberDTO -> {
             memberName = member.username
@@ -372,7 +387,7 @@ private fun MemberItem(member: Any) {
                 .height(48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar placeholder
+            // Avatar placeholder.
             Surface(
                 modifier = Modifier
                     .size(48.dp)
@@ -400,6 +415,32 @@ private fun MemberItem(member: Any) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
+            Text(
+                text = "${expense.format(2)} $currency",
+                fontWeight = FontWeight.Bold,
+                color = CopayColors.primary
+            )
         }
     }
 }
+
+// TODO: Move this into components.
+private fun calculateMemberExpense(member: Any, expenses: List<GetExpenseResponseDTO>): Double {
+    return expenses.flatMap { expense ->
+        when (member) {
+            is RegisteredMemberDTO -> {
+                expense.registeredMembers.filter { it.debtorUserId == member.registeredMemberId }
+                    .map { it.amount }
+            }
+            is ExternalMemberDTO -> {
+                expense.externalMembers.filter { it.debtorExternalMemberId == member.externalMembersId }
+                    .map { it.amount }
+            }
+            else -> emptyList()
+        }
+    }.sum()
+}
+
+// TODO: We could move this into utils.
+fun Double.format(digits: Int) = "%.${digits}f".format(this)
