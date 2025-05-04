@@ -309,7 +309,7 @@ fun CreateGroupScreen(
                             groupDescription,
                             finalEstimatedPrice,
                             selectedCurrency,
-                            invitedExternalMembers,
+                            invitedExternalMembers.filter { it.isNotBlank() },
                             invitedCopayMembers,
                             imageUrl,
                             imageProvider
