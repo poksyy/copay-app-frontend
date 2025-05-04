@@ -32,22 +32,20 @@ class GroupViewModel @Inject constructor(
     private val _groupState = MutableStateFlow<GroupState>(GroupState.Idle)
     val groupState: MutableStateFlow<GroupState> get() = _groupState
 
-    val group: StateFlow<Group?> = groupSession.group
+    val group = groupSession.group
 
     // Resets the UI state to idle.
     fun resetGroupState() {
         _groupState.value = GroupState.Idle
+
+    }
+
+    fun resetGroupSession() {
+        groupSession.clearGroup()
     }
 
     fun selectGroup(group: Group) {
-        groupSession.setGroup(
-            group.groupId,
-            group.name,
-            group.description,
-            group.currency,
-            group.registeredMembers,
-            group.externalMembers
-        )
+        groupSession.setGroup(group)
     }
 
     // Fetches groups for the current user.
@@ -60,32 +58,9 @@ class GroupViewModel @Inject constructor(
                 return@launch
             }
 
-            Log.d("GroupViewModel", "hola + ${userId}")
+            val backendResponse = groupRepository.getGroupsByUser(context, userId)
 
-            when (val backendResponse = groupRepository.getGroupsByUser(context, userId)) {
-                is GroupState.Success.GroupsFetched -> {
-
-                    val groups = groupService.extractGroups(backendResponse)
-
-                    groups.forEach { group ->
-                        groupSession.setGroup(
-                            group.groupId,
-                            group.name,
-                            group.description,
-                            group.currency,
-                            group.registeredMembers,
-                            group.externalMembers
-                        )
-                    }
-                    _groupState.value = backendResponse
-                }
-                is GroupState.Error -> {
-                    _groupState.value = backendResponse
-                }
-                else -> {
-                    _groupState.value = GroupState.Error("Unexpected response type")
-                }
-            }
+            _groupState.value = backendResponse
         }
     }
 
@@ -156,6 +131,19 @@ class GroupViewModel @Inject constructor(
             val backendResponse = groupRepository.updateGroup(context, groupId, fieldChanges)
 
             _groupState.value = backendResponse
+
+            // If the update was successful, update the group session.
+            if (backendResponse is GroupState.Success.GroupUpdated) {
+                val currentGroup = groupSession.group.value
+                currentGroup?.let { group ->
+                    val updatedGroup = group.copy(
+                        name = fieldChanges["name"] as? String ?: group.name,
+                        description = fieldChanges["description"] as? String ?: group.description,
+                        estimatedPrice = fieldChanges["estimatedPrice"] as? Float ?: group.estimatedPrice
+                    )
+                    groupSession.setGroup(updatedGroup)
+                }
+            }
         }
     }
 
