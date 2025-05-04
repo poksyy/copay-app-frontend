@@ -76,7 +76,7 @@ fun EditPhoneNumberScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button.
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile) },
+            onBackClick = { navigationViewModel.navigateBack() },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)

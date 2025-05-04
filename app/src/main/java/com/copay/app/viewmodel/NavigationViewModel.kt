@@ -11,12 +11,31 @@ import com.copay.app.navigation.SpaScreens
  */
 class NavigationViewModel : ViewModel() {
 
-    // Internal storage for current screen state (Home by default)
+    // Internal storage for current screen state (Home by default).
     private val _currentScreen = MutableStateFlow<SpaScreens>(SpaScreens.Home)
     val currentScreen: StateFlow<SpaScreens> = _currentScreen
 
-    // Update current screen state.
+    // Stack of visited screens for back navigation.
+    private val navigationHistory = mutableListOf<SpaScreens>()
+
+    // Navigates to new screen while managing back stack.
     fun navigateTo(screen: SpaScreens) {
+        _currentScreen.value.let {
+            if (it != screen) navigationHistory.add(it)
+        }
         _currentScreen.value = screen
+    }
+
+    // Navigates back to previous screen if available.
+    fun navigateBack(): Boolean {
+        return navigationHistory.removeLastOrNull()?.let { previousScreen ->
+            _currentScreen.value = previousScreen
+            true
+        } ?: false
+    }
+
+    // Clears all navigation history.
+    fun clearHistory() {
+        navigationHistory.clear()
     }
 }
