@@ -1,4 +1,4 @@
-package com.copay.app.ui.screen
+package com.copay.app.ui.screen.group
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.FlowRow
@@ -13,11 +13,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.PrimaryButton
@@ -30,6 +28,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.copay.app.ui.components.countriesList
 import com.copay.app.ui.components.input.DynamicInputList
 import com.copay.app.ui.components.input.InputField
 import com.copay.app.ui.components.input.PriceInputField
@@ -68,16 +67,19 @@ fun CreateGroupScreen(
     var snackbarColor by remember { mutableStateOf(Color.Green) }
 
     var phoneInput by remember { mutableStateOf("") }
-    var selectedCountry by remember { mutableStateOf(com.copay.app.ui.components.countriesList.first { it.code == "ES" }) }
+    val selectedCountry by remember { mutableStateOf(countriesList.first { it.code == "ES" }) }
     var phoneInputError by remember { mutableStateOf<String?>(null) }
-    var invitedCopayMembers by remember { mutableStateOf(listOf<String>()) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    var invitedCopayMembers by remember { mutableStateOf(listOf<String>()) }
     var invitedExternalMembers by remember { mutableStateOf(listOf("")) }
+
+    val imageUrl by remember { mutableStateOf("") }
+    val imageProvider by remember { mutableStateOf("") }
 
     LaunchedEffect(groupState) {
         when (groupState) {
-            is GroupState.Success -> {
+            is GroupState.Success.GroupCreated -> {
                 snackbarMessage = "Group $groupName created successfully!"
                 snackbarColor = Color(0xFF4CAF50)
                 showSnackbar = true
@@ -200,7 +202,7 @@ fun CreateGroupScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(), thickness = 2.dp, color = CopayColors.surface
             )
 
@@ -307,8 +309,10 @@ fun CreateGroupScreen(
                             groupDescription,
                             finalEstimatedPrice,
                             selectedCurrency,
-                            invitedExternalMembers,
-                            invitedCopayMembers
+                            invitedExternalMembers.filter { it.isNotBlank() },
+                            invitedCopayMembers,
+                            imageUrl,
+                            imageProvider
                         )
                     }
                 }, modifier = Modifier.padding(horizontal = 10.dp)

@@ -2,8 +2,11 @@ package com.copay.app.ui.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,22 +14,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.copay.app.R
+import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
+import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
+import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
+import com.copay.app.utils.state.GroupState
+import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
 
 @Composable
 fun HomeScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
-    userViewModel: UserViewModel = hiltViewModel()
+    userViewModel: UserViewModel = hiltViewModel(),
+    groupViewModel: GroupViewModel = hiltViewModel()
 ) {
     // Get the username value through the userViewModel.
     val user by userViewModel.user.collectAsState()
@@ -34,27 +45,113 @@ fun HomeScreen(
     val username = user?.username ?: "Username"
     Log.d("HomeScreen", "User: $user, Username: $username")
 
+    val context = LocalContext.current
+
+    // Group state.
+    val groupState by groupViewModel.groupState.collectAsState()
+    Log.d("HomeScreen", "${groupState}")
+
+    // Trigger group loading when the screen is first composed
+    LaunchedEffect(Unit) {
+        groupViewModel.getGroupsByUser(context)
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        HomeContent(
-            onJoinClick = { navigationViewModel.navigateTo(SpaScreens.JoinGroup) },
-            onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
-            username = username
-        )
+        when (groupState) {
+            is GroupState.Loading -> {
+                Log.d("HomeScreen", "hola")
+                Log.d("HomeScreen", "${groupState}")
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+
+            is GroupState.Error -> {
+                Log.d("HomeScreen", "hola2")
+                Text(
+                    text = (groupState as GroupState.Error).message,
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.Red
+                )
+            }
+
+            is GroupState.Success.GroupsFetched -> {
+
+                val response = (groupState as GroupState.Success.GroupsFetched).groupsData
+
+                val groups = response.groups.map { groupDto ->
+                    val registeredMembers = groupDto.registeredMembers.map { member ->
+                        RegisteredMemberDTO(
+                            registeredMemberId = member.registeredMemberId,
+                            username = member.username,
+                            phoneNumber = member.phoneNumber
+                        )
+                    }
+
+                    val externalMembers = groupDto.externalMembers.map { member ->
+                        ExternalMemberDTO(
+                            externalMembersId = member.externalMembersId, name = member.name
+                        )
+                    }
+
+                    Group(
+                        groupId = groupDto.groupId,
+                        name = groupDto.name,
+                        description = groupDto.description,
+                        estimatedPrice = groupDto.estimatedPrice,
+                        currency = groupDto.currency,
+                        createdAt = groupDto.createdAt,
+                        isOwner = groupDto.userIsOwner,
+                        ownerId = groupDto.groupOwner.ownerId,
+                        ownerName = groupDto.groupOwner.ownerName,
+                        registeredMembers = registeredMembers,
+                        externalMembers = externalMembers,
+                        expenses = emptyList(), // TODO Empty for now (WIP)
+                        imageUrl = null,
+                        imageProvider = null
+                    )
+                }
+                HomeContent(
+                    onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
+                    onDetailClick = { group ->
+                        groupViewModel.selectGroup(group)
+                        navigationViewModel.navigateTo(SpaScreens.BalancesGroup)
+                    },
+                    onEditClick = {
+                        group ->
+                        groupViewModel.selectGroup(group)
+                        navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
+                    },
+                    username = username,
+                    groups = groups
+                )
+            }
+
+            else -> {
+                HomeContent(
+                    onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
+                    onDetailClick = { navigationViewModel.navigateTo(SpaScreens.BalancesGroup) },
+                    onEditClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
+                    username = username,
+                    groups = emptyList()
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun HomeContent(
     // Receives the callbacks from HomeViewModel.
-    onJoinClick: () -> Unit,
     onCreateClick: () -> Unit,
-    username: String
+    onDetailClick: (Group) -> Unit,
+    onEditClick: (Group) -> Unit,
+    username: String,
+    groups: List<Group> = emptyList()
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         Text(
             // Shows the username of the logged user.
@@ -71,8 +168,7 @@ private fun HomeContent(
             shape = RoundedCornerShape(16.dp)
         ) {
             Column(
-                modifier = Modifier
-                    .padding(16.dp),
+                modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -90,9 +186,7 @@ private fun HomeContent(
                 )
 
                 Text(
-                    text = "Total spent this month",
-                    color = Color.Gray,
-                    fontSize = 14.sp
+                    text = "Total spent this month", color = Color.Gray, fontSize = 14.sp
                 )
 
                 Row(
@@ -121,85 +215,124 @@ private fun HomeContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "My groups",
-                color = CopayColors.primary,
-                style =  CopayTypography.subtitle
+                text = "My groups", color = CopayColors.primary, style = CopayTypography.subtitle
             )
             Row {
                 TextButton(onClick = onCreateClick) {
                     Text("Create")
                 }
-                TextButton(onClick = onJoinClick) {
-                    Text("Join")
-                }
             }
         }
 
-        // Display the different groups with their respective information.
-        GroupItem(
-            imageUrl = "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad",
-            title = "London trip",
-            members = "6 members",
-            amount = "16.250€"
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        GroupItem(
-            imageUrl = "https://images.unsplash.com/photo-1553621042-f6e147245754",
-            title = "Sushi dinner",
-            members = "69 members",
-            amount = "1.250€"
-        )
+        // Display user's groups dynamically
+        if (groups.isEmpty()) {
+            Text("No tienes grupos aún", modifier = Modifier.padding(vertical = 16.dp))
+        } else {
+            groups.forEach { group ->
+                GroupItem(
+                    group = group,
+                    onItemClick = { onDetailClick(group) },
+                    onEditClick = { onEditClick(group) },
+                    onDeleteClick = {},
+                    onLeaveClick = {}
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
     }
 }
 
+// TODO Bring this group item into a component
 @Composable
 private fun GroupItem(
-    imageUrl: String,
-    title: String,
-    members: String,
-    amount: String
+    group: Group,
+    onItemClick: () -> Unit,
+    onEditClick: (Group) -> Unit = {},
+    onDeleteClick: (Group) -> Unit = {},
+    onLeaveClick: (Group) -> Unit = {}
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .height(120.dp)
             .padding(vertical = 4.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-                .height(60.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .padding(12.dp),
+            contentAlignment = Alignment.Center
         ) {
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = null,
+            // Main content.
+            Row(
                 modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp)
-            ) {
-                Text(
-                    text = title,
-                    fontWeight = FontWeight.Medium
+                    .fillMaxSize()
+                    .clickable { onItemClick() }
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                // Group image.
+                AsyncImage(
+                    model = group.imageUrl ?: R.drawable.copay_banner_white,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(10.dp)),
+                    contentScale = ContentScale.Crop
                 )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Name and members.
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = group.name ?: "", fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "${(group.registeredMembers?.size ?: 0) + (group.externalMembers?.size ?: 0)} members",
+                        color = Color.Gray,
+                        fontSize = 12.sp
+                    )
+                }
+
+                // Estimated price.
                 Text(
-                    text = members,
-                    color = Color.Gray,
-                    fontSize = 12.sp
+                    text = group.estimatedPrice.toString() + " " + group.currency,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 24.dp)
                 )
             }
-            Text(
-                text = amount,
-                fontWeight = FontWeight.Bold
-            )
+
+            // Botones en la parte inferior derecha
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd),
+                horizontalArrangement = Arrangement.End
+            ) {
+                if (group.isOwner == true) {
+                    TextButton(
+                        onClick = { onEditClick(group) },
+                        modifier = Modifier.padding(start = 1.dp)
+                    ) {
+                        Text("Edit")
+                    }
+                    TextButton(
+                        onClick = { onDeleteClick(group) },
+                        modifier = Modifier.padding(start = 1.dp)
+                    ) {
+                        Text("Delete")
+                    }
+                } else {
+                    TextButton(
+                        onClick = { onLeaveClick(group) },
+                        modifier = Modifier.padding(start = 1.dp)
+                    ) {
+                        Text("Leave")
+                    }
+                }
+            }
         }
     }
 }

@@ -1,6 +1,10 @@
 package com.copay.app.config
 
-
+import com.copay.app.dto.expense.response.GetExpenseResponseDTO
+import com.copay.app.dto.group.request.CreateGroupRequestDTO
+import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
+import com.copay.app.dto.group.request.UpdateGroupRegisteredMembersRequestDTO
+import com.copay.app.dto.group.response.CreateGroupResponseDTO
 import com.copay.app.dto.request.ForgotPasswordDTO
 import com.copay.app.dto.request.UserLoginRequestDTO
 import com.copay.app.dto.request.UserRegisterStepTwoDTO
@@ -12,6 +16,8 @@ import com.copay.app.dto.request.profile.UpdateUsernameDTO
 import com.copay.app.dto.response.RegisterStepOneResponseDTO
 import com.copay.app.dto.response.LoginResponseDTO
 import com.copay.app.dto.response.RegisterStepTwoResponseDTO
+import com.copay.app.dto.group.response.GetGroupResponseDTO
+import com.copay.app.dto.group.response.GroupMessageResponseDTO
 import com.copay.app.dto.response.profile.EmailResponseDTO
 import com.copay.app.dto.response.profile.PasswordResponseDTO
 import com.copay.app.dto.response.profile.PhoneNumberResponseDTO
@@ -19,8 +25,10 @@ import com.copay.app.dto.response.profile.UsernameResponseDTO
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -60,10 +68,6 @@ interface ApiService {
     @POST("${BASE_PATH}forgot-password")
     suspend fun forgotPassword(@Body request: ForgotPasswordDTO): Response<Unit>
 
-    // Retrieve groups by user ID (for HomeScreen display)
-//    @GET("${BASE_PATH}groups/{userId}")
-//    suspend fun getGroupsByUser(@Path("userId") userId: Long): Response<List<GroupResponseDTO>>
-  
     /** API Calls to edit profile data **/
     // Update username
     @PUT("${BASE_PATH}users/edit-username/{id}")
@@ -92,4 +96,56 @@ interface ApiService {
         @Body request: UpdatePasswordDTO,
         @Header("Authorization") token: String
     ): Response<PasswordResponseDTO>
+
+    /** API Calls to Groups **/
+    // Retrieve groups by user ID.
+    @GET("${BASE_PATH}groups/{userId}")
+    suspend fun getGroupsByUser(
+        @Path("userId") userId: Long
+    ): Response<GetGroupResponseDTO>
+
+    // Create group.
+    @POST("${BASE_PATH}groups")
+    suspend fun createGroup(
+        @Body request: CreateGroupRequestDTO
+    ): Response<CreateGroupResponseDTO>
+
+    // Delete group.
+    @DELETE("${BASE_PATH}groups/{groupId}")
+    suspend fun deleteGroup(
+        @Path("groupId") groupId: Long,
+        @Header("Authorization") token: String
+    ): Response<GroupMessageResponseDTO>
+
+    // Leave group.
+    @DELETE("${BASE_PATH}groups/{groupId}/leave")
+    suspend fun leaveGroup(
+        @Path("groupId") groupId: Long,
+        @Header("Authorization") token: String
+    ): Response<GroupMessageResponseDTO>
+
+    // Update group.
+    @PATCH("${BASE_PATH}groups/{groupId}")
+    suspend fun updateGroup(
+        @Path("groupId") groupId: Long,
+        @Body fieldChanges: Map<String, @JvmSuppressWildcards Any>
+    ): Response<GroupMessageResponseDTO>
+
+    // Update group registered members.
+    @PATCH("${BASE_PATH}groups/{groupId}/copaymembers")
+    suspend fun updateGroupRegisteredMembers(
+        @Path("groupId") groupId: Long,
+        @Body request: UpdateGroupRegisteredMembersRequestDTO
+    ): Response<GroupMessageResponseDTO>
+
+    // Update group external members.
+    @PATCH("${BASE_PATH}groups/{groupId}/externalmembers")
+    suspend fun updateGroupExternalMembers(
+        @Path("groupId") groupId: Long,
+        @Body request: UpdateGroupExternalMembersRequestDTO
+    ): Response<GroupMessageResponseDTO>
+
+    // Get expenses by group id.
+    @GET("${BASE_PATH}expenses/{groupId}")
+    suspend fun getExpenses(@Path("groupId") groupId: Long): Response<List<GetExpenseResponseDTO>>
 }
