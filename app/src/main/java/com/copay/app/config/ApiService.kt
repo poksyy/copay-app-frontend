@@ -127,7 +127,7 @@ interface ApiService {
     @PATCH("${BASE_PATH}groups/{groupId}")
     suspend fun updateGroup(
         @Path("groupId") groupId: Long,
-        @Body fieldChanges: Map<String, Any>
+        @Body fieldChanges: Map<String, @JvmSuppressWildcards Any>
     ): Response<GroupMessageResponseDTO>
 
     // Update group registered members.
