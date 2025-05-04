@@ -5,16 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.copay.app.dto.expense.response.GetExpenseResponseDTO
 import com.copay.app.repository.ExpenseRepository
+import com.copay.app.utils.session.GroupSession
 import com.copay.app.utils.state.ExpenseState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ExpenseViewModel @Inject constructor(
-    private val expenseRepository: ExpenseRepository
+    private val expenseRepository: ExpenseRepository,
 ) : ViewModel() {
 
     private val _expenseState = MutableStateFlow<ExpenseState>(ExpenseState.Idle)

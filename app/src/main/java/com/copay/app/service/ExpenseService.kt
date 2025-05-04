@@ -7,8 +7,7 @@ import retrofit2.Response
 
 class ExpenseService(private val api:ApiService)  {
 
-    suspend fun getExpenses(request: GetExpenseRequestDTO): Response<List<GetExpenseResponseDTO>>
-    {
+    suspend fun getExpenses(request: GetExpenseRequestDTO): Response<List<GetExpenseResponseDTO>> {
         return api.getExpenses(request.groupId)
     }
 }

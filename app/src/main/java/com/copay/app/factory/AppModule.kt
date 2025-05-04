@@ -1,6 +1,7 @@
 package com.copay.app.factory
 
 import com.copay.app.config.RetrofitInstance
+import com.copay.app.repository.ExpenseRepository
 import com.copay.app.repository.GroupRepository
 import com.copay.app.repository.ProfileRepository
 import com.copay.app.repository.UserRepository
@@ -112,5 +113,12 @@ object AppModule {
     fun provideProfileRepository(profileService: ProfileService): ProfileRepository {
         // Instantiates and returns ProfileRepository with injected ProfileService.
         return ProfileRepository(profileService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideExpenseRepository(expenseService: ExpenseService): ExpenseRepository {
+        // Instantiates and returns ProfileRepository with injected ProfileService.
+        return ExpenseRepository(expenseService)
     }
 }
