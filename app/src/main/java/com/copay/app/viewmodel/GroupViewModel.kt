@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.copay.app.model.Group
-import com.copay.app.model.User
 import com.copay.app.repository.GroupRepository
 import com.copay.app.service.GroupService
 import com.copay.app.utils.session.GroupSession
@@ -13,7 +12,6 @@ import com.copay.app.utils.session.UserSession
 import com.copay.app.utils.state.GroupState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
