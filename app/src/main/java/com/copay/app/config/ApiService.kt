@@ -1,5 +1,6 @@
 package com.copay.app.config
 
+import com.copay.app.dto.expense.response.GetExpenseResponseDTO
 import com.copay.app.dto.group.request.CreateGroupRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupRegisteredMembersRequestDTO
@@ -143,4 +144,8 @@ interface ApiService {
         @Path("groupId") groupId: Long,
         @Body request: UpdateGroupExternalMembersRequestDTO
     ): Response<GroupMessageResponseDTO>
+
+    // Get expenses by group id.
+    @GET("${BASE_PATH}expenses/{groupId}")
+    suspend fun getExpenses(@Path("groupId") groupId: Long): Response<List<GetExpenseResponseDTO>>
 }
