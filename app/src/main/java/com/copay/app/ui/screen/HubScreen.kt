@@ -10,7 +10,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BottomNavigationBar
 import com.copay.app.ui.screen.group.CreateGroupScreen
-import com.copay.app.ui.screen.group.GroupDetailScreen
+import com.copay.app.ui.screen.group.edit.EditGroupScreen
+import com.copay.app.ui.screen.group.detail.GroupBalancesScreen
+import com.copay.app.ui.screen.group.edit.EditGroupDescriptionScreen
+import com.copay.app.ui.screen.group.edit.EditGroupMembersScreen
+import com.copay.app.ui.screen.group.edit.EditGroupNameScreen
+import com.copay.app.ui.screen.group.edit.EditGroupPriceScreen
 import com.copay.app.ui.screen.profile.EditProfileScreen
 import com.copay.app.ui.screen.profile.ProfileScreen
 import com.copay.app.ui.screen.profile.edit.EditEmailScreen
@@ -73,7 +78,17 @@ fun HubScreen(
 
                 // Home subpages.
                 SpaScreens.CreateGroup -> CreateGroupScreen()
-                SpaScreens.DetailGroup -> GroupDetailScreen()
+                SpaScreens.BalancesGroup -> GroupBalancesScreen()
+
+                // Group editing subscreens
+                is SpaScreens.GroupSubscreen -> when (currentScreen) {
+                    SpaScreens.GroupSubscreen.EditGroup -> EditGroupScreen()
+                    SpaScreens.GroupSubscreen.EditName -> EditGroupNameScreen()
+                    SpaScreens.GroupSubscreen.EditDescription -> EditGroupDescriptionScreen()
+                    SpaScreens.GroupSubscreen.EditPrice -> EditGroupPriceScreen()
+                    SpaScreens.GroupSubscreen.EditMembers -> EditGroupMembersScreen()
+                    else -> {}
+                }
 
                 // Profile subpages.
                 is SpaScreens.ProfileSubscreen -> when (currentScreen) {
