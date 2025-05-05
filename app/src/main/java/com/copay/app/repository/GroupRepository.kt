@@ -2,6 +2,7 @@ package com.copay.app.repository
 
 import android.content.Context
 import android.util.Log
+import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.request.CreateGroupRequestDTO
 import com.copay.app.dto.group.request.GetGroupRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
@@ -134,7 +135,9 @@ class GroupRepository(private val groupService: GroupService) {
 
     // Updates the list of external members in a group.
     suspend fun updateGroupExternalMembers(
-        context: Context, groupId: Long, invitedExternalMembers: List<String>
+        context: Context,
+        groupId: Long,
+        invitedExternalMembers: List<ExternalMemberDTO>
     ): GroupState {
 
         val request = UpdateGroupExternalMembersRequestDTO(
