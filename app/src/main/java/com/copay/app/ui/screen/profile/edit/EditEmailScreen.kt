@@ -72,7 +72,7 @@ fun EditEmailScreen(
             onClick = {
                 validateInputs()
                 if (emailError == null ) {
-                    profileViewModel.updateEmail(context, user?.userId ?: 0, email)
+                    profileViewModel.updateEmail(context, email)
                 }
             }, modifier = Modifier
                 .align(Alignment.TopEnd)

@@ -9,6 +9,7 @@ import com.copay.app.service.AuthService
 import com.copay.app.service.ExpenseService
 import com.copay.app.service.GroupService
 import com.copay.app.service.ProfileService
+import com.copay.app.utils.session.UserSession
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,7 +63,7 @@ object AppModule {
         // Instantiates and returns GroupService using RetrofitInstance.
         return GroupService(RetrofitInstance.api)
     }
-    
+
     // Provides the ProfileService dependency. A single instance will be used throughout the app.
     @Provides
     @Singleton
@@ -77,7 +78,7 @@ object AppModule {
         // Instantiates and returns ExpenseService using RetrofitInstance.
         return ExpenseService(RetrofitInstance.api)
     }
-    
+
     /*    ========================================================================
           =========================== REPOSITORIES =============================
           ========================================================================
@@ -110,9 +111,13 @@ object AppModule {
     // Provides the ProfileRepository dependency. A single instance will be used throughout the app.
     @Provides
     @Singleton
-    fun provideProfileRepository(profileService: ProfileService): ProfileRepository {
+    fun provideProfileRepository(
+        profileService: ProfileService, userSession: UserSession
+    ): ProfileRepository {
         // Instantiates and returns ProfileRepository with injected ProfileService.
-        return ProfileRepository(profileService)
+        return ProfileRepository(
+            profileService, userSession
+        )
     }
 
     @Provides

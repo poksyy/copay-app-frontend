@@ -21,18 +21,18 @@ import retrofit2.Response
 class ProfileService(private val api: ApiService) {
 
     // Sends a request to update the user's username.
-    suspend fun updateUsername(request: UpdateUsernameDTO): Response<UsernameResponseDTO> {
-        return api.updateUsername(request.userId, request)
+    suspend fun updateUsername(userId: Long, request: UpdateUsernameDTO): Response<UsernameResponseDTO> {
+        return api.updateUsername(userId, request)
     }
 
     // Sends a request to update the user's phone number.
-    suspend fun updatePhoneNumber(request: UpdatePhoneNumberDTO): Response<PhoneNumberResponseDTO> {
-        return api.updatePhoneNumber(request.userId, request)
+    suspend fun updatePhoneNumber(userId: Long, request: UpdatePhoneNumberDTO): Response<PhoneNumberResponseDTO> {
+        return api.updatePhoneNumber(userId, request)
     }
 
     // Sends a request to update the user's email address.
-    suspend fun updateEmail(request: UpdateEmailDTO): Response<EmailResponseDTO> {
-        return api.updateEmail(request.userId, request)
+    suspend fun updateEmail(userId: Long, request: UpdateEmailDTO): Response<EmailResponseDTO> {
+        return api.updateEmail(userId, request)
     }
 
     // Sends a request to update the user's password using a JWT token for authentication.

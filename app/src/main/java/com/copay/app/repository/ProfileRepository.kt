@@ -8,6 +8,7 @@ import com.copay.app.dto.profile.request.UpdatePhoneNumberDTO
 import com.copay.app.dto.profile.request.UpdateUsernameDTO
 import com.copay.app.service.ProfileService
 import com.copay.app.utils.DataStoreManager
+import com.copay.app.utils.session.UserSession
 import com.copay.app.utils.state.ProfileState
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -20,16 +21,23 @@ import retrofit2.Response
  * This class encapsulates the logic of managing profile update operations, ensuring that the UI receives the appropriate state.
  */
 
-class ProfileRepository(private val profileService: ProfileService) {
+class ProfileRepository(
+    private val profileService: ProfileService,
+    private val userSession: UserSession
+) {
 
     // Updates the username of the user.
     suspend fun updateUsername(
-        context: Context, userId: Long, newUsername: String
+        context: Context, newUsername: String
     ): ProfileState {
 
-        val request = UpdateUsernameDTO(userId = userId, username = newUsername)
+        // Extract userId through user session.
+        val user = userSession.user.first()
+        val userId = user?.userId ?: return ProfileState.Error("User not logged in")
+
+        val request = UpdateUsernameDTO(username = newUsername)
         val result = handleApiResponse(context) {
-            profileService.updateUsername(request)
+            profileService.updateUsername(userId, request)
         }
 
         // Handles the result of the API call and returns the appropriate ProfileState.
@@ -41,12 +49,16 @@ class ProfileRepository(private val profileService: ProfileService) {
 
     // Updates the phone number of the user.
     suspend fun updatePhoneNumber(
-        context: Context, userId: Long, newPhoneNumber: String
+        context: Context, newPhoneNumber: String
     ): ProfileState {
 
-        val request = UpdatePhoneNumberDTO(userId = userId, phoneNumber = newPhoneNumber)
+        // Extract userId through user session.
+        val user = userSession.user.first()
+        val userId = user?.userId ?: return ProfileState.Error("User not logged in")
+
+        val request = UpdatePhoneNumberDTO(phoneNumber = newPhoneNumber)
         val result = handleApiResponse(context) {
-            profileService.updatePhoneNumber(request)
+            profileService.updatePhoneNumber(userId, request)
         }
 
         // Handles the result of the API call and returns the appropriate ProfileState.
@@ -58,12 +70,16 @@ class ProfileRepository(private val profileService: ProfileService) {
 
     // Updates the email of the user.
     suspend fun updateEmail(
-        context: Context, userId: Long, newEmail: String
+        context: Context, newEmail: String
     ): ProfileState {
 
-        val request = UpdateEmailDTO(userId = userId, email = newEmail)
+        // Extract userId through user session.
+        val user = userSession.user.first()
+        val userId = user?.userId ?: return ProfileState.Error("User not logged in")
+
+        val request = UpdateEmailDTO(email = newEmail)
         val result = handleApiResponse(context) {
-            profileService.updateEmail(request)
+            profileService.updateEmail(userId, request)
         }
 
         // Handles the result of the API call and returns the appropriate ProfileState.
