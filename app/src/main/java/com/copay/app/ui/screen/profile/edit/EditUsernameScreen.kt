@@ -66,7 +66,7 @@ fun EditUsernameScreen(
             onClick = {
                 validateInputs()
                 if (usernameError == null ) {
-                    profileViewModel.updateUsername(context, user?.userId ?: 0, username)
+                    profileViewModel.updateUsername(context, username)
                 }
             },
             modifier = Modifier

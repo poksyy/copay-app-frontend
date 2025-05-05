@@ -68,11 +68,11 @@ class GroupRepository(private val groupService: GroupService) {
     suspend fun deleteGroup(
         context: Context, groupId: Long
     ): GroupState {
-        val token = DataStoreManager.getToken(context).first()
-        if (token.isNullOrEmpty()) {
-            return GroupState.Error("Authentication token not found")
-        }
 
+        // Get the token generated thanks to DataStoreManager.
+        val token = DataStoreManager.getToken(context).first()
+
+        // Send the token with "Bearer " since the backend needs that format.
         val formattedToken = "Bearer $token"
 
         return handleApiResponse(context) {
@@ -84,11 +84,11 @@ class GroupRepository(private val groupService: GroupService) {
     suspend fun leaveGroup(
         context: Context, groupId: Long
     ): GroupState {
-        val token = DataStoreManager.getToken(context).first()
-        if (token.isNullOrEmpty()) {
-            return GroupState.Error("Authentication token not found")
-        }
 
+        // Get the token generated thanks to DataStoreManager.
+        val token = DataStoreManager.getToken(context).first()
+
+        // Send the token with "Bearer " since the backend needs that format.
         val formattedToken = "Bearer $token"
 
         return handleApiResponse(context) {
@@ -101,8 +101,14 @@ class GroupRepository(private val groupService: GroupService) {
         context: Context, groupId: Long, fieldChanges: Map<String, @JvmSuppressWildcards Any>
     ): GroupState {
 
+        // Get the token generated thanks to DataStoreManager.
+        val token = DataStoreManager.getToken(context).first()
+
+        // Send the token with "Bearer " since the backend needs that format.
+        val formattedToken = "Bearer $token"
+
         return handleApiResponse(context) {
-            groupService.updateGroup(groupId, fieldChanges)
+            groupService.updateGroup(groupId, fieldChanges, formattedToken)
         }
     }
 
@@ -110,12 +116,19 @@ class GroupRepository(private val groupService: GroupService) {
     suspend fun updateGroupRegisteredMembers(
         context: Context, groupId: Long, invitedRegisteredMembers: List<String>
     ): GroupState {
+
         val request = UpdateGroupRegisteredMembersRequestDTO(
             invitedRegisteredMembers = invitedRegisteredMembers
         )
 
+        // Get the token generated thanks to DataStoreManager.
+        val token = DataStoreManager.getToken(context).first()
+
+        // Send the token with "Bearer " since the backend needs that format.
+        val formattedToken = "Bearer $token"
+
         return handleApiResponse(context) {
-            groupService.updateGroupRegisteredMembers(groupId, request)
+            groupService.updateGroupRegisteredMembers(groupId, request, formattedToken)
         }
     }
 
@@ -123,12 +136,19 @@ class GroupRepository(private val groupService: GroupService) {
     suspend fun updateGroupExternalMembers(
         context: Context, groupId: Long, invitedExternalMembers: List<String>
     ): GroupState {
+
         val request = UpdateGroupExternalMembersRequestDTO(
             invitedExternalMembers = invitedExternalMembers
         )
 
+        // Get the token generated thanks to DataStoreManager.
+        val token = DataStoreManager.getToken(context).first()
+
+        // Send the token with "Bearer " since the backend needs that format.
+        val formattedToken = "Bearer $token"
+
         return handleApiResponse(context) {
-            groupService.updateGroupExternalMembers(groupId, request)
+            groupService.updateGroupExternalMembers(groupId, request, formattedToken)
         }
     }
 

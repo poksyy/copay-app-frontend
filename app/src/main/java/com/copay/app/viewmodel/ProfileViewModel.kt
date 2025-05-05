@@ -1,6 +1,7 @@
 package com.copay.app.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.copay.app.repository.ProfileRepository
@@ -26,14 +27,14 @@ class ProfileViewModel @Inject constructor(
     }
 
     // Updates the user's username.
-    fun updateUsername(context: Context, userId: Long, newUsername: String) {
+    fun updateUsername(context: Context, newUsername: String) {
         viewModelScope.launch {
 
             _profileState.value = ProfileState.Loading
 
             // Calls the repository to perform the update.
             val backendResponse =
-                profileRepository.updateUsername(context, userId, newUsername)
+                profileRepository.updateUsername(context, newUsername)
 
             // Updates the UI through profileState.
             _profileState.value = backendResponse
@@ -55,14 +56,14 @@ class ProfileViewModel @Inject constructor(
     }
 
     // Updates the user's phone number.
-    fun updatePhoneNumber(context: Context, userId: Long, newPhoneNumber: String) {
+    fun updatePhoneNumber(context: Context, newPhoneNumber: String) {
         viewModelScope.launch {
 
             _profileState.value = ProfileState.Loading
 
             // Calls the repository to perform the update.
             val backendResponse =
-                profileRepository.updatePhoneNumber(context, userId, newPhoneNumber)
+                profileRepository.updatePhoneNumber(context, newPhoneNumber)
 
             // Updates the UI through profileState.
             _profileState.value = backendResponse
@@ -84,14 +85,14 @@ class ProfileViewModel @Inject constructor(
     }
 
     // Updates the user's email address.
-    fun updateEmail(context: Context, userId: Long, newEmail: String) {
+    fun updateEmail(context: Context, newEmail: String) {
         viewModelScope.launch {
 
             _profileState.value = ProfileState.Loading
 
             // Calls the repository to perform the update.
             val backendResponse =
-                profileRepository.updateEmail(context, userId, newEmail)
+                profileRepository.updateEmail(context, newEmail)
 
             // Updates the UI through profileState.
             _profileState.value = backendResponse
