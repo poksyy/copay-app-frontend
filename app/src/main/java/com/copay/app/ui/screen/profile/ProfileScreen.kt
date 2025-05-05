@@ -20,7 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.R
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.LogoutButton
+import com.copay.app.ui.components.button.LogoutButton
 import com.copay.app.viewmodel.AuthViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel

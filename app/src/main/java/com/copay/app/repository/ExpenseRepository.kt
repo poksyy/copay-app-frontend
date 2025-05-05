@@ -10,11 +10,11 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import retrofit2.Response
 
-/*
-ExpenseRepository is responsible for managing expense-related operations by interacting with the ExpenseService.
-It makes API calls to fetch expenses and handles responses by processing success and error cases.
-This class encapsulates the logic of managing expenses, ensuring that the UI receives the appropriate state.
-*/
+/**
+ * ExpenseRepository is responsible for managing expense-related operations by interacting with the ExpenseService.
+ * It makes API calls to fetch expenses and handles responses by processing success and error cases.
+ * This class encapsulates the logic of managing expenses, ensuring that the UI receives the appropriate state.
+ */
 
 class ExpenseRepository(private val expenseService: ExpenseService) {
 
@@ -48,6 +48,7 @@ class ExpenseRepository(private val expenseService: ExpenseService) {
                                 ExpenseState.Error("Invalid response format")
                             }
                         }
+
                         else -> ExpenseState.Error("Unexpected response type")
                     }
                 } ?: ExpenseState.Error("Empty response body")

@@ -26,8 +26,8 @@ import com.copay.app.dto.expense.response.GetExpenseResponseDTO
 import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.BackButtonTop
-import com.copay.app.ui.components.ConfirmationDialog
+import com.copay.app.ui.components.button.BackButtonTop
+import com.copay.app.ui.components.dialog.ConfirmationDialog
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState

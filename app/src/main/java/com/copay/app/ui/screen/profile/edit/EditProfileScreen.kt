@@ -1,4 +1,4 @@
-package com.copay.app.ui.screen.profile
+package com.copay.app.ui.screen.profile.edit
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.components.button.BackButtonTop
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.viewmodel.NavigationViewModel

@@ -7,13 +7,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.copay.app.repository.PasswordRepository
-import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.components.button.BackButtonTop
 import com.copay.app.ui.components.input.InputField
-import com.copay.app.ui.components.PrimaryButton
+import com.copay.app.ui.components.button.PrimaryButton
 import com.copay.app.config.RetrofitInstance
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography

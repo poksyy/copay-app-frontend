@@ -2,7 +2,6 @@ package com.copay.app.ui.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,17 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import com.copay.app.R
-import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
-import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.theme.CopayColors
@@ -32,6 +26,7 @@ import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
+import com.copay.app.ui.components.listitem.GroupItem
 
 @Composable
 fun HomeScreen(
@@ -49,7 +44,7 @@ fun HomeScreen(
 
     // Group state.
     val groupState by groupViewModel.groupState.collectAsState()
-    Log.d("HomeScreen", "${groupState}")
+    Log.d("HomeScreen", "$groupState")
 
     // Trigger group loading when the screen is first composed
     LaunchedEffect(Unit) {
@@ -59,13 +54,10 @@ fun HomeScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when (groupState) {
             is GroupState.Loading -> {
-                Log.d("HomeScreen", "hola")
-                Log.d("HomeScreen", "${groupState}")
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
 
             is GroupState.Error -> {
-                Log.d("HomeScreen", "hola2")
                 Text(
                     text = (groupState as GroupState.Error).message,
                     modifier = Modifier.align(Alignment.Center),
@@ -75,48 +67,15 @@ fun HomeScreen(
 
             is GroupState.Success.GroupsFetched -> {
 
-                val response = (groupState as GroupState.Success.GroupsFetched).groupsData
+                val groups = (groupState as GroupState.Success.GroupsFetched).groups
 
-                val groups = response.groups.map { groupDto ->
-                    val registeredMembers = groupDto.registeredMembers.map { member ->
-                        RegisteredMemberDTO(
-                            registeredMemberId = member.registeredMemberId,
-                            username = member.username,
-                            phoneNumber = member.phoneNumber
-                        )
-                    }
-
-                    val externalMembers = groupDto.externalMembers.map { member ->
-                        ExternalMemberDTO(
-                            externalMembersId = member.externalMembersId, name = member.name
-                        )
-                    }
-
-                    Group(
-                        groupId = groupDto.groupId,
-                        name = groupDto.name,
-                        description = groupDto.description,
-                        estimatedPrice = groupDto.estimatedPrice,
-                        currency = groupDto.currency,
-                        createdAt = groupDto.createdAt,
-                        isOwner = groupDto.userIsOwner,
-                        ownerId = groupDto.groupOwner.ownerId,
-                        ownerName = groupDto.groupOwner.ownerName,
-                        registeredMembers = registeredMembers,
-                        externalMembers = externalMembers,
-                        expenses = emptyList(), // TODO Empty for now (WIP)
-                        imageUrl = null,
-                        imageProvider = null
-                    )
-                }
                 HomeContent(
                     onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
                     onDetailClick = { group ->
                         groupViewModel.selectGroup(group)
                         navigationViewModel.navigateTo(SpaScreens.BalancesGroup)
                     },
-                    onEditClick = {
-                        group ->
+                    onEditClick = { group ->
                         groupViewModel.selectGroup(group)
                         navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
                     },
@@ -226,112 +185,15 @@ private fun HomeContent(
 
         // Display user's groups dynamically
         if (groups.isEmpty()) {
-            Text("No tienes grupos aún", modifier = Modifier.padding(vertical = 16.dp))
+            Text("You do not have any groups.", modifier = Modifier.padding(vertical = 16.dp))
         } else {
             groups.forEach { group ->
-                GroupItem(
-                    group = group,
+                GroupItem(group = group,
                     onItemClick = { onDetailClick(group) },
                     onEditClick = { onEditClick(group) },
                     onDeleteClick = {},
-                    onLeaveClick = {}
-                )
+                    onLeaveClick = {})
                 Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
-    }
-}
-
-// TODO Bring this group item into a component
-@Composable
-private fun GroupItem(
-    group: Group,
-    onItemClick: () -> Unit,
-    onEditClick: (Group) -> Unit = {},
-    onDeleteClick: (Group) -> Unit = {},
-    onLeaveClick: (Group) -> Unit = {}
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            // Main content.
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable { onItemClick() }
-                    .padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically) {
-                // Group image.
-                AsyncImage(
-                    model = group.imageUrl ?: R.drawable.copay_banner_white,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(10.dp)),
-                    contentScale = ContentScale.Crop
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                // Name and members.
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = group.name ?: "", fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = "${(group.registeredMembers?.size ?: 0) + (group.externalMembers?.size ?: 0)} members",
-                        color = Color.Gray,
-                        fontSize = 12.sp
-                    )
-                }
-
-                // Estimated price.
-                Text(
-                    text = group.estimatedPrice.toString() + " " + group.currency,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 24.dp)
-                )
-            }
-
-            // Botones en la parte inferior derecha
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd),
-                horizontalArrangement = Arrangement.End
-            ) {
-                if (group.isOwner == true) {
-                    TextButton(
-                        onClick = { onEditClick(group) },
-                        modifier = Modifier.padding(start = 1.dp)
-                    ) {
-                        Text("Edit")
-                    }
-                    TextButton(
-                        onClick = { onDeleteClick(group) },
-                        modifier = Modifier.padding(start = 1.dp)
-                    ) {
-                        Text("Delete")
-                    }
-                } else {
-                    TextButton(
-                        onClick = { onLeaveClick(group) },
-                        modifier = Modifier.padding(start = 1.dp)
-                    ) {
-                        Text("Leave")
-                    }
-                }
             }
         }
     }

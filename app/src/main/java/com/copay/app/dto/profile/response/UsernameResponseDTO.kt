@@ -1,4 +1,4 @@
-package com.copay.app.dto.response.profile
+package com.copay.app.dto.profile.response
 
 data class UsernameResponseDTO(
     val id: Long,

@@ -1,4 +1,4 @@
-package com.copay.app.ui.screen.group
+package com.copay.app.ui.screen.group.create
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.FlowRow
@@ -18,8 +18,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.PrimaryButton
-import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.components.button.PrimaryButton
+import com.copay.app.ui.components.button.BackButtonTop
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.validation.GroupValidation
 import kotlinx.coroutines.delay

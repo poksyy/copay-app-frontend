@@ -1,4 +1,4 @@
-package com.copay.app.ui.components
+package com.copay.app.ui.components.dialog
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button

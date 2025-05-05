@@ -19,7 +19,7 @@ import com.copay.app.R
 import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.components.button.BackButtonTop
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel

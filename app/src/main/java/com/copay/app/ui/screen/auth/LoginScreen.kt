@@ -11,9 +11,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.components.button.BackButtonTop
 import com.copay.app.ui.components.input.InputField
-import com.copay.app.ui.components.PrimaryButton
+import com.copay.app.ui.components.button.PrimaryButton
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.AuthState

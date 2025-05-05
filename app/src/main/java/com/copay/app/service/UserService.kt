@@ -2,8 +2,8 @@ package com.copay.app.service
 
 import android.util.Log
 import com.google.gson.Gson
-import com.copay.app.dto.response.LoginResponseDTO
-import com.copay.app.dto.response.RegisterStepTwoResponseDTO
+import com.copay.app.dto.auth.response.LoginResponseDTO
+import com.copay.app.dto.auth.response.RegisterStepTwoResponseDTO
 import com.copay.app.model.User
 import com.copay.app.utils.state.AuthState
 import javax.inject.Inject
