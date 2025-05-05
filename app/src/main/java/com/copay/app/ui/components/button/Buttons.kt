@@ -1,4 +1,4 @@
-package com.copay.app.ui.components
+package com.copay.app.ui.components.button
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -21,12 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.copay.app.R
-import com.copay.app.ui.theme.AppTypography
-import com.copay.app.ui.theme.Black
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import com.copay.app.ui.theme.LogoutButtonBackground
-import com.copay.app.ui.theme.White
 
 @Composable
 fun PrimaryButton(
