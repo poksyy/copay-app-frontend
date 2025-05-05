@@ -1,5 +1,6 @@
 package com.copay.app.ui.screen.profile.edit
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -42,11 +43,8 @@ fun EditPhoneNumberScreen(
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
     var phoneNumberError by remember { mutableStateOf<String?>(null) }
 
-    var phoneNumber = user?.phoneNumber ?: ""
+    var phoneNumber by remember { mutableStateOf(user?.phoneNumber ?: "") }
     val selectedCountry by remember { mutableStateOf(country) }
-
-    // Combines the country code with the number for E.164 format.
-    val completePhoneNumber = getE164PhoneNumber(selectedCountry, phoneNumber)
 
     LaunchedEffect(profileState) {
         when (profileState) {
@@ -83,7 +81,7 @@ fun EditPhoneNumberScreen(
             onClick = {
                 validateInputs()
                 if (phoneNumberError == null ) {
-                    profileViewModel.updatePhoneNumber(context, completePhoneNumber)
+                    profileViewModel.updatePhoneNumber(context, phoneNumber)
                 }
             }, modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -117,7 +115,7 @@ fun EditPhoneNumberScreen(
                     validateInputs()
                     apiErrorMessage = null
                 },
-                label = "Email",
+                label = "Phone number",
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Email
                 ),
