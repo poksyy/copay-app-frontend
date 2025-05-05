@@ -34,7 +34,8 @@ class UserService @Inject constructor() {
                     userId = data.userId,
                     username = data.username,
                     email = data.email,
-                    phoneNumber = data.phoneNumber
+                    phoneNumber = data.phoneNumber,
+                    phonePrefix = data.phonePrefix
                 )
             }
             // Backend response when an user registers.
