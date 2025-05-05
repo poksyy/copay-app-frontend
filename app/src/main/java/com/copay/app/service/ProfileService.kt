@@ -2,32 +2,44 @@ package com.copay.app.service
 
 import android.util.Log
 import com.copay.app.config.ApiService
-import com.copay.app.dto.request.profile.UpdateEmailDTO
-import com.copay.app.dto.request.profile.UpdatePasswordDTO
-import com.copay.app.dto.request.profile.UpdatePhoneNumberDTO
-import com.copay.app.dto.request.profile.UpdateUsernameDTO
-import com.copay.app.dto.response.profile.EmailResponseDTO
-import com.copay.app.dto.response.profile.PasswordResponseDTO
-import com.copay.app.dto.response.profile.PhoneNumberResponseDTO
-import com.copay.app.dto.response.profile.UsernameResponseDTO
+import com.copay.app.dto.profile.request.UpdateEmailDTO
+import com.copay.app.dto.profile.request.UpdatePasswordDTO
+import com.copay.app.dto.profile.request.UpdatePhoneNumberDTO
+import com.copay.app.dto.profile.request.UpdateUsernameDTO
+import com.copay.app.dto.profile.response.EmailResponseDTO
+import com.copay.app.dto.profile.response.PasswordResponseDTO
+import com.copay.app.dto.profile.response.PhoneNumberResponseDTO
+import com.copay.app.dto.profile.response.UsernameResponseDTO
 import retrofit2.Response
+
+/**
+ * ProfileService handles all profile-related operations such as updating
+ * user information like username, phone number, email, and password.
+ * It serves as a clean interface between the ViewModel and ApiService.
+ */
 
 class ProfileService(private val api: ApiService) {
 
+    // Sends a request to update the user's username.
     suspend fun updateUsername(request: UpdateUsernameDTO): Response<UsernameResponseDTO> {
         return api.updateUsername(request.userId, request)
     }
 
+    // Sends a request to update the user's phone number.
     suspend fun updatePhoneNumber(request: UpdatePhoneNumberDTO): Response<PhoneNumberResponseDTO> {
         return api.updatePhoneNumber(request.userId, request)
     }
 
+    // Sends a request to update the user's email address.
     suspend fun updateEmail(request: UpdateEmailDTO): Response<EmailResponseDTO> {
         return api.updateEmail(request.userId, request)
     }
 
-    suspend fun updatePassword(request: UpdatePasswordDTO, token: String): Response<PasswordResponseDTO> {
-        Log.d("DataStoreManager","update password SENDING TOKEN TO BACKEND $token")
+    // Sends a request to update the user's password using a JWT token for authentication.
+    suspend fun updatePassword(
+        request: UpdatePasswordDTO, token: String
+    ): Response<PasswordResponseDTO> {
+        Log.d("DataStoreManager", "update password SENDING TOKEN TO BACKEND $token")
         return api.updatePassword(request, token)
     }
 }
