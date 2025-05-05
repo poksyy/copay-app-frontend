@@ -1,36 +1,34 @@
 package com.copay.app.ui.components.dialog
 
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 
 @Composable
-fun ConfirmationDialog(
+fun LeaveGroupDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
-    title: String,
-    text: String,
-    confirmButtonText: String = "Confirm",
-    dismissButtonText: String = "Cancel",
-    confirmButtonColor: Color = Color.Red
+    title: String = "Leave Group",
+    message: String = "Are you sure you want to leave this group?",
+    confirmText: String = "Leave",
+    dismissText: String = "Cancel"
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
-        text = { Text(text) },
+        text = { Text(message) },
         confirmButton = {
-            Button(
-                onClick = onConfirm
-            ) {
-                Text(confirmButtonText)
+            TextButton(onClick = {
+                onConfirm()
+                onDismiss()
+            }) {
+                Text(confirmText)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(dismissButtonText)
+                Text(dismissText)
             }
         }
     )
