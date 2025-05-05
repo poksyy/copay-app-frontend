@@ -108,7 +108,7 @@ class GroupRepository(private val groupService: GroupService) {
         val formattedToken = "Bearer $token"
 
         return handleApiResponse(context) {
-            groupService.updateGroup(groupId, fieldChanges, formattedToken)
+            groupService.updateGroup(groupId, fieldChanges)
         }
     }
 
@@ -128,7 +128,7 @@ class GroupRepository(private val groupService: GroupService) {
         val formattedToken = "Bearer $token"
 
         return handleApiResponse(context) {
-            groupService.updateGroupRegisteredMembers(groupId, request, formattedToken)
+            groupService.updateGroupRegisteredMembers(groupId, request)
         }
     }
 
@@ -148,7 +148,7 @@ class GroupRepository(private val groupService: GroupService) {
         val formattedToken = "Bearer $token"
 
         return handleApiResponse(context) {
-            groupService.updateGroupExternalMembers(groupId, request, formattedToken)
+            groupService.updateGroupExternalMembers(groupId, request)
         }
     }
 
