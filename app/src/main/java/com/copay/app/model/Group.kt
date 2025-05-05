@@ -7,6 +7,7 @@ import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
  * Represents a Group entity used for group management and data transfer.
  * This model contains all group information including members and metadata.
  */
+
 data class Group(
 
     val groupId: Long? = null,
@@ -23,11 +24,4 @@ data class Group(
     val imageUrl: String? = null,
     val imageProvider: String? = null,
     val expenses: List<Expense>? = null
-) {
-    data class Member(
-        val id: Long,
-        val name: String,
-        val isRegistered: Boolean,
-        val phoneNumber: String? = null
-    )
-}
+)

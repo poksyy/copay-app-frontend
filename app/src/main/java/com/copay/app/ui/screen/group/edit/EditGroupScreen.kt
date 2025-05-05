@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.BackButtonTop
+import com.copay.app.ui.components.button.BackButtonTop
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.viewmodel.GroupViewModel
@@ -117,7 +117,7 @@ fun GroupRow(
             style = CopayTypography.body
         )
     }
-    Divider()
+    HorizontalDivider()
 }
 
 @Preview(showBackground = true)

@@ -2,9 +2,9 @@ package com.copay.app.repository
 
 import android.content.Context
 import android.util.Log
-import com.copay.app.dto.request.UserLoginRequestDTO
-import com.copay.app.dto.request.UserRegisterStepOneDTO
-import com.copay.app.dto.request.UserRegisterStepTwoDTO
+import com.copay.app.dto.auth.request.UserLoginRequestDTO
+import com.copay.app.dto.auth.request.UserRegisterStepOneDTO
+import com.copay.app.dto.auth.request.UserRegisterStepTwoDTO
 import com.copay.app.service.AuthService
 import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.AuthState
@@ -13,19 +13,17 @@ import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
-/*
-UserRepository is responsible for managing user authentication operations by interacting with the AuthService.
-It makes API calls for login, registration steps, and handles responses by processing success and error cases.
-It also extracts the authentication token from the response and securely stores it using the DataStoreManager.
-This class encapsulates the logic of managing user authentication state and storing the token, which is crucial for maintaining user sessions.
-*/
+/**
+ * UserRepository is responsible for managing user authentication operations by interacting with the AuthService.
+ * It makes API calls for login, registration steps, and handles responses by processing success and error cases.
+ * It also extracts the authentication token from the response and securely stores it using the DataStoreManager.
+ * This class encapsulates the logic of managing user authentication state and storing the token, which is crucial for maintaining user sessions.
+ */
 class UserRepository(private val authService: AuthService) {
 
     // Login method.
     suspend fun login(
-        context: Context,
-        phoneNumber: String,
-        password: String
+        context: Context, phoneNumber: String, password: String
     ): AuthState {
 
         val request = UserLoginRequestDTO(phoneNumber, password)
@@ -34,11 +32,7 @@ class UserRepository(private val authService: AuthService) {
 
     // Registration step one method
     suspend fun registerStepOne(
-        context: Context,
-        username: String,
-        email: String,
-        password: String,
-        confirmPassword: String
+        context: Context, username: String, email: String, password: String, confirmPassword: String
     ): AuthState {
 
         val request = UserRegisterStepOneDTO(username, email, password, confirmPassword)
@@ -47,9 +41,7 @@ class UserRepository(private val authService: AuthService) {
 
     // Registration step two method.
     suspend fun registerStepTwo(
-        context: Context,
-        phonePrefix: String,
-        phoneNumber: String
+        context: Context, phonePrefix: String, phoneNumber: String
     ): AuthState {
 
         // Get the token generated in registerStepOne thanks to DataStoreManager.
@@ -72,13 +64,12 @@ class UserRepository(private val authService: AuthService) {
         }
     }
 
-    
+
     // Logout method.
     suspend fun logout(
-        context: Context,
-        token: String
+        context: Context, token: String
     ): AuthState {
-      
+
         return handleApiResponse(context, handleToken = false) {
             authService.logout("Bearer $token")
         }.also { state ->
@@ -88,45 +79,44 @@ class UserRepository(private val authService: AuthService) {
         }
     }
 
-  // Handles API response with optional token extraction and saving.
-  private suspend fun <T> handleApiResponse(
-        context: Context,
-        handleToken: Boolean = true,
-        apiCall: suspend () -> Response<T>
+    // Handles API response with optional token extraction and saving.
+    private suspend fun <T> handleApiResponse(
+        context: Context, handleToken: Boolean = true, apiCall: suspend () -> Response<T>
     ): AuthState {
 
-      return try {
-          val response = apiCall()
+        return try {
+            val response = apiCall()
 
-          // If response is successful, process body.
-          if (response.isSuccessful) {
-              val body = response.body()
+            // If response is successful, process body.
+            if (response.isSuccessful) {
+                val body = response.body()
 
-              // Extract and save token if enabled.
-              if (handleToken) {
-                  body?.let {
-                      extractToken(it)?.let { token ->
-                          DataStoreManager.saveToken(context, token)
-                          Log.d("UserRepository", "Token saved: $token")
-                      }
-                  }
-              }
+                // Extract and save token if enabled.
+                if (handleToken) {
+                    body?.let {
+                        extractToken(it)?.let { token ->
+                            DataStoreManager.saveToken(context, token)
+                            Log.d("UserRepository", "Token saved: $token")
+                        }
+                    }
+                }
 
-              // Return success state with body.
-              AuthState.Success(body)
-          } else {
-              // Parse error message from error body.
-              val errorBody = response.errorBody()?.string()
-              val message = extractErrorMessage(errorBody)
-              Log.d("UserRepository", "ERROR STRUCTURE: $errorBody")
-              AuthState.Error(message ?: "Unknown error")
-          }
-      } catch (e: Exception) {
-          // Handle exceptions such as network errors.
-          Log.e("UserRepository", "Connection error: ${e.message}")
-          AuthState.Error("Connection error: ${e.message}")
-      }
-  }
+                // Return success state with body.
+                AuthState.Success(body)
+            } else {
+                // Parse error message from error body.
+                val errorBody = response.errorBody()?.string()
+                val message = extractErrorMessage(errorBody)
+                Log.d("UserRepository", "ERROR STRUCTURE: $errorBody")
+                AuthState.Error(message ?: "Unknown error")
+            }
+        } catch (e: Exception) {
+            // Handle exceptions such as network errors.
+            Log.e("UserRepository", "Connection error: ${e.message}")
+            AuthState.Error("Connection error: ${e.message}")
+        }
+    }
+
     // Method to extract the token from the response.
     private fun <T> extractToken(responseBody: T?): String? {
         return try {

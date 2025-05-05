@@ -10,9 +10,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.copay.app.ui.components.PhoneNumberField
-import com.copay.app.ui.components.PrimaryButton
+import com.copay.app.ui.components.button.PrimaryButton
 import com.copay.app.ui.theme.CopayColors
-import com.copay.app.utils.getE164PhoneNumber
 import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthViewModel

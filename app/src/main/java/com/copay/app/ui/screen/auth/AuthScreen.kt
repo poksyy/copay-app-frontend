@@ -13,9 +13,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import com.copay.app.R
 import androidx.compose.ui.unit.dp
-import com.copay.app.ui.components.PrimaryButton
-import com.copay.app.ui.components.SecondaryButton
-import com.copay.app.ui.components.SignInWithGoogleButton
+import com.copay.app.ui.components.button.PrimaryButton
+import com.copay.app.ui.components.button.SecondaryButton
+import com.copay.app.ui.components.button.SignInWithGoogleButton
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 

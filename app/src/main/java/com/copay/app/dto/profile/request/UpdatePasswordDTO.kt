@@ -1,4 +1,4 @@
-package com.copay.app.dto.request.profile
+package com.copay.app.dto.profile.request
 
 data class UpdatePasswordDTO(
     val currentPassword: String,

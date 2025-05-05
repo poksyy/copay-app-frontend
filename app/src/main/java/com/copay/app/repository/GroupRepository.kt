@@ -17,17 +17,24 @@ import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
+/**
+ * GroupRepository is responsible for managing group operations by interacting with the GroupService.
+ * It handles group creation, deletion, updates, and member management. This class encapsulates all
+ * logic related to groups and returns UI-ready GroupState responses.
+ */
+
 class GroupRepository(private val groupService: GroupService) {
 
+    // Fetches all groups associated with a specific user.
     suspend fun getGroupsByUser(
-        context: Context,
-        userId: Long
+        context: Context, userId: Long
     ): GroupState {
         val request = GetGroupRequestDTO(userId = userId)
 
         return handleApiResponse(context) { groupService.getGroupsByUser(request) }
     }
 
+    // Creates a new group with specified details and invited members.
     suspend fun createGroup(
         context: Context,
         createdBy: Long,
@@ -57,6 +64,7 @@ class GroupRepository(private val groupService: GroupService) {
         }
     }
 
+    // Deletes a group by its ID using an authenticated request.
     suspend fun deleteGroup(
         context: Context, groupId: Long
     ): GroupState {
@@ -72,6 +80,7 @@ class GroupRepository(private val groupService: GroupService) {
         }
     }
 
+    // Leaves a group by its ID using an authenticated request.
     suspend fun leaveGroup(
         context: Context, groupId: Long
     ): GroupState {
@@ -87,10 +96,9 @@ class GroupRepository(private val groupService: GroupService) {
         }
     }
 
+    // Updates specific fields of a group.
     suspend fun updateGroup(
-        context: Context,
-        groupId: Long,
-        fieldChanges: Map<String, @JvmSuppressWildcards Any>
+        context: Context, groupId: Long, fieldChanges: Map<String, @JvmSuppressWildcards Any>
     ): GroupState {
 
         return handleApiResponse(context) {
@@ -98,6 +106,7 @@ class GroupRepository(private val groupService: GroupService) {
         }
     }
 
+    // Updates the list of registered members in a group.
     suspend fun updateGroupRegisteredMembers(
         context: Context, groupId: Long, invitedRegisteredMembers: List<String>
     ): GroupState {
@@ -110,6 +119,7 @@ class GroupRepository(private val groupService: GroupService) {
         }
     }
 
+    // Updates the list of external members in a group.
     suspend fun updateGroupExternalMembers(
         context: Context, groupId: Long, invitedExternalMembers: List<String>
     ): GroupState {
@@ -122,6 +132,7 @@ class GroupRepository(private val groupService: GroupService) {
         }
     }
 
+    // Handles the API response for all group-related operations.
     private suspend fun <T> handleApiResponse(
         context: Context, apiCall: suspend () -> Response<T>
     ): GroupState {
@@ -148,6 +159,7 @@ class GroupRepository(private val groupService: GroupService) {
         }
     }
 
+    // Extracts error message from JSON error response.
     private fun extractErrorMessage(errorJson: String?): String? {
         if (errorJson.isNullOrEmpty()) return null
 

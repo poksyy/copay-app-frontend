@@ -3,7 +3,8 @@ package com.copay.app.utils.state
 import com.copay.app.dto.group.response.CreateGroupResponseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.dto.group.response.GroupMessageResponseDTO
-import com.google.gson.annotations.Expose
+import com.copay.app.model.Group
+import com.copay.app.utils.GroupMapper
 
 /**
  * Different group states for UI handling
@@ -18,7 +19,11 @@ sealed class GroupState {
 
     // Group operations completed successfully
     sealed class Success : GroupState() {
-        data class GroupsFetched(val groupsData: GetGroupResponseDTO) : Success()
+        data class GroupsFetched(val groupsData: GetGroupResponseDTO) : Success() {
+            // Converts DTOs to domain models.
+            val groups: List<Group>
+                get() = groupsData.groups.map { GroupMapper.toGroup(it) }
+        }
         data class GroupCreated(val creationData: CreateGroupResponseDTO) : Success()
         data class GroupUpdated(val updateData: GroupMessageResponseDTO) : Success()
         data class GroupDeleted(val deletionData: GroupMessageResponseDTO) : Success()
