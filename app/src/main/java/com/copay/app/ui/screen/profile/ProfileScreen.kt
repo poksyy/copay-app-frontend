@@ -47,7 +47,10 @@ fun ProfileScreen(
     if (showLogoutDialog) {
         LogoutDialog(
             onDismiss = { showLogoutDialog = false },
-            onConfirm = { authViewModel.logout(context) }
+            onConfirm = {
+                authViewModel.logout(context)
+                navigationViewModel.clearHistory()
+            }
         )
     }
 }

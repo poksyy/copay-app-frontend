@@ -144,13 +144,14 @@ fun GroupBalancesScreen(
             // Back button
             BackButtonTop(
                 onBackClick = {
-                    navigationViewModel.navigateTo(SpaScreens.Home)
+                    navigationViewModel.navigateBack()
                     groupViewModel.resetGroupSession()
                 }, modifier = Modifier
                     .padding(16.dp)
                     .align(Alignment.TopStart)
             )
 
+            // TODO Add pencil icon to replace the edit text.
             // Edit button.
             if (group?.isOwner == true) {
                 TextButton(
@@ -252,11 +253,17 @@ fun GroupBalancesScreen(
                                 style = CopayTypography.subtitle
                             )
 
+                            // TODO move this small button into component.
                             Button(
-                                onClick = { showAddMemberDialog = true },
-                                shape = RoundedCornerShape(8.dp)
+                                onClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditMembers) },
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
                             ) {
-                                Text("Add Member")
+                                Text(
+                                    text = "Manage members",
+                                    maxLines = 1,
+                                    softWrap = false
+                                )
                             }
                         }
 
@@ -305,53 +312,10 @@ fun GroupBalancesScreen(
                 showLeaveDialog = false
             }, title = "Leave Group", text = "Are you sure you want to leave this group?")
         }
-
-        // Dialog for adding members
-        if (showAddMemberDialog) {
-            AlertDialog(onDismissRequest = { showAddMemberDialog = false },
-                title = { Text("Add Member") },
-                text = {
-                    Column {
-                        Text("Enter email or phone number:")
-                        Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedTextField(value = newMemberEmail,
-                            onValueChange = { newMemberEmail = it },
-                            placeholder = { Text("Email or phone") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                },
-                confirmButton = {
-                    Button(onClick = {
-                        coroutineScope.launch {
-                            if (newMemberEmail.contains("@")) {
-                                // Email - registered user
-                                groupViewModel.updateGroupRegisteredMembers(
-                                    context, group?.groupId ?: 0, listOf(newMemberEmail)
-                                )
-                            } else {
-                                // Phone - external member
-                                groupViewModel.updateGroupExternalMembers(
-                                    context, group?.groupId ?: 0, listOf(newMemberEmail)
-                                )
-                            }
-                        }
-                        newMemberEmail = ""
-                        showAddMemberDialog = false
-                    }) {
-                        Text("Add")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showAddMemberDialog = false }) {
-                        Text("Cancel")
-                    }
-                })
-        }
     }
 }
 
+// TODO move this into components or utils but somewhere else.
 @Composable
 private fun MemberItem(member: Any, expense: Double, currency: String?) {
     val memberName: String
@@ -425,7 +389,7 @@ private fun MemberItem(member: Any, expense: Double, currency: String?) {
     }
 }
 
-// TODO: Move this into components.
+// TODO: Move this into components or somewhere else.
 private fun calculateMemberExpense(member: Any, expenses: List<GetExpenseResponseDTO>): Double {
     return expenses.flatMap { expense ->
         when (member) {

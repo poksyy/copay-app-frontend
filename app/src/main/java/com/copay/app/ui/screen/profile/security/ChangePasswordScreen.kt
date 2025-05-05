@@ -25,7 +25,6 @@ import com.copay.app.viewmodel.UserViewModel
 @Composable
 fun ChangePasswordScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
-    userViewModel: UserViewModel = hiltViewModel(),
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -71,7 +70,7 @@ fun ChangePasswordScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.Profile) },
+            onBackClick = { navigationViewModel.navigateBack() },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)

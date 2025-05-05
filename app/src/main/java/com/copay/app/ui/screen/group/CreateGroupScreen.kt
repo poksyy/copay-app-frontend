@@ -115,7 +115,7 @@ fun CreateGroupScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.Home) },
+            onBackClick = { navigationViewModel.navigateBack() },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)

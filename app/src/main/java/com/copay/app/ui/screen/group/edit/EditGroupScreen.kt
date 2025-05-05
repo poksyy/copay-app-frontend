@@ -35,7 +35,7 @@ fun EditGroupScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.BalancesGroup) },
+            onBackClick = { navigationViewModel.navigateBack() },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)
