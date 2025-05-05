@@ -20,6 +20,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
+import com.copay.app.ui.components.dialog.DeleteGroupDialog
+import com.copay.app.ui.components.dialog.LeaveGroupDialog
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -38,13 +40,19 @@ fun HomeScreen(
     val user by userViewModel.user.collectAsState()
     Log.d("HomeScreen", "User in HomeScreen: $user")
     val username = user?.username ?: "Username"
-    Log.d("HomeScreen", "User: $user, Username: $username")
 
     val context = LocalContext.current
 
     // Group state.
     val groupState by groupViewModel.groupState.collectAsState()
     Log.d("HomeScreen", "$groupState")
+
+    // State variables to control the visibility of the leave & delete dialogs.
+    var showLeaveDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    // The group selected by the user.
+    var groupSelected by remember { mutableStateOf<Group?>(null) }
 
     // Trigger group loading when the screen is first composed
     LaunchedEffect(Unit) {
@@ -79,6 +87,14 @@ fun HomeScreen(
                         groupViewModel.selectGroup(group)
                         navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
                     },
+                    onDeleteClick = { group ->
+                        groupSelected = group
+                        showDeleteDialog = true
+                    },
+                    onLeaveClick = { group ->
+                        groupSelected = group
+                        showLeaveDialog = true
+                    },
                     username = username,
                     groups = groups
                 )
@@ -89,10 +105,46 @@ fun HomeScreen(
                     onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
                     onDetailClick = { navigationViewModel.navigateTo(SpaScreens.BalancesGroup) },
                     onEditClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
+                    onDeleteClick = { group ->
+                        groupSelected = group
+                        showDeleteDialog = true
+                    },
+                    onLeaveClick = { group ->
+                        groupSelected = group
+                        showLeaveDialog = true
+                    },
                     username = username,
                     groups = emptyList()
                 )
             }
+        }
+
+        if (showDeleteDialog) {
+            DeleteGroupDialog(
+                onDismiss = { showDeleteDialog = false },
+                onConfirm = {
+                    groupSelected?.groupId?.let { groupId ->
+                        groupViewModel.deleteGroup(context, groupId) {
+                            groupViewModel.getGroupsByUser(context)
+                        }
+                    }
+                    showDeleteDialog = false
+                }
+            )
+        }
+
+        if (showLeaveDialog) {
+            LeaveGroupDialog(
+                onDismiss = { showLeaveDialog = false },
+                onConfirm = {
+                    groupSelected?.groupId?.let { groupId ->
+                        groupViewModel.leaveGroup(context, groupId) {
+                            groupViewModel.getGroupsByUser(context)
+                        }
+                    }
+                    showLeaveDialog = false
+                }
+            )
         }
     }
 }
@@ -103,6 +155,8 @@ private fun HomeContent(
     onCreateClick: () -> Unit,
     onDetailClick: (Group) -> Unit,
     onEditClick: (Group) -> Unit,
+    onDeleteClick: (Group) -> Unit,
+    onLeaveClick: (Group) -> Unit,
     username: String,
     groups: List<Group> = emptyList()
 ) {
@@ -191,8 +245,8 @@ private fun HomeContent(
                 GroupItem(group = group,
                     onItemClick = { onDetailClick(group) },
                     onEditClick = { onEditClick(group) },
-                    onDeleteClick = {},
-                    onLeaveClick = {})
+                    onDeleteClick = { onDeleteClick(group) },
+                    onLeaveClick = { onLeaveClick(group) })
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
