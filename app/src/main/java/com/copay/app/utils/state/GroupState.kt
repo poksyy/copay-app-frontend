@@ -9,6 +9,7 @@ import com.copay.app.utils.GroupMapper
 /**
  * Different group states for UI handling
  */
+
 sealed class GroupState {
 
     // Initial state when no action is performed.
@@ -26,9 +27,6 @@ sealed class GroupState {
         }
         data class GroupCreated(val creationData: CreateGroupResponseDTO) : Success()
         data class GroupUpdated(val updateData: GroupMessageResponseDTO) : Success()
-        data class GroupDeleted(val deletionData: GroupMessageResponseDTO) : Success()
-        data class GroupMemberLeft(val leaveData: GroupMessageResponseDTO) : Success()
-        data class GroupMembersUpdated(val membersData: GroupMessageResponseDTO) : Success()
     }
 
     // An error occurred during group operations.
