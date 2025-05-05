@@ -13,6 +13,7 @@ data class LoginResponseDTO(
     // Logged user details.
     val userId: Long? = null,
     val phoneNumber: String? = null,
+    val phonePrefix: String? = null,
     val username: String? = null,
     val email: String? = null,
     val isLogin: String?= null,
