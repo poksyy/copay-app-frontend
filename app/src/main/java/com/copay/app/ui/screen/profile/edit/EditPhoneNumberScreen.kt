@@ -36,15 +36,13 @@ fun EditPhoneNumberScreen(
     val profileState by profileViewModel.profileState.collectAsState()
 
     // Extract country prefix and local number
-    val fullPhone = user?.phoneNumber ?: ""
-    val country = countriesList.find { fullPhone.startsWith(it.dialCode) } ?: countriesList.first()
-    val localNumber = fullPhone.removePrefix(country.dialCode)
+    val country = countriesList.find { user?.phonePrefix?.startsWith(it.dialCode) == true } ?: countriesList.first()
 
     // Local states for managing the phone number value and errors
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
     var phoneNumberError by remember { mutableStateOf<String?>(null) }
 
-    var phoneNumber by remember { mutableStateOf(localNumber) }
+    var phoneNumber = user?.phoneNumber ?: ""
     val selectedCountry by remember { mutableStateOf(country) }
 
     // Combines the country code with the number for E.164 format.
@@ -85,7 +83,7 @@ fun EditPhoneNumberScreen(
             onClick = {
                 validateInputs()
                 if (phoneNumberError == null ) {
-                    profileViewModel.updatePhoneNumber(context, user?.userId ?: 0, completePhoneNumber)
+                    profileViewModel.updatePhoneNumber(context, completePhoneNumber)
                 }
             }, modifier = Modifier
                 .align(Alignment.TopEnd)

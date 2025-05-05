@@ -54,7 +54,7 @@ fun EditProfileScreen(
             // TODO Edit profile image
             ProfileRow(label = "Username", value = username, onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditUsername) })
             ProfileRow(label = "Email", value = email, onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditEmail) })
-            ProfileRow(label = "Phone", value = phoneNumber, onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditPhoneNumber) })
+            ProfileRow(label = "Phone", value = phoneNumber, onClick = { /**navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditPhoneNumber)*/ })
         }
     }
 }
