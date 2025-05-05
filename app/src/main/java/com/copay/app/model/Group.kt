@@ -23,11 +23,4 @@ data class Group(
     val imageUrl: String? = null,
     val imageProvider: String? = null,
     val expenses: List<Expense>? = null
-) {
-    data class Member(
-        val id: Long,
-        val name: String,
-        val isRegistered: Boolean,
-        val phoneNumber: String? = null
-    )
-}
+)
