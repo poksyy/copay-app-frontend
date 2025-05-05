@@ -1,18 +1,16 @@
-package com.copay.app.dto.response
+package com.copay.app.dto.auth.response
 
 /**
- * Data class representing the response received from the login API.
+ * Data class representing the response received from the login API and register API.
  */
 
-data class RegisterStepTwoResponseDTO(
+data class RegisterStepOneResponseDTO(
     // JWT Token.
     val token: String? = null,
     // Token expiration in seconds.
     val expiresIn: Int? = null,
 
-    // Registered user details.
-    val userId: Long? = null,
-    val phoneNumber: String? =null,
+    // Registered (temporally) user details.
     val username: String? = null,
     val email: String? = null,
 

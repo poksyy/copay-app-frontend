@@ -9,14 +9,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.BottomNavigationBar
-import com.copay.app.ui.screen.group.CreateGroupScreen
+import com.copay.app.ui.screen.group.create.CreateGroupScreen
 import com.copay.app.ui.screen.group.edit.EditGroupScreen
 import com.copay.app.ui.screen.group.detail.GroupBalancesScreen
 import com.copay.app.ui.screen.group.edit.EditGroupDescriptionScreen
 import com.copay.app.ui.screen.group.edit.EditGroupMembersScreen
 import com.copay.app.ui.screen.group.edit.EditGroupNameScreen
 import com.copay.app.ui.screen.group.edit.EditGroupPriceScreen
-import com.copay.app.ui.screen.profile.EditProfileScreen
+import com.copay.app.ui.screen.profile.edit.EditProfileScreen
 import com.copay.app.ui.screen.profile.ProfileScreen
 import com.copay.app.ui.screen.profile.edit.EditEmailScreen
 import com.copay.app.ui.screen.profile.edit.EditPhoneNumberScreen
@@ -29,6 +29,7 @@ import com.copay.app.viewmodel.NavigationViewModel
 /**
  * Handles bottom navigation and screen switching.
  */
+
 @Composable
 fun HubScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
@@ -80,7 +81,7 @@ fun HubScreen(
                 SpaScreens.CreateGroup -> CreateGroupScreen()
                 SpaScreens.BalancesGroup -> GroupBalancesScreen()
 
-                // Group editing subscreens
+                // Group editing subpages.
                 is SpaScreens.GroupSubscreen -> when (currentScreen) {
                     SpaScreens.GroupSubscreen.EditGroup -> EditGroupScreen()
                     SpaScreens.GroupSubscreen.EditName -> EditGroupNameScreen()

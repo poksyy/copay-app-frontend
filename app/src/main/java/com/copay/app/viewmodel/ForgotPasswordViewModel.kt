@@ -3,11 +3,9 @@ package com.copay.app.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.copay.app.dto.request.ForgotPasswordDTO
+import com.copay.app.dto.password.ForgotPasswordDTO
 import com.copay.app.repository.PasswordRepository
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
 
 class ForgotPasswordViewModel(private val repository: PasswordRepository) : ViewModel() {
 
