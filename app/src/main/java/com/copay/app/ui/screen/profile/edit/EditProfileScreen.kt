@@ -1,4 +1,4 @@
-package com.copay.app.ui.screen.profile
+package com.copay.app.ui.screen.profile.edit
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

@@ -1,4 +1,4 @@
-package com.copay.app.ui.screen.group
+package com.copay.app.ui.screen.group.create
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.FlowRow
