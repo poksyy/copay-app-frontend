@@ -128,21 +128,24 @@ interface ApiService {
     @PATCH("${BASE_PATH}groups/{groupId}")
     suspend fun updateGroup(
         @Path("groupId") groupId: Long,
-        @Body fieldChanges: Map<String, @JvmSuppressWildcards Any>
+        @Body fieldChanges: Map<String, @JvmSuppressWildcards Any>,
+        @Header("Authorization") token: String
     ): Response<GroupMessageResponseDTO>
 
     // Update group registered members.
     @PATCH("${BASE_PATH}groups/{groupId}/copaymembers")
     suspend fun updateGroupRegisteredMembers(
         @Path("groupId") groupId: Long,
-        @Body request: UpdateGroupRegisteredMembersRequestDTO
+        @Body request: UpdateGroupRegisteredMembersRequestDTO,
+        @Header("Authorization") token: String
     ): Response<GroupMessageResponseDTO>
 
     // Update group external members.
     @PATCH("${BASE_PATH}groups/{groupId}/externalmembers")
     suspend fun updateGroupExternalMembers(
         @Path("groupId") groupId: Long,
-        @Body request: UpdateGroupExternalMembersRequestDTO
+        @Body request: UpdateGroupExternalMembersRequestDTO,
+        @Header("Authorization") token: String
     ): Response<GroupMessageResponseDTO>
 
     // Get expenses by group id.

@@ -27,7 +27,7 @@ import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.dialog.ConfirmationDialog
+import com.copay.app.ui.components.dialog.LeaveGroupDialog
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -75,24 +75,10 @@ fun GroupBalancesScreen(
     // Monitor group state changes
     LaunchedEffect(groupState) {
         when (groupState) {
-            is GroupState.Success.GroupDeleted -> {
-                snackbarMessage = "Group deleted successfully"
+            is GroupState.Success.GroupUpdated -> {
+                snackbarMessage = (groupState as GroupState.Success.GroupUpdated).updateData.message
                 showSnackbar = true
                 navigationViewModel.navigateTo(SpaScreens.Home)
-                groupViewModel.resetGroupState()
-            }
-
-            is GroupState.Success.GroupMemberLeft -> {
-                snackbarMessage = "You left the group successfully"
-                showSnackbar = true
-                navigationViewModel.navigateTo(SpaScreens.Home)
-                groupViewModel.resetGroupState()
-            }
-
-            is GroupState.Success.GroupMembersUpdated -> {
-                snackbarMessage = "Members updated successfully"
-                showSnackbar = true
-                groupViewModel.getGroupsByUser(context)
                 groupViewModel.resetGroupState()
             }
 
@@ -305,12 +291,14 @@ fun GroupBalancesScreen(
 
         // Dialog for confirming leaving the group
         if (showLeaveDialog) {
-            ConfirmationDialog(onDismiss = { showLeaveDialog = false }, onConfirm = {
+            LeaveGroupDialog(
+                onDismiss = { showLeaveDialog = false },
+                onConfirm = {
                 coroutineScope.launch {
                     groupViewModel.leaveGroup(context, group?.groupId ?: 0)
                 }
                 showLeaveDialog = false
-            }, title = "Leave Group", text = "Are you sure you want to leave this group?")
+            })
         }
     }
 }

@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
+import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.model.Group
 import com.copay.app.repository.GroupRepository
 import com.copay.app.service.GroupService
@@ -100,22 +102,30 @@ class GroupViewModel @Inject constructor(
     }
 
     // Method to delete a group
-    fun deleteGroup(context: Context, groupId: Long) {
+    fun deleteGroup(context: Context, groupId: Long, onSuccess: () -> Unit = {}) {
         viewModelScope.launch {
             _groupState.value = GroupState.Loading
 
             val backendResponse = groupRepository.deleteGroup(context, groupId)
+
+            if (backendResponse is GroupState.Success.GroupUpdated) {
+                onSuccess()
+            }
 
             _groupState.value = backendResponse
         }
     }
 
     // Method to leave a group
-    fun leaveGroup(context: Context, groupId: Long) {
+    fun leaveGroup(context: Context, groupId: Long, onSuccess: () -> Unit = {}) {
         viewModelScope.launch {
             _groupState.value = GroupState.Loading
 
             val backendResponse = groupRepository.leaveGroup(context, groupId)
+
+            if (backendResponse is GroupState.Success.GroupUpdated) {
+                onSuccess()
+            }
 
             _groupState.value = backendResponse
         }
@@ -137,7 +147,8 @@ class GroupViewModel @Inject constructor(
                     val updatedGroup = group.copy(
                         name = fieldChanges["name"] as? String ?: group.name,
                         description = fieldChanges["description"] as? String ?: group.description,
-                        estimatedPrice = fieldChanges["estimatedPrice"] as? Float ?: group.estimatedPrice
+                        estimatedPrice = fieldChanges["estimatedPrice"] as? Float
+                            ?: group.estimatedPrice
                     )
                     groupSession.setGroup(updatedGroup)
                 }
@@ -149,16 +160,47 @@ class GroupViewModel @Inject constructor(
     fun updateGroupRegisteredMembers(
         context: Context,
         groupId: Long,
-        invitedRegisteredMembers: List<String>
+        currentRegisteredMembers: List<RegisteredMemberDTO>,
+        newRegisteredMembers: List<String>
     ) {
         viewModelScope.launch {
             _groupState.value = GroupState.Loading
 
+            // TODO Maybe we could simplify this with an endpoint that only does a GET by group id.
+            // Filter members that contains a phone number.
+            val existingRegisteredMembers = currentRegisteredMembers.filter { member ->
+                newRegisteredMembers.contains(member.phoneNumber)
+            }
+
+            val newPhoneNumbers = newRegisteredMembers.filter { phoneNumber ->
+                currentRegisteredMembers.none { it.phoneNumber == phoneNumber }
+            }
+
+            val newMembers = newPhoneNumbers.map { phoneNumber ->
+                RegisteredMemberDTO(
+                    registeredMemberId = -1, // Temporal
+                    username = "Temporal (cj still working on this)", // Temporal
+                    phoneNumber = phoneNumber
+                )
+            }
+
+            val invitedRegisteredMembers = existingRegisteredMembers + newMembers
+
             val backendResponse = groupRepository.updateGroupRegisteredMembers(
-                context,
-                groupId,
-                invitedRegisteredMembers
+                context, groupId, newRegisteredMembers
             )
+
+            // TODO Maybe we could simplify this with an endpoint that only does a GET by group id.
+            // The list is updated if the operation is successful.
+            if (backendResponse is GroupState.Success.GroupUpdated) {
+                val currentGroup = groupSession.group.value
+                currentGroup?.let { group ->
+                    val updatedGroup = group.copy(
+                        registeredMembers = invitedRegisteredMembers
+                    )
+                    groupSession.setGroup(updatedGroup)
+                }
+            }
 
             _groupState.value = backendResponse
         }
@@ -168,18 +210,70 @@ class GroupViewModel @Inject constructor(
     fun updateGroupExternalMembers(
         context: Context,
         groupId: Long,
-        invitedExternalMembers: List<String>
+        currentExternalMembers: List<ExternalMemberDTO>,
+        newExternalMembers: List<String>
     ) {
         viewModelScope.launch {
             _groupState.value = GroupState.Loading
 
+            // Construct the DTO.
+            val invitedExternalMembers = newExternalMembers.map { name ->
+
+                // Check if external member exists.
+                val existingMember = currentExternalMembers.find { it.name == name }
+
+                if (existingMember != null) {
+                    // External member already exists. Maintain external member ID.
+                    ExternalMemberDTO(
+                        externalMembersId = existingMember.externalMembersId, name = name
+                    )
+                } else {
+                    // New external member.
+                    ExternalMemberDTO(
+                        name = name
+                    )
+                }
+            }
+
             val backendResponse = groupRepository.updateGroupExternalMembers(
-                context,
-                groupId,
-                invitedExternalMembers
+                context, groupId, invitedExternalMembers
             )
+
+            // TODO Maybe we could simplify this with an endpoint that only does a GET by group id.
+            // The list is updated if the operation is successful.
+            if (backendResponse is GroupState.Success.GroupUpdated) {
+                val currentGroup = groupSession.group.value
+                currentGroup?.let { group ->
+                    val updatedGroup = group.copy(
+                        externalMembers = invitedExternalMembers
+                    )
+                    groupSession.setGroup(updatedGroup)
+                }
+            }
 
             _groupState.value = backendResponse
         }
+    }
+
+    // Method to add registered members.
+    fun addRegisteredMember(
+        context: Context,
+        groupId: Long,
+        currentMembers: List<RegisteredMemberDTO>,
+        newPhoneNumber: String
+    ) {
+        val updatedPhoneNumbers = currentMembers.map { it.phoneNumber } + newPhoneNumber
+        updateGroupRegisteredMembers(context, groupId, currentMembers, updatedPhoneNumbers)
+    }
+
+    // Method to add external members.
+    fun addExternalMember(
+        context: Context,
+        groupId: Long,
+        currentMembers: List<ExternalMemberDTO>,
+        newName: String
+    ) {
+        val updatedNames = currentMembers.map { it.name } + newName
+        updateGroupExternalMembers(context, groupId, currentMembers, updatedNames)
     }
 }

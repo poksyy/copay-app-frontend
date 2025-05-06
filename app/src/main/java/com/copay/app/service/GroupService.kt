@@ -30,32 +30,32 @@ class GroupService(private val api: ApiService) {
 
     // Deletes a group by its ID using the user's authentication token.
     suspend fun deleteGroup(groupId: Long, token: String): Response<GroupMessageResponseDTO> {
-        return api.deleteGroup(groupId, "Bearer $token")
+        return api.deleteGroup(groupId, token)
     }
 
     // Removes the authenticated user from the specified group.
     suspend fun leaveGroup(groupId: Long, token: String): Response<GroupMessageResponseDTO> {
-        return api.leaveGroup(groupId, "Bearer $token")
+        return api.leaveGroup(groupId, token)
     }
 
     // Updates group details using a map of field changes.
     suspend fun updateGroup(
-        groupId: Long, fieldChanges: Map<String, Any>
+        groupId: Long, fieldChanges: Map<String, Any>, token: String
     ): Response<GroupMessageResponseDTO> {
-        return api.updateGroup(groupId, fieldChanges)
+        return api.updateGroup(groupId, fieldChanges, token)
     }
 
     // Updates the list of registered members in a group.
     suspend fun updateGroupRegisteredMembers(
-        groupId: Long, request: UpdateGroupRegisteredMembersRequestDTO
+        groupId: Long, request: UpdateGroupRegisteredMembersRequestDTO, token: String
     ): Response<GroupMessageResponseDTO> {
-        return api.updateGroupRegisteredMembers(groupId, request)
+        return api.updateGroupRegisteredMembers(groupId, request, token)
     }
 
     // Updates the list of external members in a group.
     suspend fun updateGroupExternalMembers(
-        groupId: Long, request: UpdateGroupExternalMembersRequestDTO
+        groupId: Long, request: UpdateGroupExternalMembersRequestDTO, token: String
     ): Response<GroupMessageResponseDTO> {
-        return api.updateGroupExternalMembers(groupId, request)
+        return api.updateGroupExternalMembers(groupId, request, token)
     }
 }
