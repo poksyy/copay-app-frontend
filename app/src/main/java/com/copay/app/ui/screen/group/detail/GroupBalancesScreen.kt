@@ -371,7 +371,7 @@ private fun MemberItem(member: Any, expense: Double, currency: String?) {
             Text(
                 text = "${expense.format(2)} $currency",
                 fontWeight = FontWeight.Bold,
-                color = CopayColors.primary
+                color = if (expense < 0) MaterialTheme.colorScheme.error else CopayColors.primary
             )
         }
     }
@@ -379,19 +379,35 @@ private fun MemberItem(member: Any, expense: Double, currency: String?) {
 
 // TODO: Move this into components or somewhere else.
 private fun calculateMemberExpense(member: Any, expenses: List<GetExpenseResponseDTO>): Double {
-    return expenses.flatMap { expense ->
+    return expenses.sumOf { expense ->
         when (member) {
             is RegisteredMemberDTO -> {
-                expense.registeredMembers.filter { it.debtorUserId == member.registeredMemberId }
-                    .map { it.amount }
+                val paid = if (expense.creditorUserId == member.registeredMemberId) {
+                    -expense.totalAmount
+                } else 0.0
+
+                val owes = expense.registeredMembers
+                    .filter { it.debtorUserId == member.registeredMemberId }
+                    .sumOf { it.amount }
+
+                paid + owes
             }
+
             is ExternalMemberDTO -> {
-                expense.externalMembers.filter { it.debtorExternalMemberId == member.externalMembersId }
-                    .map { it.amount }
+                val paid = if (expense.creditorExternalMemberId == member.externalMembersId) {
+                    -expense.totalAmount
+                } else 0.0
+
+                val owes = expense.externalMembers
+                    .filter { it.debtorExternalMemberId == member.externalMembersId }
+                    .sumOf { it.amount }
+
+                paid + owes
             }
-            else -> emptyList()
+
+            else -> 0.0
         }
-    }.sum()
+    }
 }
 
 // TODO: We could move this into utils.
