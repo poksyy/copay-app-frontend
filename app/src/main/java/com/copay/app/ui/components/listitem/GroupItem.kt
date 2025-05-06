@@ -59,7 +59,7 @@ fun GroupItem(
                 verticalAlignment = Alignment.CenterVertically) {
                 // Group image.
                 AsyncImage(
-                    model = group.imageUrl ?: R.drawable.copay_banner_white,
+                    model = group.imageUrl ?: R.drawable.chinese_buffet,
                     contentDescription = null,
                     modifier = Modifier
                         .size(56.dp)

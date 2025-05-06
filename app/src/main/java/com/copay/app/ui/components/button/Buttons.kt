@@ -151,6 +151,7 @@ fun BackButtonTop(navController: NavController, modifier: Modifier = Modifier) {
     }
 }
 
+
 // Back Button for the SPA Screens.
 @Composable
 fun BackButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -160,8 +161,23 @@ fun BackButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier) {
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_back),
-            contentDescription = "Back",
-            tint = CopayColors.primary
+            contentDescription = "Back"
         )
     }
 }
+
+// Back Button for background images.
+@Composable
+fun BackButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier, iconColor: Color) {
+    IconButton(
+        onClick = { onBackClick() },
+        modifier = modifier
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_back),
+            contentDescription = "Back",
+            tint = iconColor
+        )
+    }
+}
+

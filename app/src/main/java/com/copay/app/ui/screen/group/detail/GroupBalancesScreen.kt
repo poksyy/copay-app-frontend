@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -99,6 +101,17 @@ fun GroupBalancesScreen(
         }
     }
 
+    // Detects if banner image color is dark or not
+    fun isBackgroundDark(imageUrl: String?): Boolean {
+        return imageUrl == null || imageUrl.contains("dark", ignoreCase = true)
+    }
+
+    val iconColor = if (isBackgroundDark(group?.imageUrl)) {
+        Color.White
+    } else {
+        Color.Black
+    }
+
     // Show the screen content
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -108,7 +121,7 @@ fun GroupBalancesScreen(
                 .height(150.dp)
         ) {
             AsyncImage(
-                model = group?.imageUrl ?: R.drawable.copay_banner_white,
+                model = group?.imageUrl ?: R.drawable.chinese_buffet,
                 contentDescription = "Group background",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -134,10 +147,10 @@ fun GroupBalancesScreen(
                     groupViewModel.resetGroupSession()
                 }, modifier = Modifier
                     .padding(16.dp)
-                    .align(Alignment.TopStart)
+                    .align(Alignment.TopStart),
+                iconColor = iconColor
             )
 
-            // TODO Add pencil icon to replace the edit text.
             // Edit button.
             if (group?.isOwner == true) {
                 TextButton(
@@ -146,9 +159,11 @@ fun GroupBalancesScreen(
                         .align(Alignment.TopEnd)
                         .padding(16.dp)
                 ) {
-                    Text(
-                        "Edit",
-                        style = MaterialTheme.typography.bodyLarge,
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = "Edit",
+                        tint = iconColor,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             } else {
@@ -181,10 +196,11 @@ fun GroupBalancesScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(start = 24.dp, end = 24.dp, top = 150.dp)
+                        .padding(start = 24.dp, end = 24.dp, top = 170.dp)
                 ) {
                     // Group Header
                     item {
+
                         Text(
                             text = group?.name ?: "Group",
                             color = CopayColors.primary,
@@ -201,24 +217,9 @@ fun GroupBalancesScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Price information
-//                            Surface(
-//                                color = CopayColors.primary.copy(alpha = 0.1f),
-//                                shape = RoundedCornerShape(8.dp)
-//                            ) {
-//                                Text(
-//                                    text = "Total spent ${group?.estimatedPrice} ${group?.currency}",
-//                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-//                                    fontWeight = FontWeight.Bold,
-//                                    color = CopayColors.primary
-//                                )
-//                            }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
                         Text(
-                            text = "Members ${(group?.registeredMembers?.size ?: 0) + (group?.externalMembers?.size ?: 0)} members",
-                            fontSize = 14.sp,
+                            text = "Members: ${(group?.registeredMembers?.size ?: 0) + (group?.externalMembers?.size ?: 0)}",
+                            style = CopayTypography.body,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
@@ -234,9 +235,13 @@ fun GroupBalancesScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            val totalGroupExpense = expenses.sumOf { it.totalAmount }
+
                             Text(
-                                text = "Members ${(group?.registeredMembers?.size ?: 0) + (group?.externalMembers?.size ?: 0)} members",
-                                style = CopayTypography.subtitle
+                                text = "Total: ${totalGroupExpense.format(2)} ${group?.currency ?: ""}",
+                                style = CopayTypography.subtitle,
+                                fontWeight = FontWeight.Bold,
+                                color = CopayColors.primary
                             )
 
                             // TODO move this small button into component.
