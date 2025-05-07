@@ -19,13 +19,13 @@ import retrofit2.Response
 class GroupService(private val api: ApiService) {
 
     // Fetches all groups associated with a specific user ID.
-    suspend fun getGroupsByUser(request: GetGroupRequestDTO): Response<GetGroupResponseDTO> {
-        return api.getGroupsByUser(request.userId)
+    suspend fun getGroupsByUser(request: GetGroupRequestDTO, token: String): Response<GetGroupResponseDTO> {
+        return api.getGroupsByUser(request.userId, token)
     }
 
     // Sends a request to create a new group with the provided details.
-    suspend fun createGroup(request: CreateGroupRequestDTO): Response<CreateGroupResponseDTO> {
-        return api.createGroup(request)
+    suspend fun createGroup(request: CreateGroupRequestDTO, token: String): Response<CreateGroupResponseDTO> {
+        return api.createGroup(request, token)
     }
 
     // Deletes a group by its ID using the user's authentication token.
