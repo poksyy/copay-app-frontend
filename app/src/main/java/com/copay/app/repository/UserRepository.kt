@@ -7,11 +7,9 @@ import com.copay.app.dto.auth.request.UserRegisterStepOneDTO
 import com.copay.app.dto.auth.request.UserRegisterStepTwoDTO
 import com.copay.app.service.AuthService
 import com.copay.app.utils.DataStoreManager
-import com.copay.app.utils.TokenUtils
 import com.copay.app.utils.state.AuthState
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
 /**
@@ -45,7 +43,7 @@ class UserRepository(private val authService: AuthService) {
         context: Context, phonePrefix: String, phoneNumber: String
     ): AuthState {
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         // Create the request with both phonePrefix and phoneNumber
         val request = UserRegisterStepTwoDTO(phonePrefix, phoneNumber)
@@ -86,7 +84,7 @@ class UserRepository(private val authService: AuthService) {
                 if (handleToken) {
                     body?.let {
 
-                        TokenUtils.extractToken(it)?.let { token ->
+                        DataStoreManager.extractToken(it)?.let { token ->
                             DataStoreManager.saveToken(context, token)
                             Log.d("UserRepository", "Token saved: $token")
                         }

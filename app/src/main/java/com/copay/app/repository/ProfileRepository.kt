@@ -8,7 +8,6 @@ import com.copay.app.dto.profile.request.UpdatePhoneNumberDTO
 import com.copay.app.dto.profile.request.UpdateUsernameDTO
 import com.copay.app.service.ProfileService
 import com.copay.app.utils.DataStoreManager
-import com.copay.app.utils.TokenUtils
 import com.copay.app.utils.session.UserSession
 import com.copay.app.utils.state.ProfileState
 import com.google.gson.Gson
@@ -36,7 +35,7 @@ class ProfileRepository(
         val user = userSession.user.first()
         val userId = user?.userId ?: return ProfileState.Error("User not logged in")
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         val request = UpdateUsernameDTO(username = newUsername)
         val result = handleApiResponse(context) {
@@ -59,7 +58,7 @@ class ProfileRepository(
         val user = userSession.user.first()
         val userId = user?.userId ?: return ProfileState.Error("User not logged in")
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         val request = UpdatePhoneNumberDTO(phoneNumber = newPhoneNumber)
         val result = handleApiResponse(context) {
@@ -82,7 +81,7 @@ class ProfileRepository(
         val user = userSession.user.first()
         val userId = user?.userId ?: return ProfileState.Error("User not logged in")
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         val request = UpdateEmailDTO(email = newEmail)
         val result = handleApiResponse(context) {
@@ -107,7 +106,7 @@ class ProfileRepository(
             confirmNewPassword = confirmNewPassword
         )
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         val result = handleApiResponse(context) {
             profileService.updatePassword(request, token)

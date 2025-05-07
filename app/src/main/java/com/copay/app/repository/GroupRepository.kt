@@ -12,11 +12,9 @@ import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.dto.group.response.GroupMessageResponseDTO
 import com.copay.app.service.GroupService
 import com.copay.app.utils.DataStoreManager
-import com.copay.app.utils.TokenUtils
 import com.copay.app.utils.state.GroupState
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
 /**
@@ -33,7 +31,7 @@ class GroupRepository(private val groupService: GroupService) {
     ): GroupState {
         val request = GetGroupRequestDTO(userId = userId)
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) { groupService.getGroupsByUser(request, token) }
     }
@@ -65,7 +63,7 @@ class GroupRepository(private val groupService: GroupService) {
 
         return handleApiResponse(context) {
 
-            val token = TokenUtils.getFormattedToken(context)
+            val token = DataStoreManager.getFormattedToken(context)
 
             groupService.createGroup(request, token)
         }
@@ -76,7 +74,7 @@ class GroupRepository(private val groupService: GroupService) {
         context: Context, groupId: Long
     ): GroupState {
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) {
             groupService.deleteGroup(groupId, token)
@@ -88,7 +86,7 @@ class GroupRepository(private val groupService: GroupService) {
         context: Context, groupId: Long
     ): GroupState {
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) {
             groupService.leaveGroup(groupId, token)
@@ -100,7 +98,7 @@ class GroupRepository(private val groupService: GroupService) {
         context: Context, groupId: Long, fieldChanges: Map<String, @JvmSuppressWildcards Any>
     ): GroupState {
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) {
             groupService.updateGroup(groupId, fieldChanges, token)
@@ -116,7 +114,7 @@ class GroupRepository(private val groupService: GroupService) {
             invitedRegisteredMembers = invitedRegisteredMembers
         )
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) {
             groupService.updateGroupRegisteredMembers(groupId, request, token)
@@ -134,7 +132,7 @@ class GroupRepository(private val groupService: GroupService) {
             invitedExternalMembers = invitedExternalMembers
         )
 
-        val token = TokenUtils.getFormattedToken(context)
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) {
             groupService.updateGroupExternalMembers(groupId, request, token)
