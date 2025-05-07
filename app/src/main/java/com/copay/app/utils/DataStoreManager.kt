@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /**
@@ -40,4 +41,45 @@ object DataStoreManager {
             preferences.remove(TOKEN_KEY)
         }
     }
+
+    suspend fun getFormattedToken(context: Context): String {
+
+        // Get the token generated thanks to DataStoreManager.
+        val token = DataStoreManager.getToken(context).first()
+
+        // Send the token with "Bearer " since the backend needs that format.
+        return "Bearer $token"
+    }
+
+    // Method to extract the token from the response.
+    fun <T> extractToken(responseBody: T?): String? {
+        return try {
+            // Verify if body response is not null.
+            responseBody?.let {
+                val field = it.javaClass.getDeclaredField("token")
+                field.isAccessible = true
+                field.get(it) as? String
+            }
+            // Returns null if body is null.
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun testDataStore(context: Context) {
+        val testToken = "sample_jwt_token"
+
+        saveToken(context, testToken)
+        Log.d("DataStoreTest", "Token saved: $testToken")
+
+        val retrievedToken = getToken(context).first()
+        Log.d("DataStoreTest", "Token retrieved: $retrievedToken")
+
+        clearToken(context)
+        Log.d("DataStoreTest", "Token cleared")
+
+        val emptyToken = getToken(context).first()
+        Log.d("DataStoreTest", "Token after clearing: $emptyToken")
+    }
+
 }
