@@ -15,7 +15,6 @@ import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.GroupState
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
 /**
@@ -32,7 +31,9 @@ class GroupRepository(private val groupService: GroupService) {
     ): GroupState {
         val request = GetGroupRequestDTO(userId = userId)
 
-        return handleApiResponse(context) { groupService.getGroupsByUser(request) }
+        val token = DataStoreManager.getFormattedToken(context)
+
+        return handleApiResponse(context) { groupService.getGroupsByUser(request, token) }
     }
 
     // Creates a new group with specified details and invited members.
@@ -61,7 +62,10 @@ class GroupRepository(private val groupService: GroupService) {
         )
 
         return handleApiResponse(context) {
-            groupService.createGroup(request)
+
+            val token = DataStoreManager.getFormattedToken(context)
+
+            groupService.createGroup(request, token)
         }
     }
 
@@ -70,14 +74,10 @@ class GroupRepository(private val groupService: GroupService) {
         context: Context, groupId: Long
     ): GroupState {
 
-        // Get the token generated thanks to DataStoreManager.
-        val token = DataStoreManager.getToken(context).first()
-
-        // Send the token with "Bearer " since the backend needs that format.
-        val formattedToken = "Bearer $token"
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) {
-            groupService.deleteGroup(groupId, formattedToken)
+            groupService.deleteGroup(groupId, token)
         }
     }
 
@@ -86,14 +86,10 @@ class GroupRepository(private val groupService: GroupService) {
         context: Context, groupId: Long
     ): GroupState {
 
-        // Get the token generated thanks to DataStoreManager.
-        val token = DataStoreManager.getToken(context).first()
-
-        // Send the token with "Bearer " since the backend needs that format.
-        val formattedToken = "Bearer $token"
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) {
-            groupService.leaveGroup(groupId, formattedToken)
+            groupService.leaveGroup(groupId, token)
         }
     }
 
@@ -102,14 +98,10 @@ class GroupRepository(private val groupService: GroupService) {
         context: Context, groupId: Long, fieldChanges: Map<String, @JvmSuppressWildcards Any>
     ): GroupState {
 
-        // Get the token generated thanks to DataStoreManager.
-        val token = DataStoreManager.getToken(context).first()
-
-        // Send the token with "Bearer " since the backend needs that format.
-        val formattedToken = "Bearer $token"
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) {
-            groupService.updateGroup(groupId, fieldChanges, formattedToken)
+            groupService.updateGroup(groupId, fieldChanges, token)
         }
     }
 
@@ -122,14 +114,10 @@ class GroupRepository(private val groupService: GroupService) {
             invitedRegisteredMembers = invitedRegisteredMembers
         )
 
-        // Get the token generated thanks to DataStoreManager.
-        val token = DataStoreManager.getToken(context).first()
-
-        // Send the token with "Bearer " since the backend needs that format.
-        val formattedToken = "Bearer $token"
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) {
-            groupService.updateGroupRegisteredMembers(groupId, request, formattedToken)
+            groupService.updateGroupRegisteredMembers(groupId, request, token)
         }
     }
 
@@ -144,14 +132,10 @@ class GroupRepository(private val groupService: GroupService) {
             invitedExternalMembers = invitedExternalMembers
         )
 
-        // Get the token generated thanks to DataStoreManager.
-        val token = DataStoreManager.getToken(context).first()
-
-        // Send the token with "Bearer " since the backend needs that format.
-        val formattedToken = "Bearer $token"
+        val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse(context) {
-            groupService.updateGroupExternalMembers(groupId, request, formattedToken)
+            groupService.updateGroupExternalMembers(groupId, request, token)
         }
     }
 

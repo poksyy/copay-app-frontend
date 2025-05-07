@@ -5,6 +5,7 @@ import android.util.Log
 import com.copay.app.dto.expense.request.GetExpenseRequestDTO
 import com.copay.app.dto.expense.response.GetExpenseResponseDTO
 import com.copay.app.service.ExpenseService
+import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.ExpenseState
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -26,7 +27,9 @@ class ExpenseRepository(private val expenseService: ExpenseService) {
 
         val request = GetExpenseRequestDTO(groupId = groupId)
 
-        return handleApiResponse(context) { expenseService.getExpenses(request) }
+        val token = DataStoreManager.getFormattedToken(context)
+
+        return handleApiResponse(context) { expenseService.getExpenses(request, token) }
     }
 
     // Handles the API response for expense operations.

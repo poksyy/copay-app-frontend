@@ -10,7 +10,6 @@ import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.AuthState
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
 /**
@@ -44,23 +43,13 @@ class UserRepository(private val authService: AuthService) {
         context: Context, phonePrefix: String, phoneNumber: String
     ): AuthState {
 
-        // Get the token generated in registerStepOne thanks to DataStoreManager.
-        val token = DataStoreManager.getToken(context).first()
-        Log.d("UserRepository", "Token sent to registerStepTwo: $token")
-
-        // Verifies if token is null.
-        if (token.isNullOrEmpty()) {
-            return AuthState.Error("Token not found.")
-        }
-
-        // Send the token with "Bearer " since the backend needs that format.
-        val formattedToken = "Bearer $token"
+        val token = DataStoreManager.getFormattedToken(context)
 
         // Create the request with both phonePrefix and phoneNumber
         val request = UserRegisterStepTwoDTO(phonePrefix, phoneNumber)
 
         return handleApiResponse(context) {
-            authService.registerStepTwo(request, formattedToken)
+            authService.registerStepTwo(request, token)
         }
     }
 
@@ -94,7 +83,8 @@ class UserRepository(private val authService: AuthService) {
                 // Extract and save token if enabled.
                 if (handleToken) {
                     body?.let {
-                        extractToken(it)?.let { token ->
+
+                        DataStoreManager.extractToken(it)?.let { token ->
                             DataStoreManager.saveToken(context, token)
                             Log.d("UserRepository", "Token saved: $token")
                         }
@@ -114,21 +104,6 @@ class UserRepository(private val authService: AuthService) {
             // Handle exceptions such as network errors.
             Log.e("UserRepository", "Connection error: ${e.message}")
             AuthState.Error("Connection error: ${e.message}")
-        }
-    }
-
-    // Method to extract the token from the response.
-    private fun <T> extractToken(responseBody: T?): String? {
-        return try {
-            // Verify if body response is not null.
-            responseBody?.let {
-                val field = it.javaClass.getDeclaredField("token")
-                field.isAccessible = true
-                field.get(it) as? String
-            }
-            // Returns null if body is null.
-        } catch (e: Exception) {
-            null
         }
     }
 

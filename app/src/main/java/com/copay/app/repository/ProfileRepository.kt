@@ -35,9 +35,11 @@ class ProfileRepository(
         val user = userSession.user.first()
         val userId = user?.userId ?: return ProfileState.Error("User not logged in")
 
+        val token = DataStoreManager.getFormattedToken(context)
+
         val request = UpdateUsernameDTO(username = newUsername)
         val result = handleApiResponse(context) {
-            profileService.updateUsername(userId, request)
+            profileService.updateUsername(userId, request, token)
         }
 
         // Handles the result of the API call and returns the appropriate ProfileState.
@@ -56,9 +58,11 @@ class ProfileRepository(
         val user = userSession.user.first()
         val userId = user?.userId ?: return ProfileState.Error("User not logged in")
 
+        val token = DataStoreManager.getFormattedToken(context)
+
         val request = UpdatePhoneNumberDTO(phoneNumber = newPhoneNumber)
         val result = handleApiResponse(context) {
-            profileService.updatePhoneNumber(userId, request)
+            profileService.updatePhoneNumber(userId, request, token)
         }
 
         // Handles the result of the API call and returns the appropriate ProfileState.
@@ -77,9 +81,11 @@ class ProfileRepository(
         val user = userSession.user.first()
         val userId = user?.userId ?: return ProfileState.Error("User not logged in")
 
+        val token = DataStoreManager.getFormattedToken(context)
+
         val request = UpdateEmailDTO(email = newEmail)
         val result = handleApiResponse(context) {
-            profileService.updateEmail(userId, request)
+            profileService.updateEmail(userId, request, token)
         }
 
         // Handles the result of the API call and returns the appropriate ProfileState.
@@ -100,14 +106,10 @@ class ProfileRepository(
             confirmNewPassword = confirmNewPassword
         )
 
-        // Get the token generated in registerStepOne thanks to DataStoreManager.
-        val token = DataStoreManager.getToken(context).first()
-
-        // Send the token with "Bearer " since the backend needs that format.
-        val formattedToken = "Bearer $token"
+        val token = DataStoreManager.getFormattedToken(context)
 
         val result = handleApiResponse(context) {
-            profileService.updatePassword(request, formattedToken)
+            profileService.updatePassword(request, token)
         }
 
         // Handles the result of the API call and returns the appropriate ProfileState.

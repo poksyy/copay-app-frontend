@@ -73,21 +73,25 @@ interface ApiService {
     @PUT("${BASE_PATH}users/edit-username/{id}")
     suspend fun updateUsername(
         @Path("id") userId: Long,
-        @Body request: UpdateUsernameDTO
-    ): Response<UsernameResponseDTO>
+        @Body request: UpdateUsernameDTO,
+        @Header("Authorization") token: String
+        ): Response<UsernameResponseDTO>
 
     // Update phone number.
     @PUT("${BASE_PATH}users/edit-phone/{id}")
     suspend fun updatePhoneNumber(
         @Path("id") userId: Long,
-        @Body request: UpdatePhoneNumberDTO
-    ): Response<PhoneNumberResponseDTO>
+        @Body request: UpdatePhoneNumberDTO,
+        @Header("Authorization") token: String
+        ): Response<PhoneNumberResponseDTO>
 
     // Update email.
     @PUT("${BASE_PATH}users/edit-email/{id}")
     suspend fun updateEmail(
         @Path("id") userId: Long,
-        @Body request: UpdateEmailDTO
+        @Body request: UpdateEmailDTO,
+        @Header("Authorization") token: String
+
     ): Response<EmailResponseDTO>
 
     // Update password.
@@ -101,13 +105,15 @@ interface ApiService {
     // Retrieve groups by user ID.
     @GET("${BASE_PATH}groups/{userId}")
     suspend fun getGroupsByUser(
-        @Path("userId") userId: Long
+        @Path("userId") userId: Long,
+        @Header("Authorization") token: String
     ): Response<GetGroupResponseDTO>
 
     // Create group.
     @POST("${BASE_PATH}groups")
     suspend fun createGroup(
-        @Body request: CreateGroupRequestDTO
+        @Body request: CreateGroupRequestDTO,
+        @Header("Authorization") token: String
     ): Response<CreateGroupResponseDTO>
 
     // Delete group.
@@ -150,5 +156,7 @@ interface ApiService {
 
     // Get expenses by group id.
     @GET("${BASE_PATH}expenses/{groupId}")
-    suspend fun getExpenses(@Path("groupId") groupId: Long): Response<List<GetExpenseResponseDTO>>
+    suspend fun getExpenses(@Path("groupId") groupId: Long,
+                            @Header("Authorization") token: String
+    ): Response<List<GetExpenseResponseDTO>>
 }
