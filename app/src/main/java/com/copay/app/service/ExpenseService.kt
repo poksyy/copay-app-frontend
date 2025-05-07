@@ -14,7 +14,7 @@ import retrofit2.Response
 class ExpenseService(private val api:ApiService)  {
 
     // Retrieves a list of expenses associated with the specified group ID.
-    suspend fun getExpenses(request: GetExpenseRequestDTO): Response<List<GetExpenseResponseDTO>> {
-        return api.getExpenses(request.groupId)
+    suspend fun getExpenses(request: GetExpenseRequestDTO, token: String): Response<List<GetExpenseResponseDTO>> {
+        return api.getExpenses(request.groupId, token)
     }
 }

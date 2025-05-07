@@ -32,7 +32,6 @@ class AuthService(private val api: ApiService) {
     suspend fun registerStepTwo(
         request: UserRegisterStepTwoDTO, token: String
     ): Response<RegisterStepTwoResponseDTO> {
-        Log.d("DataStoreManager", "SENDING TOKEN TO BACKEND $token")
         return api.registerStepTwo(request, token)
     }
 
