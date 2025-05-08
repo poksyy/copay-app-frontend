@@ -268,7 +268,7 @@ fun CreateGroupScreen(
                 onExpandedChange = { dropdownExpanded = it }
             ) {
                 TextField(
-                    value = selectedCreditor ?: "Select payer",
+                    value = selectedCreditor ?: "Select creditor",
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },

@@ -183,7 +183,7 @@ class GroupViewModel @Inject constructor(
                     registeredMemberId = -1, // Temporal
                     username = "Temporal (cj still working on this)", // Temporal
                     phoneNumber = phoneNumber,
-                    payer = false
+                    creditor = false
                 )
             }
 
@@ -230,14 +230,14 @@ class GroupViewModel @Inject constructor(
                     ExternalMemberDTO(
                         externalMembersId = existingMember.externalMembersId,
                         name = name,
-                        payer = false
+                        creditor = false
                     )
                 } else {
                     // New external member.
                     ExternalMemberDTO(
                         name = name,
                         externalMembersId = TODO(),
-                        payer = false
+                        creditor = false
                     )
                 }
             }

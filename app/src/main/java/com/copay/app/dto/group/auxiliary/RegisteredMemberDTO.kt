@@ -4,5 +4,5 @@ data class RegisteredMemberDTO(
     val registeredMemberId: Long,
     val username: String,
     val phoneNumber: String,
-    val payer: Boolean
+    val creditor: Boolean
 )
