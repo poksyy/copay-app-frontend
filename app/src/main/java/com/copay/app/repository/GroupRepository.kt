@@ -3,6 +3,8 @@ package com.copay.app.repository
 import android.content.Context
 import android.util.Log
 import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
+import com.copay.app.dto.group.auxiliary.InvitedExternalMemberDTO
+import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
 import com.copay.app.dto.group.request.CreateGroupRequestDTO
 import com.copay.app.dto.group.request.GetGroupRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
@@ -44,8 +46,8 @@ class GroupRepository(private val groupService: GroupService) {
         description: String,
         estimatedPrice: Float,
         currency: String,
-        invitedExternalMembers: List<String>,
-        invitedRegisteredMembers: List<String>,
+        invitedExternalMembers: List<InvitedExternalMemberDTO>,
+        invitedRegisteredMembers: List<InvitedRegisteredMemberDTO>,
         imageUrl: String,
         imageProvider: String
     ): GroupState {
