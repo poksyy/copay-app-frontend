@@ -21,6 +21,7 @@ import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.BackButtonTop
 import com.copay.app.ui.components.button.PrimaryButton
+import com.copay.app.ui.components.button.SecondaryButton
 import com.copay.app.ui.components.dialog.AddMemberDialog
 import com.copay.app.ui.components.input.InputField
 import com.copay.app.ui.components.input.PriceInputField
@@ -75,9 +76,7 @@ fun CreateGroupScreen(
     val memberNames = remember { mutableStateMapOf<String, String>() }
 
     LaunchedEffect(registeredMembers) {
-        registeredMembers
-            .filterNotNull()
-            .filter { it != userPhoneNumber && !memberNames.containsKey(it) }
+        registeredMembers.filterNotNull().filter { it != userPhoneNumber && !memberNames.containsKey(it) }
             .forEach { phone ->
                 userViewModel.getUserByPhone(context, phone)
             }
@@ -95,16 +94,12 @@ fun CreateGroupScreen(
             buildList<GroupMember> {
                 add(GroupMember.Me(userPhoneNumber))
 
-                registeredMembers
-                    .filterNotNull()
-                    .filter { it != userPhoneNumber }
-                    .forEach { phone ->
-                        val name = memberNames[phone] ?: phone
-                        add(GroupMember.RegisteredMember(name, phone))
-                    }
+                registeredMembers.filterNotNull().filter { it != userPhoneNumber }.forEach { phone ->
+                    val name = memberNames[phone] ?: phone
+                    add(GroupMember.RegisteredMember(name, phone))
+                }
 
-                externalMembers
-                    .forEach {
+                externalMembers.forEach {
                     add(GroupMember.ExternalMember(it))
                 }
             }
@@ -133,10 +128,8 @@ fun CreateGroupScreen(
 
     fun validateInputs() {
         groupNameError = GroupValidation.validateGroupName(groupName).errorMessage
-        estimatedPriceError =
-            GroupValidation.validateEstimatedPrice(estimatedPriceText).errorMessage
-        groupDescriptionError =
-            GroupValidation.validateGroupDescription(groupDescription).errorMessage
+        estimatedPriceError = GroupValidation.validateEstimatedPrice(estimatedPriceText).errorMessage
+        groupDescriptionError = GroupValidation.validateGroupDescription(groupDescription).errorMessage
         currencyError = GroupValidation.validateCurrency(selectedCurrency).errorMessage
     }
 
@@ -144,31 +137,135 @@ fun CreateGroupScreen(
     fun updateInvitedMembers() {
         invitedRegisteredMembers = registeredMembers.map { phone ->
             InvitedRegisteredMemberDTO(
-                phoneNumber = phone!!,
-                creditor = phone == selectedCreditorPhone
+                phoneNumber = phone!!, creditor = phone == selectedCreditorPhone
             )
         }
 
         invitedExternalMembers = externalMembers.map { name ->
             InvitedExternalMemberDTO(
-                name = name,
-                creditor = name == selectedCreditorPhone
+                name = name, creditor = name == selectedCreditorPhone
             )
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp)
         ) {
-            BackButtonTop(onBackClick = { navigationViewModel.navigateBack() })
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BackButtonTop(onBackClick = { navigationViewModel.navigateBack() })
+            }
 
-            IconButton(
-                onClick = {
+            Text(
+                text = "Create New Group",
+                style = CopayTypography.title,
+                color = CopayColors.primary,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
+
+            // Content in a scrollable column
+            Column(
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            ) {
+                InputField(
+                    value = groupName,
+                    onValueChange = { groupName = it },
+                    label = "Group Name",
+                    isRequired = true,
+                    isError = groupNameError != null,
+                    errorMessage = groupNameError
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                InputField(
+                    value = groupDescription,
+                    onValueChange = { groupDescription = it },
+                    label = "Description",
+                    isRequired = false,
+                    isError = groupDescriptionError != null,
+                    errorMessage = groupDescriptionError
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                PriceInputField(
+                    value = estimatedPriceText,
+                    onValueChange = { estimatedPriceText = it },
+                    label = "Estimated Price",
+                    selectedCurrency = selectedCurrency,
+                    onCurrencyChange = { selectedCurrency = it },
+                    currencyList = currencyList,
+                    isRequired = true,
+                    isError = estimatedPriceError != null,
+                    errorMessage = estimatedPriceError
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Group Members", style = CopayTypography.subtitle, modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    SecondaryButton(
+                        text = "View Members", onClick = { showMembersDialog = true }, modifier = Modifier.weight(1f)
+                    )
+                    SecondaryButton(
+                        text = "Add Members", onClick = {
+                            showAddMembersDialog = true
+                        }, modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Who paid for this group?",
+                    style = CopayTypography.subtitle,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                ExposedDropdownMenuBox(
+                    expanded = dropdownExpanded, onExpandedChange = { dropdownExpanded = it }) {
+                    TextField(
+                        value = selectedCreditor ?: "Select creditor",
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = CopayColors.primary,
+                            unfocusedIndicatorColor = CopayColors.surface
+                        ),
+                        modifier = Modifier.fillMaxWidth().menuAnchor()
+                            .clickable { dropdownExpanded = !dropdownExpanded })
+
+                    ExposedDropdownMenu(
+                        expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
+                        membersList.value.forEach { member ->
+                            DropdownMenuItem(text = { Text(member.displayText()) }, onClick = {
+                                selectedCreditor = member.displayText()
+                                selectedCreditorPhone = member.identifier
+                                dropdownExpanded = false
+                                isCreditor = true
+                            })
+                        }
+                    }
+                }
+            }
+
+            // Create Group button at the bottom
+            PrimaryButton(
+                text = "Create Group", onClick = {
                     validateInputs()
                     updateInvitedMembers()
 
@@ -183,151 +280,19 @@ fun CreateGroupScreen(
                         imageUrl,
                         imageProvider
                     )
-                }, modifier = Modifier.size(48.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Create Group",
-                    tint = CopayColors.primary
-                )
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp)
-                .padding(top = 72.dp, bottom = 24.dp)
-        ) {
-            Text(
-                text = "Create New Group",
-                style = CopayTypography.title,
-                color = CopayColors.primary,
-                modifier = Modifier.padding(bottom = 24.dp)
+                }, modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp)
             )
-
-            InputField(
-                value = groupName,
-                onValueChange = { groupName = it },
-                label = "Group Name",
-                isRequired = true,
-                isError = groupNameError != null,
-                errorMessage = groupNameError
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            InputField(
-                value = groupDescription,
-                onValueChange = { groupDescription = it },
-                label = "Description",
-                isRequired = false,
-                isError = groupDescriptionError != null,
-                errorMessage = groupDescriptionError
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            PriceInputField(
-                value = estimatedPriceText,
-                onValueChange = { estimatedPriceText = it },
-                label = "Estimated Price",
-                selectedCurrency = selectedCurrency,
-                onCurrencyChange = { selectedCurrency = it },
-                currencyList = currencyList,
-                isRequired = true,
-                isError = estimatedPriceError != null,
-                errorMessage = estimatedPriceError
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Group Members",
-                style = CopayTypography.subtitle,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                PrimaryButton(
-                    text = "View Members",
-                    onClick = { showMembersDialog = true },
-                    modifier = Modifier.weight(1f)
-                )
-                PrimaryButton(
-                    text = "Add Members",
-                    onClick = {
-                        showAddMembersDialog = true
-                  },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Who paid for this group?",
-                style = CopayTypography.subtitle,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            ExposedDropdownMenuBox(
-                expanded = dropdownExpanded,
-                onExpandedChange = { dropdownExpanded = it }
-            ) {
-                TextField(
-                    value = selectedCreditor ?: "Select creditor",
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = CopayColors.primary,
-                        unfocusedIndicatorColor = CopayColors.surface
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor()
-                        .clickable { dropdownExpanded = !dropdownExpanded })
-
-                ExposedDropdownMenu(
-                    expanded = dropdownExpanded,
-                    onDismissRequest = { dropdownExpanded = false }
-                ) {
-                    membersList.value.forEach { member ->
-                        DropdownMenuItem(
-                            text = { Text(member.displayText()) },
-                            onClick = {
-                                selectedCreditor = member.displayText()
-                                selectedCreditorPhone = member.identifier
-                                dropdownExpanded = false
-                                isCreditor = true
-                            }
-                        )
-                    }
-                }
-
-            }
         }
 
         if (showAddMembersDialog) {
-            AddMemberDialog(
-                onDismiss = { showAddMembersDialog = false },
-                onAddRegistered = { phone ->
-                    registeredMembers.add(phone)
-                    userViewModel.getUserByPhone(context, phone)
-                    updateInvitedMembers()
-                },
-                onAddExternal = { name ->
-                    externalMembers.add(name)
-                    updateInvitedMembers()
-                }
-            )
+            AddMemberDialog(onDismiss = { showAddMembersDialog = false }, onAddRegistered = { phone ->
+                registeredMembers.add(phone)
+                userViewModel.getUserByPhone(context, phone)
+                updateInvitedMembers()
+            }, onAddExternal = { name ->
+                externalMembers.add(name)
+                updateInvitedMembers()
+            })
         }
 
         if (showMembersDialog) {
