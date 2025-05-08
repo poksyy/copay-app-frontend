@@ -26,6 +26,20 @@ class ProfileRepository(
     private val userSession: UserSession
 ) {
 
+    // Get user by phone number.
+    suspend fun userByPhone(
+        context: Context, phoneNumber: String
+    ): ProfileState {
+
+        val token = DataStoreManager.getFormattedToken(context)
+
+        Log.d("ProfileRepository", "$token")
+
+        return handleApiResponse(context) {
+            profileService.getUserByPhone(phoneNumber, token)
+        }
+    }
+
     // Updates the username of the user.
     suspend fun updateUsername(
         context: Context, newUsername: String

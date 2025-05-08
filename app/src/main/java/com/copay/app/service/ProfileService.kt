@@ -10,6 +10,7 @@ import com.copay.app.dto.profile.response.EmailResponseDTO
 import com.copay.app.dto.profile.response.PasswordResponseDTO
 import com.copay.app.dto.profile.response.PhoneNumberResponseDTO
 import com.copay.app.dto.profile.response.UsernameResponseDTO
+import com.copay.app.dto.user.UserResponseDTO
 import retrofit2.Response
 
 /**
@@ -19,6 +20,11 @@ import retrofit2.Response
  */
 
 class ProfileService(private val api: ApiService) {
+
+    // Sends a request to get a specific user's data.
+    suspend fun getUserByPhone(phoneNumber: String, token: String): Response<UserResponseDTO> {
+        return api.getUserByPhone(phoneNumber, token)
+    }
 
     // Sends a request to update the user's username.
     suspend fun updateUsername(userId: Long, request: UpdateUsernameDTO, token: String): Response<UsernameResponseDTO> {

@@ -22,6 +22,7 @@ import com.copay.app.dto.profile.response.EmailResponseDTO
 import com.copay.app.dto.profile.response.PasswordResponseDTO
 import com.copay.app.dto.profile.response.PhoneNumberResponseDTO
 import com.copay.app.dto.profile.response.UsernameResponseDTO
+import com.copay.app.dto.user.UserResponseDTO
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -68,6 +69,14 @@ interface ApiService {
     @POST("${BASE_PATH}forgot-password")
     suspend fun forgotPassword(@Body request: ForgotPasswordDTO): Response<Unit>
 
+    /** API Calls to get specific user **/
+    // Get user by phone number
+    @GET("${BASE_PATH}users/phone/{phoneNumber}")
+    suspend fun getUserByPhone(
+        @Path("phoneNumber") phoneNumber: String,
+        @Header("Authorization") token: String
+    ): Response<UserResponseDTO>
+
     /** API Calls to edit profile data **/
     // Update username
     @PUT("${BASE_PATH}users/edit-username/{id}")
@@ -75,7 +84,7 @@ interface ApiService {
         @Path("id") userId: Long,
         @Body request: UpdateUsernameDTO,
         @Header("Authorization") token: String
-        ): Response<UsernameResponseDTO>
+    ): Response<UsernameResponseDTO>
 
     // Update phone number.
     @PUT("${BASE_PATH}users/edit-phone/{id}")
@@ -83,7 +92,7 @@ interface ApiService {
         @Path("id") userId: Long,
         @Body request: UpdatePhoneNumberDTO,
         @Header("Authorization") token: String
-        ): Response<PhoneNumberResponseDTO>
+    ): Response<PhoneNumberResponseDTO>
 
     // Update email.
     @PUT("${BASE_PATH}users/edit-email/{id}")
@@ -91,7 +100,6 @@ interface ApiService {
         @Path("id") userId: Long,
         @Body request: UpdateEmailDTO,
         @Header("Authorization") token: String
-
     ): Response<EmailResponseDTO>
 
     // Update password.
@@ -156,7 +164,8 @@ interface ApiService {
 
     // Get expenses by group id.
     @GET("${BASE_PATH}expenses/{groupId}")
-    suspend fun getExpenses(@Path("groupId") groupId: Long,
-                            @Header("Authorization") token: String
+    suspend fun getExpenses(
+        @Path("groupId") groupId: Long,
+        @Header("Authorization") token: String
     ): Response<List<GetExpenseResponseDTO>>
 }

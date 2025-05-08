@@ -1,108 +1,123 @@
 package com.copay.app.ui.screen.group.create
 
+import MemberListDialog
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.PrimaryButton
-import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.viewmodel.NavigationViewModel
-import com.copay.app.validation.GroupValidation
-import kotlinx.coroutines.delay
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.ui.zIndex
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.copay.app.ui.components.countriesList
-import com.copay.app.ui.components.input.DynamicInputList
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.copay.app.dto.group.auxiliary.InvitedExternalMemberDTO
+import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
+import com.copay.app.ui.components.button.BackButtonTop
+import com.copay.app.ui.components.button.PrimaryButton
+import com.copay.app.ui.components.dialog.AddMemberDialog
 import com.copay.app.ui.components.input.InputField
 import com.copay.app.ui.components.input.PriceInputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import com.copay.app.utils.state.GroupState
-import com.copay.app.validation.UserValidation
+import com.copay.app.utils.state.ProfileState
+import com.copay.app.validation.GroupValidation
 import com.copay.app.viewmodel.GroupViewModel
+import com.copay.app.viewmodel.NavigationViewModel
+import com.copay.app.viewmodel.UserViewModel
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateGroupScreen(
-    navigationViewModel: NavigationViewModel = viewModel()
+    navigationViewModel: NavigationViewModel = viewModel(),
+    userViewModel: UserViewModel = hiltViewModel(),
+    groupViewModel: GroupViewModel = hiltViewModel()
 ) {
-    val groupViewModel: GroupViewModel = hiltViewModel()
-    val groupState by groupViewModel.groupState.collectAsState()
-
     val context = LocalContext.current
 
-    var apiErrorMessage by remember { mutableStateOf<String?>(null) }
+    // Get the current user.
+    val user by userViewModel.user.collectAsState()
+    val userPhoneNumber = user?.phoneNumber
 
+    // Inputs.
     var groupName by remember { mutableStateOf("") }
     var groupDescription by remember { mutableStateOf("") }
     var estimatedPriceText by remember { mutableStateOf("") }
-
     var selectedCurrency by remember { mutableStateOf("EUR") }
-    val currencyList = listOf("USD", "EUR", "GBP", "JPY", "MXN")
+    var invitedRegisteredMembers by remember { mutableStateOf(listOf<InvitedRegisteredMemberDTO>()) }
+    var invitedExternalMembers by remember { mutableStateOf(listOf<InvitedExternalMemberDTO>()) }
+    var isCreditor by remember { mutableStateOf(true) }
+    val imageUrl by remember { mutableStateOf("") } // TODO: Store image
+    val imageProvider by remember { mutableStateOf("") }
 
+    // Price parsed to Float.
+    val estimatedPriceFloat = estimatedPriceText.toFloatOrNull() ?: 0f
+
+    // Error inputs.
     var groupNameError by remember { mutableStateOf<String?>(null) }
     var estimatedPriceError by remember { mutableStateOf<String?>(null) }
     var groupDescriptionError by remember { mutableStateOf<String?>(null) }
     var currencyError by remember { mutableStateOf<String?>(null) }
 
-    var showSnackbar by remember { mutableStateOf(false) }
-    var snackbarMessage by remember { mutableStateOf("") }
-    var snackbarColor by remember { mutableStateOf(Color.Green) }
+    // Group members (registered and external).
+    val registeredMembers = remember { mutableStateListOf(userPhoneNumber) }
+    val externalMembers = remember { mutableStateListOf<String>() }
 
-    var phoneInput by remember { mutableStateOf("") }
-    val selectedCountry by remember { mutableStateOf(countriesList.first { it.code == "ES" }) }
-    var phoneInputError by remember { mutableStateOf<String?>(null) }
-    val keyboardController = LocalSoftwareKeyboardController.current
+    // Save names.
+    val memberNames = remember { mutableStateMapOf<String, String>() }
 
-    var invitedCopayMembers by remember { mutableStateOf(listOf<String>()) }
-    var invitedExternalMembers by remember { mutableStateOf(listOf("")) }
-
-    val imageUrl by remember { mutableStateOf("") }
-    val imageProvider by remember { mutableStateOf("") }
-
-    LaunchedEffect(groupState) {
-        when (groupState) {
-            is GroupState.Success.GroupCreated -> {
-                snackbarMessage = "Group $groupName created successfully!"
-                snackbarColor = Color(0xFF4CAF50)
-                showSnackbar = true
-                navigationViewModel.navigateTo(SpaScreens.Home)
+    LaunchedEffect(registeredMembers) {
+        registeredMembers
+            .filterNotNull()
+            .filter { it != userPhoneNumber && !memberNames.containsKey(it) }
+            .forEach { phone ->
+                userViewModel.getUserByPhone(context, phone)
             }
+    }
 
-            is GroupState.Error -> {
-                apiErrorMessage = (groupState as GroupState.Error).message
-                snackbarMessage = apiErrorMessage ?: "Error creating group"
-                snackbarColor = Color.Red
-                showSnackbar = true
+    val userState by userViewModel.userState.collectAsState()
+
+    LaunchedEffect(userState) {
+        handleUserState(userState, memberNames)
+    }
+
+    // Members list for dropdown
+    val membersList = remember {
+        derivedStateOf {
+            buildList<GroupMember> {
+                add(GroupMember.Me(userPhoneNumber))
+
+                registeredMembers
+                    .filterNotNull()
+                    .filter { it != userPhoneNumber }
+                    .forEach { phone ->
+                        val name = memberNames[phone] ?: phone
+                        add(GroupMember.RegisteredMember(name, phone))
+                    }
+
+                externalMembers
+                    .forEach {
+                    add(GroupMember.ExternalMember(it))
+                }
             }
-
-            else -> {}
         }
     }
 
-    if (showSnackbar) {
-        LaunchedEffect(showSnackbar) {
-            delay(5000)
-            showSnackbar = false
-        }
-    }
+    // Dialogs
+    var showMembersDialog by remember { mutableStateOf(false) }
+    var showAddMembersDialog by remember { mutableStateOf(false) }
+
+    // Dropdown creditor.
+    var selectedCreditorPhone by remember { mutableStateOf<String?>(userPhoneNumber) }
+    var selectedCreditor by remember { mutableStateOf<String?>("Me") }
+    var dropdownExpanded by remember { mutableStateOf(false) }
+
+    val currencyList = listOf("USD", "EUR", "GBP", "JPY", "MXN")
 
     fun validateInputs() {
         groupNameError = GroupValidation.validateGroupName(groupName).errorMessage
@@ -113,36 +128,76 @@ fun CreateGroupScreen(
         currencyError = GroupValidation.validateCurrency(selectedCurrency).errorMessage
     }
 
+    // TODO: Could move this method into another package. Maybe utils?
+    fun updateInvitedMembers() {
+        invitedRegisteredMembers = registeredMembers.map { phone ->
+            InvitedRegisteredMemberDTO(
+                phoneNumber = phone!!,
+                creditor = phone == selectedCreditorPhone
+            )
+        }
+
+        invitedExternalMembers = externalMembers.map { name ->
+            InvitedExternalMemberDTO(
+                name = name,
+                creditor = name == selectedCreditorPhone
+            )
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        BackButtonTop(
-            onBackClick = { navigationViewModel.navigateBack() },
+        Row(
             modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopStart)
-                .zIndex(1f)
-        )
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BackButtonTop(onBackClick = { navigationViewModel.navigateBack() })
+
+            IconButton(
+                onClick = {
+                    validateInputs()
+                    updateInvitedMembers()
+
+                    groupViewModel.createGroup(
+                        context,
+                        groupName,
+                        groupDescription,
+                        estimatedPriceFloat,
+                        selectedCurrency,
+                        invitedExternalMembers,
+                        invitedRegisteredMembers,
+                        imageUrl,
+                        imageProvider
+                    )
+
+                }, modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Create Group",
+                    tint = CopayColors.primary
+                )
+            }
+        }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 24.dp)
+                .padding(top = 72.dp, bottom = 24.dp)
         ) {
             Text(
-                text = "Create a new group",
-                color = CopayColors.primary,
+                text = "Create New Group",
                 style = CopayTypography.title,
-                modifier = Modifier.padding(bottom = 16.dp)
+                color = CopayColors.primary,
+                modifier = Modifier.padding(bottom = 24.dp)
             )
 
             InputField(
                 value = groupName,
-                onValueChange = {
-                    groupName = it
-                    groupNameError = GroupValidation.validateGroupName(it).errorMessage
-                },
+                onValueChange = { groupName = it },
                 label = "Group Name",
                 isRequired = true,
                 isError = groupNameError != null,
@@ -153,12 +208,9 @@ fun CreateGroupScreen(
 
             InputField(
                 value = groupDescription,
-                onValueChange = {
-                    groupDescription = it
-                    groupDescriptionError =
-                        GroupValidation.validateGroupDescription(it).errorMessage
-                },
+                onValueChange = { groupDescription = it },
                 label = "Description",
+                isRequired = false,
                 isError = groupDescriptionError != null,
                 errorMessage = groupDescriptionError
             )
@@ -167,169 +219,142 @@ fun CreateGroupScreen(
 
             PriceInputField(
                 value = estimatedPriceText,
-                onValueChange = { newValue ->
-                    estimatedPriceText = newValue
-                    estimatedPriceError =
-                        GroupValidation.validateEstimatedPrice(newValue).errorMessage
-                },
+                onValueChange = { estimatedPriceText = it },
                 label = "Estimated Price",
                 selectedCurrency = selectedCurrency,
                 onCurrencyChange = { selectedCurrency = it },
                 currencyList = currencyList,
                 isRequired = true,
                 isError = estimatedPriceError != null,
-                errorMessage = estimatedPriceError,
-                modifier = Modifier.fillMaxWidth()
+                errorMessage = estimatedPriceError
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            DynamicInputList(
-                items = invitedExternalMembers,
-                onAddItem = { invitedExternalMembers = invitedExternalMembers + "" },
-                onRemoveItem = { index ->
-                    invitedExternalMembers =
-                        invitedExternalMembers.filterIndexed { i, _ -> i != index }
-                },
-                onItemChange = { index, newValue ->
-                    invitedExternalMembers = invitedExternalMembers.toMutableList().apply {
-                        set(index, newValue)
-                    }
-                },
-                label = "Enter member's name",
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(), thickness = 2.dp, color = CopayColors.surface
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Invite Copay Users",
+                text = "Group Members",
                 style = CopayTypography.subtitle,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            InputField(
-                value = phoneInput,
-                onValueChange = {
-                    if (it.all { char -> char.isDigit() }) {
-                        phoneInput = it
-                        phoneInputError = UserValidation.validatePhoneNumber(it, selectedCountry.dialCode).errorMessage
-                    }
-                },
-                label = "Enter phone numbers and press enter",
-                isError = phoneInputError != null,
-                errorMessage = phoneInputError,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = {
-
-                    val phoneValidation = UserValidation.validatePhoneNumber(phoneInput, selectedCountry.dialCode)
-
-                    if (phoneValidation.isValid) {
-
-                        val maxMembersValidation =
-                            GroupValidation.validateMaxInvitedCopayMembers(invitedCopayMembers)
-
-                        if (maxMembersValidation.isValid) {
-                            invitedCopayMembers = invitedCopayMembers + phoneInput
-                            phoneInput = ""
-                            keyboardController?.hide()
-                        } else {
-                            snackbarMessage = maxMembersValidation.errorMessage ?: "Error"
-                            snackbarColor = Color.Red
-                            showSnackbar = true
-                        }
-                    } else {
-                        phoneInputError = phoneValidation.errorMessage
-                    }
-                }),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            FlowRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                invitedCopayMembers.forEach { phone ->
-                    AssistChip(
-                        onClick = {
-                            invitedCopayMembers = invitedCopayMembers - phone
-                        },
-                        label = { Text(phone) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = "Added",
-                                tint = Color(0xFF4CAF50)
-                            )
-                        },
-                        shape = RoundedCornerShape(16.dp),
-                        colors = AssistChipDefaults.assistChipColors(
-                            containerColor = Color(0xFFE8F5E9)
-                        )
-                    )
-                }
+                PrimaryButton(
+                    text = "View Members",
+                    onClick = { showMembersDialog = true },
+                    modifier = Modifier.weight(1f)
+                )
+                PrimaryButton(
+                    text = "Add Members",
+                    onClick = {
+                        showAddMembersDialog = true
+                  },
+                    modifier = Modifier.weight(1f)
+                )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            PrimaryButton(
-                text = "Create", onClick = {
-                    validateInputs()
+            Text(
+                text = "Who paid for this group?",
+                style = CopayTypography.subtitle,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
 
-                    if (listOf(
-                            groupNameError,
-                            estimatedPriceError,
-                            groupDescriptionError,
-                            currencyError
-                        ).all { it == null }
-                    ) {
-                        snackbarMessage = "Creating group..."
-                        snackbarColor = Color(0xFF2196F3)
-                        showSnackbar = true
+            ExposedDropdownMenuBox(
+                expanded = dropdownExpanded,
+                onExpandedChange = { dropdownExpanded = it }
+            ) {
+                TextField(
+                    value = selectedCreditor ?: "Select payer",
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = CopayColors.primary,
+                        unfocusedIndicatorColor = CopayColors.surface
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                        .clickable { dropdownExpanded = !dropdownExpanded })
 
-                        val finalEstimatedPrice = estimatedPriceText.toFloatOrNull() ?: 0f
-                        groupViewModel.createGroup(
-                            context,
-                            groupName,
-                            groupDescription,
-                            finalEstimatedPrice,
-                            selectedCurrency,
-                            invitedExternalMembers.filter { it.isNotBlank() },
-                            invitedCopayMembers,
-                            imageUrl,
-                            imageProvider
+                ExposedDropdownMenu(
+                    expanded = dropdownExpanded,
+                    onDismissRequest = { dropdownExpanded = false }
+                ) {
+                    membersList.value.forEach { member ->
+                        DropdownMenuItem(
+                            text = { Text(member.displayText()) },
+                            onClick = {
+                                selectedCreditor = member.displayText()
+                                selectedCreditorPhone = member.identifier
+                                dropdownExpanded = false
+                                isCreditor = true
+                            }
                         )
                     }
-                }, modifier = Modifier.padding(horizontal = 10.dp)
+                }
+
+            }
+        }
+
+        if (showAddMembersDialog) {
+            AddMemberDialog(
+                onDismiss = { showAddMembersDialog = false },
+                onAddRegistered = { phone ->
+                    registeredMembers.add(phone)
+                    userViewModel.getUserByPhone(context, phone)
+                    updateInvitedMembers()
+                },
+                onAddExternal = { name ->
+                    externalMembers.add(name)
+                    updateInvitedMembers()
+                }
             )
         }
 
-        if (showSnackbar) {
-            Snackbar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .align(Alignment.BottomCenter),
-                containerColor = snackbarColor,
-                contentColor = Color.White
-            ) {
-                Text(text = snackbarMessage)
-            }
+        if (showMembersDialog) {
+            MemberListDialog(
+                onDismiss = { showMembersDialog = false },
+                registeredMembers = registeredMembers.filterNotNull(),
+                externalMembers = externalMembers
+            )
+        }
+    }
+}
+
+sealed class GroupMember {
+    abstract fun displayText(): String
+    abstract val identifier: String
+
+    data class Me(val phoneNumber: String?) : GroupMember() {
+        override fun displayText(): String = "Me"
+        override val identifier: String = phoneNumber ?: "me"
+    }
+
+    data class RegisteredMember(val name: String, val phoneNumber: String) : GroupMember() {
+        override fun displayText(): String = phoneNumber
+        override val identifier: String = phoneNumber
+    }
+
+    data class ExternalMember(val name: String) : GroupMember() {
+        override fun displayText(): String = "$name (External)"
+        override val identifier: String = name
+    }
+}
+
+
+fun handleUserState(state: ProfileState, memberNames: MutableMap<String, String>) {
+    if (state is ProfileState.Success.GetUser) {
+        val user = state.data
+        user.let {
+            memberNames[it.phoneNumber] = it.username
         }
     }
 }
