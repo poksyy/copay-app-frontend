@@ -3,6 +3,7 @@ package com.copay.app.ui.components.input
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.copay.app.ui.theme.CopayColors
 
 @Composable
 fun PriceInputField(
@@ -28,41 +30,64 @@ fun PriceInputField(
 ) {
     var isCurrencyDropdownExpanded by remember { mutableStateOf(false) }
 
-    InputField(
-        value = value,
-        onValueChange = { newValue ->
-            if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
-                onValueChange(newValue)
-            }
-        },
-        label = label,
-        isRequired = isRequired,
-        isError = isError,
-        errorMessage = errorMessage,
-        modifier = modifier,
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Decimal
-        ),
-        trailingIcon = {
+    Column(modifier = modifier) {
+        Text(
+            text = label + if (isRequired) " *" else "",
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+        ) {
+            OutlinedTextField(
+                value = value,
+                onValueChange = {
+                    if (it.isEmpty() || it.matches(Regex("^\\d*\\.?\\d*$"))) {
+                        onValueChange(it)
+                    }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = CopayColors.onBackground,
+                    unfocusedTextColor = CopayColors.onBackground,
+                    cursorColor = CopayColors.primary,
+                    focusedContainerColor = CopayColors.onPrimary,
+                    unfocusedContainerColor = CopayColors.onPrimary,
+                    focusedBorderColor = CopayColors.primary,
+                    unfocusedBorderColor = CopayColors.surface.copy(alpha = 0.3f)
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                isError = isError,
+                singleLine = true,
+                placeholder = { Text("0.00") }
+            )
+
             Box(
                 modifier = Modifier
+                    .width(90.dp)
+                    .fillMaxHeight()
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.outline,
-                        shape = MaterialTheme.shapes.small
+                        shape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
                     )
-                    .clickable { isCurrencyDropdownExpanded = true }
+                    .clickable { isCurrencyDropdownExpanded = true },
+                contentAlignment = Alignment.Center
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Text(text = selectedCurrency)
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Select currency"
-                    )
+                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
                 }
+
                 DropdownMenu(
                     expanded = isCurrencyDropdownExpanded,
                     onDismissRequest = { isCurrencyDropdownExpanded = false }
@@ -79,5 +104,14 @@ fun PriceInputField(
                 }
             }
         }
-    )
+
+        if (isError && errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+    }
 }

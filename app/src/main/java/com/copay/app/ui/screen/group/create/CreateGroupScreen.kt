@@ -76,7 +76,9 @@ fun CreateGroupScreen(
     val memberNames = remember { mutableStateMapOf<String, String>() }
 
     LaunchedEffect(registeredMembers) {
-        registeredMembers.filterNotNull().filter { it != userPhoneNumber && !memberNames.containsKey(it) }
+        registeredMembers
+            .filterNotNull()
+            .filter { it != userPhoneNumber && !memberNames.containsKey(it) }
             .forEach { phone ->
                 userViewModel.getUserByPhone(context, phone)
             }
@@ -94,14 +96,18 @@ fun CreateGroupScreen(
             buildList<GroupMember> {
                 add(GroupMember.Me(userPhoneNumber))
 
-                registeredMembers.filterNotNull().filter { it != userPhoneNumber }.forEach { phone ->
-                    val name = memberNames[phone] ?: phone
-                    add(GroupMember.RegisteredMember(name, phone))
-                }
+                registeredMembers
+                    .filterNotNull()
+                    .filter { it != userPhoneNumber }
+                    .forEach { phone ->
+                        val name = memberNames[phone] ?: phone
+                        add(GroupMember.RegisteredMember(name, phone))
+                    }
 
-                externalMembers.forEach {
-                    add(GroupMember.ExternalMember(it))
-                }
+                externalMembers
+                    .forEach {
+                        add(GroupMember.ExternalMember(it))
+                    }
             }
         }
     }
@@ -128,8 +134,10 @@ fun CreateGroupScreen(
 
     fun validateInputs() {
         groupNameError = GroupValidation.validateGroupName(groupName).errorMessage
-        estimatedPriceError = GroupValidation.validateEstimatedPrice(estimatedPriceText).errorMessage
-        groupDescriptionError = GroupValidation.validateGroupDescription(groupDescription).errorMessage
+        estimatedPriceError =
+            GroupValidation.validateEstimatedPrice(estimatedPriceText).errorMessage
+        groupDescriptionError =
+            GroupValidation.validateGroupDescription(groupDescription).errorMessage
         currencyError = GroupValidation.validateCurrency(selectedCurrency).errorMessage
     }
 
@@ -137,23 +145,29 @@ fun CreateGroupScreen(
     fun updateInvitedMembers() {
         invitedRegisteredMembers = registeredMembers.map { phone ->
             InvitedRegisteredMemberDTO(
-                phoneNumber = phone!!, creditor = phone == selectedCreditorPhone
+                phoneNumber = phone!!,
+                creditor = phone == selectedCreditorPhone
             )
         }
 
         invitedExternalMembers = externalMembers.map { name ->
             InvitedExternalMemberDTO(
-                name = name, creditor = name == selectedCreditorPhone
+                name = name,
+                creditor = name == selectedCreditorPhone
             )
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -169,7 +183,9 @@ fun CreateGroupScreen(
 
             // Content in a scrollable column
             Column(
-                modifier = Modifier.weight(1f).fillMaxWidth()
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
             ) {
                 InputField(
                     value = groupName,
@@ -208,19 +224,26 @@ fun CreateGroupScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Group Members", style = CopayTypography.subtitle, modifier = Modifier.padding(bottom = 8.dp)
+                    text = "Group Members",
+                    style = CopayTypography.subtitle,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     SecondaryButton(
-                        text = "View Members", onClick = { showMembersDialog = true }, modifier = Modifier.weight(1f)
+                        text = "View Members",
+                        onClick = { showMembersDialog = true },
+                        modifier = Modifier.weight(1f)
                     )
                     SecondaryButton(
-                        text = "Add Members", onClick = {
+                        text = "Add Members",
+                        onClick = {
                             showAddMembersDialog = true
-                        }, modifier = Modifier.weight(1f)
+                        },
+                        modifier = Modifier.weight(1f)
                     )
                 }
 
@@ -233,7 +256,9 @@ fun CreateGroupScreen(
                 )
 
                 ExposedDropdownMenuBox(
-                    expanded = dropdownExpanded, onExpandedChange = { dropdownExpanded = it }) {
+                    expanded = dropdownExpanded,
+                    onExpandedChange = { dropdownExpanded = it }
+                ) {
                     TextField(
                         value = selectedCreditor ?: "Select creditor",
                         onValueChange = {},
@@ -246,18 +271,25 @@ fun CreateGroupScreen(
                             focusedIndicatorColor = CopayColors.primary,
                             unfocusedIndicatorColor = CopayColors.surface
                         ),
-                        modifier = Modifier.fillMaxWidth().menuAnchor()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
                             .clickable { dropdownExpanded = !dropdownExpanded })
 
                     ExposedDropdownMenu(
-                        expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
+                        expanded = dropdownExpanded,
+                        onDismissRequest = { dropdownExpanded = false }
+                    ) {
                         membersList.value.forEach { member ->
-                            DropdownMenuItem(text = { Text(member.displayText()) }, onClick = {
-                                selectedCreditor = member.displayText()
-                                selectedCreditorPhone = member.identifier
-                                dropdownExpanded = false
-                                isCreditor = true
-                            })
+                            DropdownMenuItem(
+                                text = { Text(member.displayText()) },
+                                onClick = {
+                                    selectedCreditor = member.displayText()
+                                    selectedCreditorPhone = member.identifier
+                                    dropdownExpanded = false
+                                    isCreditor = true
+                                }
+                            )
                         }
                     }
                 }
@@ -265,7 +297,8 @@ fun CreateGroupScreen(
 
             // Create Group button at the bottom
             PrimaryButton(
-                text = "Create Group", onClick = {
+                text = "Create Group",
+                onClick = {
                     validateInputs()
                     updateInvitedMembers()
 
@@ -280,19 +313,26 @@ fun CreateGroupScreen(
                         imageUrl,
                         imageProvider
                     )
-                }, modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp)
             )
         }
 
         if (showAddMembersDialog) {
-            AddMemberDialog(onDismiss = { showAddMembersDialog = false }, onAddRegistered = { phone ->
-                registeredMembers.add(phone)
-                userViewModel.getUserByPhone(context, phone)
-                updateInvitedMembers()
-            }, onAddExternal = { name ->
-                externalMembers.add(name)
-                updateInvitedMembers()
-            })
+            AddMemberDialog(
+                onDismiss = { showAddMembersDialog = false },
+                onAddRegistered = { phone ->
+                    registeredMembers.add(phone)
+                    userViewModel.getUserByPhone(context, phone)
+                    updateInvitedMembers()
+                },
+                onAddExternal = { name ->
+                    externalMembers.add(name)
+                    updateInvitedMembers()
+                }
+            )
         }
 
         if (showMembersDialog) {
