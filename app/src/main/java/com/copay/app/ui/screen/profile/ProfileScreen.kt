@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.draw.alpha
 import com.copay.app.R
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.LogoutButton
@@ -133,13 +134,14 @@ private fun ProfileContent(
         }
 
         items(options) { option ->
+            val isEnabled = option == "Password & Security"
+
             ProfileOptionItem(
                 option = option,
+                enabled = isEnabled,
                 onClick = {
-                    when (option) {
-                        "Password & Security" -> onSecurityClick()
-                        // TODO Add other options
-                        else -> {}
+                    if (isEnabled) {
+                        onSecurityClick()
                     }
                 }
             )
@@ -157,8 +159,9 @@ private fun ProfileContent(
 @Composable
 fun ProfileOptionItem(
     option: String,
+    enabled: Boolean,
     onClick: () -> Unit
-) {
+){
     val optionIcons = mapOf(
         "Help & Support" to R.drawable.ic_help,
         "Language Settings" to R.drawable.ic_language,
@@ -173,7 +176,8 @@ fun ProfileOptionItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 2.dp)
-            .clickable(onClick = onClick),
+            .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier)
+            .alpha(if (enabled) 1f else 0.4f),
         shape = RoundedCornerShape(12.dp),
     ) {
         Row(
