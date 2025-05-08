@@ -1,5 +1,7 @@
 package com.copay.app.utils.state
 
+import com.copay.app.dto.user.UserResponseDTO
+
 /**
  * Different profile states for UI handling
  */
@@ -13,6 +15,7 @@ sealed class ProfileState {
 
     // Profile updated successfully
     open class Success(open val data: Any?) : ProfileState() {
+        class GetUser(override val data: UserResponseDTO) : Success(data)
         class EmailUpdated(override val data: Any?) : Success(data)
         class UsernameUpdated(override val data: Any?) : Success(data)
         class PhoneUpdated(override val data: Any?) : Success(data)
