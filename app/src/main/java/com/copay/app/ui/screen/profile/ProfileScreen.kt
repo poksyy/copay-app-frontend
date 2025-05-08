@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import com.copay.app.R
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.LogoutButton
@@ -163,14 +165,14 @@ fun ProfileOptionItem(
     onClick: () -> Unit
 ){
     val optionIcons = mapOf(
-        "Help & Support" to R.drawable.ic_help,
-        "Language Settings" to R.drawable.ic_language,
-        "Password & Security" to R.drawable.ic_security,
-        "Privacy Policy" to R.drawable.ic_privacy,
-        "Account Settings" to R.drawable.ic_account
+        "Help & Support" to ImageVector.vectorResource(R.drawable.ic_help),
+        "Language Settings" to ImageVector.vectorResource(R.drawable.ic_language),
+        "Password & Security" to ImageVector.vectorResource(R.drawable.ic_security),
+        "Privacy Policy" to ImageVector.vectorResource(R.drawable.ic_privacy),
+        "Account Settings" to ImageVector.vectorResource(R.drawable.ic_account)
     )
 
-    val iconResId = optionIcons[option] ?: R.drawable.ic_general // Default icon if none found
+    val icon = optionIcons[option] ?: ImageVector.vectorResource(R.drawable.ic_general)
 
     Card(
         modifier = Modifier
@@ -187,7 +189,7 @@ fun ProfileOptionItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = iconResId),
+                imageVector = icon,
                 contentDescription = option,
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.onSurface
