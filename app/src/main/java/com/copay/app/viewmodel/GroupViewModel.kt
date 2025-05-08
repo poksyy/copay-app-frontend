@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
+import com.copay.app.dto.group.auxiliary.InvitedExternalMemberDTO
+import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.model.Group
 import com.copay.app.repository.GroupRepository
@@ -71,8 +73,8 @@ class GroupViewModel @Inject constructor(
         description: String,
         estimatedPrice: Float,
         currency: String,
-        invitedExternalMembers: List<String>,
-        invitedRegisteredMembers: List<String>,
+        invitedExternalMembers: List<InvitedExternalMemberDTO>,
+        invitedRegisteredMembers: List<InvitedRegisteredMemberDTO>,
         imageUrl: String,
         imageProvider: String
     ) {
@@ -180,7 +182,8 @@ class GroupViewModel @Inject constructor(
                 RegisteredMemberDTO(
                     registeredMemberId = -1, // Temporal
                     username = "Temporal (cj still working on this)", // Temporal
-                    phoneNumber = phoneNumber
+                    phoneNumber = phoneNumber,
+                    payer = false
                 )
             }
 
@@ -225,12 +228,16 @@ class GroupViewModel @Inject constructor(
                 if (existingMember != null) {
                     // External member already exists. Maintain external member ID.
                     ExternalMemberDTO(
-                        externalMembersId = existingMember.externalMembersId, name = name
+                        externalMembersId = existingMember.externalMembersId,
+                        name = name,
+                        payer = false
                     )
                 } else {
                     // New external member.
                     ExternalMemberDTO(
-                        name = name
+                        name = name,
+                        externalMembersId = TODO(),
+                        payer = false
                     )
                 }
             }
