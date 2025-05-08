@@ -18,13 +18,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.dto.group.auxiliary.InvitedExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
+import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.BackButtonTop
 import com.copay.app.ui.components.button.PrimaryButton
 import com.copay.app.ui.components.dialog.AddMemberDialog
 import com.copay.app.ui.components.input.InputField
 import com.copay.app.ui.components.input.PriceInputField
+import com.copay.app.ui.screen.HomeScreen
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
+import com.copay.app.utils.state.GroupState
 import com.copay.app.utils.state.ProfileState
 import com.copay.app.validation.GroupValidation
 import com.copay.app.viewmodel.GroupViewModel
@@ -108,6 +111,15 @@ fun CreateGroupScreen(
         }
     }
 
+    val groupState by groupViewModel.groupState.collectAsState()
+
+    LaunchedEffect(groupState) {
+        if (groupState is GroupState.Success.GroupCreated) {
+            navigationViewModel.navigateTo(SpaScreens.Home)
+            groupViewModel.resetGroupState()
+        }
+    }
+
     // Dialogs
     var showMembersDialog by remember { mutableStateOf(false) }
     var showAddMembersDialog by remember { mutableStateOf(false) }
@@ -171,7 +183,6 @@ fun CreateGroupScreen(
                         imageUrl,
                         imageProvider
                     )
-
                 }, modifier = Modifier.size(48.dp)
             ) {
                 Icon(
