@@ -182,7 +182,7 @@ private fun HomeContent(
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = "Dashboard",
@@ -192,29 +192,33 @@ private fun HomeContent(
                 )
 
                 Text(
-                    text = "1.250€",
+                    text = "--- €",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
                 Text(
-                    text = "Total spent this month", color = Color.Gray, fontSize = 14.sp
+                    text = "Total spent this month",
+                    color = Color.Gray, fontSize = 14.sp,
+                    modifier = Modifier.padding(vertical = 16.dp)
                 )
 
                 Row(
-                    modifier = Modifier.padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.Center
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     repeat(3) { index ->
                         Box(
                             modifier = Modifier
                                 .size(8.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(if (index == 1) Color.Black else Color.Gray)
-                                .padding(end = 4.dp)
+                                .background(if (index == 0) Color.Black else Color.Gray)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        if (index < 2) Spacer(modifier = Modifier.width(8.dp))
                     }
                 }
             }

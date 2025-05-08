@@ -63,12 +63,10 @@ private fun ProfileContent(
     username: String
 ) {
     val options = listOf(
-        "Notifications",
         "Help & Support",
         "Language Settings",
         "Password & Security",
         "Privacy Policy",
-        "Terms of Service",
         "Account Settings"
     )
 
@@ -149,7 +147,7 @@ private fun ProfileContent(
         }
 
         item {
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             LogoutButton(text = "Log out", onClick = onLogoutClick)
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -162,12 +160,10 @@ fun ProfileOptionItem(
     onClick: () -> Unit
 ) {
     val optionIcons = mapOf(
-        "Notifications" to R.drawable.ic_notifications,
         "Help & Support" to R.drawable.ic_help,
         "Language Settings" to R.drawable.ic_language,
         "Password & Security" to R.drawable.ic_security,
         "Privacy Policy" to R.drawable.ic_privacy,
-        "Terms of Service" to R.drawable.ic_terms,
         "Account Settings" to R.drawable.ic_account
     )
 
