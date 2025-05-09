@@ -1,12 +1,19 @@
 package com.copay.app.ui.components
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.theme.CopayColors
 
 data class Country(
     val name: String, val code: String, val dialCode: String, val flag: String
@@ -20,53 +27,7 @@ val countriesList = listOf(
     Country("Mexico", "MX", "+52", "🇲🇽"),
     Country("Canada", "CA", "+1", "🇨🇦"),
     Country("Germany", "DE", "+49", "🇩🇪"),
-    Country("Argentina", "AR", "+54", "🇦🇷"),
-    Country("France", "FR", "+33", "🇫🇷"),
-    Country("Italy", "IT", "+39", "🇮🇹"),
-    Country("Brazil", "BR", "+55", "🇧🇷"),
-    Country("Colombia", "CO", "+57", "🇨🇴"),
-    Country("Chile", "CL", "+56", "🇨🇱"),
-    Country("Peru", "PE", "+51", "🇵🇪"),
-    Country("India", "IN", "+91", "🇮🇳"),
-    Country("China", "CN", "+86", "🇨🇳"),
-    Country("Japan", "JP", "+81", "🇯🇵"),
-    Country("Australia", "AU", "+61", "🇦🇺"),
-    Country("Russia", "RU", "+7", "🇷🇺"),
 )
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CountryCodePicker(
-    selectedCountry: Country, onCountrySelected: (Country) -> Unit, modifier: Modifier = Modifier
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded, onExpandedChange = { expanded = !expanded }, modifier = modifier
-    ) {
-        OutlinedTextField(
-            readOnly = true,
-            value = "${selectedCountry.flag}  ${selectedCountry.dialCode}",
-            onValueChange = {},
-            label = { Text("Code") },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-            modifier = Modifier.menuAnchor()
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded, onDismissRequest = { expanded = false }) {
-            countriesList.forEach { country ->
-                DropdownMenuItem(text = {
-                    Text("${country.flag}  ${country.dialCode}")
-                }, onClick = {
-                    onCountrySelected(country)
-                    expanded = false
-                })
-            }
-        }
-    }
-}
 
 @Composable
 fun PhoneNumberField(
@@ -75,40 +36,102 @@ fun PhoneNumberField(
     selectedCountry: Country,
     onCountrySelected: (Country) -> Unit,
     label: String = "Phone Number",
+    isRequired: Boolean = false,
     isError: Boolean = false,
     errorMessage: String? = null,
     modifier: Modifier = Modifier
 ) {
-    Column {
-        Row(
-            modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Country picker component
-            CountryCodePicker(
-                selectedCountry = selectedCountry,
-                onCountrySelected = onCountrySelected,
-                modifier = Modifier.width(127.dp)
-            )
+    var isCountryDropdownExpanded by remember { mutableStateOf(false) }
 
-            Spacer(modifier = Modifier.width(8.dp))
+    Column(modifier = modifier) {
+        Text(
+            text = label + if (isRequired) " *" else "",
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+        ) {
+            // Country code selector
+            Box(
+                modifier = Modifier
+                    .width(110.dp)
+                    .fillMaxHeight()
+                    .border(
+                        width = 1.dp,
+                        color = if (isError) MaterialTheme.colorScheme.error
+                        else if (isCountryDropdownExpanded) CopayColors.primary
+                        else CopayColors.surface.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
+                    )
+                    .clickable { isCountryDropdownExpanded = true },
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                ) {
+                    Text(text = "${selectedCountry.flag} ${selectedCountry.dialCode}")
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
+                }
+
+                DropdownMenu(
+                    expanded = isCountryDropdownExpanded,
+                    onDismissRequest = { isCountryDropdownExpanded = false }
+                ) {
+                    countriesList.forEach { country ->
+                        DropdownMenuItem(
+                            text = { Text("${country.flag}  ${country.dialCode} - ${country.code}") },
+                            onClick = {
+                                onCountrySelected(country)
+                                isCountryDropdownExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             // Phone number input field
-            InputField(
+            OutlinedTextField(
                 value = phoneNumber,
-                onValueChange = onPhoneNumberChange,
-                label = label,
+                onValueChange = {
+                    // Accept only digits for phone number
+                    if (it.isEmpty() || it.all { char -> char.isDigit() }) {
+                        onPhoneNumberChange(it)
+                    }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = CopayColors.onBackground,
+                    unfocusedTextColor = CopayColors.onBackground,
+                    cursorColor = CopayColors.primary,
+                    focusedContainerColor = CopayColors.onPrimary,
+                    unfocusedContainerColor = CopayColors.onPrimary,
+                    focusedBorderColor = CopayColors.primary,
+                    unfocusedBorderColor = CopayColors.surface.copy(alpha = 0.3f),
+                    errorBorderColor = MaterialTheme.colorScheme.error
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                shape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
                 isError = isError,
-                errorMessage = null
+                singleLine = true,
+                placeholder = { Text("Enter phone number") }
             )
         }
 
-        // Display error message if any
         if (isError && errorMessage != null) {
             Text(
                 text = errorMessage,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
     }
