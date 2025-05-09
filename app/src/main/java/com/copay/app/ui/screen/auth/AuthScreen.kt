@@ -59,7 +59,7 @@ fun AuthScreen(
 
         // Space between the image.
         val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-        Spacer(modifier = Modifier.height(screenHeight * 0.2f))
+        Spacer(modifier = Modifier.height(screenHeight * 0.1f))
 
         val bannerRes = if (isDarkTheme) R.drawable.copay_banner_white else R.drawable.copay_banner_black
 
