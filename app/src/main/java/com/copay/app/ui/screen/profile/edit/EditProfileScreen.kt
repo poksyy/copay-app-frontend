@@ -1,15 +1,22 @@
 package com.copay.app.ui.screen.profile.edit
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.copay.app.R
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.BackButtonTop
 import com.copay.app.ui.theme.CopayColors
@@ -35,26 +42,75 @@ fun EditProfileScreen(
         BackButtonTop(
             onBackClick = { navigationViewModel.navigateBack() },
             modifier = Modifier
+                .zIndex(1f)
                 .padding(16.dp)
                 .align(Alignment.TopStart)
         )
 
         // Main content
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 72.dp)
+                .padding(horizontal = 24.dp),
+            contentPadding = PaddingValues(top = 72.dp, bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                "Edit Profile",
-                color = CopayColors.primary,
-                style = CopayTypography.title
-            )
+            item {
+                Text(
+                    "Edit Profile",
+                    color = CopayColors.primary,
+                    style = CopayTypography.title
+                )
+            }
 
-            // TODO Edit profile image
-            ProfileRow(label = "Username", value = username, onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditUsername) })
-            ProfileRow(label = "Email", value = email, onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditEmail) })
-            ProfileRow(label = "Phone", value = phoneNumber, onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditPhoneNumber) })
+            item {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.profile_picture),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .size(130.dp)
+                            .clip(CircleShape)
+                            .padding(top = 24.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "Edit photo",
+                        color = CopayColors.primary,
+                        style = CopayTypography.body
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
+            // TODO: Edit profile image
+
+            item {
+                ProfileRow(
+                    label = "Username",
+                    value = username,
+                    onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditUsername) }
+                )
+            }
+
+            item {
+                ProfileRow(
+                    label = "Email",
+                    value = email,
+                    onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditEmail) }
+                )
+            }
+
+            item {
+                ProfileRow(
+                    label = "Phone",
+                    value = phoneNumber,
+                    onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditPhoneNumber) }
+                )
+            }
         }
     }
 }
@@ -84,7 +140,7 @@ fun ProfileRow(
             style = CopayTypography.body
         )
     }
-    Divider()
+    HorizontalDivider()
 }
 
 @Preview(showBackground = true)
