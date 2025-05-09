@@ -1,6 +1,5 @@
 package com.copay.app.ui.screen.profile.edit
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -15,11 +14,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.countriesList
+import com.copay.app.ui.components.input.countriesList
 import com.copay.app.ui.components.input.InputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import com.copay.app.utils.getE164PhoneNumber
 import com.copay.app.utils.state.ProfileState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.NavigationViewModel

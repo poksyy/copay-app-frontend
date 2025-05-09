@@ -1,4 +1,4 @@
-package com.copay.app.ui.components
+package com.copay.app.ui.components.input
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,6 +39,7 @@ fun PhoneNumberField(
     isRequired: Boolean = false,
     isError: Boolean = false,
     errorMessage: String? = null,
+    keyboardOptions: KeyboardOptions,
     modifier: Modifier = Modifier
 ) {
     var isCountryDropdownExpanded by remember { mutableStateOf(false) }

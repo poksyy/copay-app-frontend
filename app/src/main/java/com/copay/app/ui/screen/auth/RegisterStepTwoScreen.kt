@@ -9,12 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.copay.app.ui.components.PhoneNumberField
+import com.copay.app.ui.components.input.PhoneNumberField
 import com.copay.app.ui.components.button.PrimaryButton
+import com.copay.app.ui.components.input.countriesList
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthViewModel
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+
 
 @Composable
 fun RegisterStepTwoScreen(
@@ -28,7 +32,7 @@ fun RegisterStepTwoScreen(
 
     // Keep state of phone number and selected country separately.
     var phoneNumber by remember { mutableStateOf("") }
-    var selectedCountry by remember { mutableStateOf(com.copay.app.ui.components.countriesList.first { it.code == "ES" }) }
+    var selectedCountry by remember { mutableStateOf(countriesList.first { it.code == "ES" }) }
     var phoneNumberError by remember { mutableStateOf<String?>(null) }
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
@@ -81,7 +85,8 @@ fun RegisterStepTwoScreen(
                 validateInputs()
             },
             isError = phoneNumberError != null,
-            errorMessage = phoneNumberError
+            errorMessage = phoneNumberError,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
 
         Spacer(modifier = Modifier.height(24.dp))

@@ -1,6 +1,6 @@
 package com.copay.app.utils
 
-import com.copay.app.ui.components.Country
+import com.copay.app.ui.components.input.Country
 
 // This function combines the country code with the number for E.164 format.
 fun getE164PhoneNumber(selectedCountry: Country, phoneNumber: String): String {
