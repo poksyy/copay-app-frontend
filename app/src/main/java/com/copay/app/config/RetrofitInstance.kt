@@ -17,7 +17,7 @@ object RetrofitInstance {
 
     // Create an OkHttpClient with logging interceptor for debugging.
     private val client by lazy {
-        val logging = HttpLoggingIntercep   tor().apply {
+        val logging = HttpLoggingInterceptor().apply {
             // Log full request/response body for debugging.
             level = HttpLoggingInterceptor.Level.BODY
         }
