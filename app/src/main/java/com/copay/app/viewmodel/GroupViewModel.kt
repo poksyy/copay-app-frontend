@@ -182,8 +182,7 @@ class GroupViewModel @Inject constructor(
                 RegisteredMemberDTO(
                     registeredMemberId = -1, // Temporal
                     username = "Temporal (cj still working on this)", // Temporal
-                    phoneNumber = phoneNumber,
-                    creditor = false
+                    phoneNumber = phoneNumber
                 )
             }
 
@@ -226,18 +225,17 @@ class GroupViewModel @Inject constructor(
                 val existingMember = currentExternalMembers.find { it.name == name }
 
                 if (existingMember != null) {
+
                     // External member already exists. Maintain external member ID.
                     ExternalMemberDTO(
                         externalMembersId = existingMember.externalMembersId,
-                        name = name,
-                        creditor = false
+                        name = name
                     )
                 } else {
                     // New external member.
                     ExternalMemberDTO(
                         name = name,
-                        externalMembersId = TODO(),
-                        creditor = false
+                        externalMembersId = null
                     )
                 }
             }
