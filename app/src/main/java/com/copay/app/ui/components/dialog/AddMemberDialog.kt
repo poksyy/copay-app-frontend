@@ -10,6 +10,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 
 @Composable
 fun AddMemberDialog(
@@ -23,12 +25,12 @@ fun AddMemberDialog(
 
     val selectedTabColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
     val unselectedTabColor = Color.Transparent
-    val selectedTextColor = MaterialTheme.colorScheme.primary
-    val unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val selectedTextColor = CopayColors.primary
+    val unselectedTextColor = CopayColors.onBackground
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Member") },
+        title = { Text("Add Member", style = CopayTypography.title) },
         text = {
             Column {
                 Row(
@@ -48,7 +50,7 @@ fun AddMemberDialog(
                                 "Registered Users",
                                 color = if (activeTab == 0) selectedTextColor else unselectedTextColor,
                                 fontWeight = if (activeTab == 0) FontWeight.Medium else FontWeight.Normal,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = CopayTypography.body,
                                 textAlign = TextAlign.Center,
                                 maxLines = 1
                             )
@@ -67,7 +69,7 @@ fun AddMemberDialog(
                                 "Guests",
                                 color = if (activeTab == 1) selectedTextColor else unselectedTextColor,
                                 fontWeight = if (activeTab == 1) FontWeight.Medium else FontWeight.Normal,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = CopayTypography.body,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -80,8 +82,8 @@ fun AddMemberDialog(
                     0 -> {
                         Text(
                             text = "Invite a user who already has a Copay account using their phone number.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = CopayTypography.footer,
+                            color = CopayColors.onBackground
                         )
                         InputField(
                             value = phoneNumber,
@@ -93,8 +95,8 @@ fun AddMemberDialog(
                     1 -> {
                         Text(
                             text = "Add a temporary external user by name. They won't need to have a Copay account.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = CopayTypography.footer,
+                            color = CopayColors.onBackground
                         )
                         InputField(
                             value = externalName,
@@ -126,12 +128,12 @@ fun AddMemberDialog(
                     else -> false
                 }
             ) {
-                Text("Add")
+                Text("Add", style = CopayTypography.body)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("Cancel", style = CopayTypography.body)
             }
         }
     )
