@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.dialog.LogoutAfterPhoneChangeDialog
 import com.copay.app.ui.components.button.BackButtonTop
 import com.copay.app.ui.components.input.countriesList
@@ -71,7 +72,7 @@ fun EditPhoneNumberScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button.
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateBack() },
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile )},
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)

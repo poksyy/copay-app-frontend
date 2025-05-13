@@ -62,7 +62,7 @@ fun EditGroupDescriptionScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateBack() },
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup )},
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)

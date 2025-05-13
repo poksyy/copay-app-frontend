@@ -40,7 +40,7 @@ fun EditProfileScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateBack() },
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.Profile )},
             modifier = Modifier
                 .zIndex(1f)
                 .padding(16.dp)
