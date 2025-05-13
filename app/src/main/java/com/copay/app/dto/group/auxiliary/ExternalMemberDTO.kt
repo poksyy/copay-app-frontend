@@ -1,7 +1,6 @@
 package com.copay.app.dto.group.auxiliary
 
 data class ExternalMemberDTO(
-    val externalMembersId: Long,
-    val name: String,
-    val creditor: Boolean
+    val externalMembersId: Long?,
+    val name: String
 )

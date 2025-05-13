@@ -147,7 +147,7 @@ interface ApiService {
     ): Response<GroupMessageResponseDTO>
 
     // Update group registered members.
-    @PATCH("${BASE_PATH}groups/{groupId}/copaymembers")
+    @PATCH("${BASE_PATH}groups/{groupId}/registeredmembers")
     suspend fun updateGroupRegisteredMembers(
         @Path("groupId") groupId: Long,
         @Body request: UpdateGroupRegisteredMembersRequestDTO,
