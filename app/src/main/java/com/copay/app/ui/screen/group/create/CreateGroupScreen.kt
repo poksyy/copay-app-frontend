@@ -339,7 +339,16 @@ fun CreateGroupScreen(
             MemberListDialog(
                 onDismiss = { showMembersDialog = false },
                 registeredMembers = registeredMembers.filterNotNull(),
-                externalMembers = externalMembers
+                externalMembers = externalMembers,
+                onRemoveRegisteredMember = { phone ->
+                    registeredMembers.remove(phone)
+                    updateInvitedMembers()
+                },
+                onRemoveExternalMember = { name ->
+                    externalMembers.remove(name)
+                    updateInvitedMembers()
+                },
+                currentUserPhone = userPhoneNumber
             )
         }
     }
