@@ -8,9 +8,9 @@ import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.InvitedExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
+import com.copay.app.repository.ProfileRepository
 import com.copay.app.model.Group
 import com.copay.app.repository.GroupRepository
-import com.copay.app.service.GroupService
 import com.copay.app.utils.session.GroupSession
 import com.copay.app.utils.session.UserSession
 import com.copay.app.utils.state.GroupState
@@ -21,8 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GroupViewModel @Inject constructor(
+    private val profileRepository: ProfileRepository,
     private val groupRepository: GroupRepository,
-    private val groupService: GroupService,
     private val userSession: UserSession,
     private val groupSession: GroupSession
 ) : ViewModel() {
@@ -178,12 +178,15 @@ class GroupViewModel @Inject constructor(
                 currentRegisteredMembers.none { it.phoneNumber == phoneNumber }
             }
 
-            val newMembers = newPhoneNumbers.map { phoneNumber ->
-                RegisteredMemberDTO(
-                    registeredMemberId = -1, // Temporal
-                    username = "Temporal (cj still working on this)", // Temporal
-                    phoneNumber = phoneNumber
-                )
+            val newMembers = newPhoneNumbers.mapNotNull { phoneNumber ->
+                val user = profileRepository.getUserByPhoneDirect(context, phoneNumber)
+                user?.let {
+                    RegisteredMemberDTO(
+                        registeredMemberId = it.userId ?: -1,
+                        username = it.username ?: "Unknown",
+                        phoneNumber = it.phoneNumber ?: phoneNumber
+                    )
+                }
             }
 
             val invitedRegisteredMembers = existingRegisteredMembers + newMembers
