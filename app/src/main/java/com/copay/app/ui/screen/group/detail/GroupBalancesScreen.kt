@@ -127,7 +127,7 @@ fun GroupBalancesScreen(
                 modifier = Modifier.fillMaxSize()
             )
 
-            // TODO Move the style for group's banner in another place
+            // TODO: Move the style for group's banner in another place
             Box(
                 modifier = Modifier
                     .fillMaxSize()

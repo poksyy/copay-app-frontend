@@ -6,6 +6,8 @@ import com.copay.app.dto.profile.request.UpdateEmailDTO
 import com.copay.app.dto.profile.request.UpdatePasswordDTO
 import com.copay.app.dto.profile.request.UpdatePhoneNumberDTO
 import com.copay.app.dto.profile.request.UpdateUsernameDTO
+import com.copay.app.mappers.toUser
+import com.copay.app.model.User
 import com.copay.app.service.ProfileService
 import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.session.UserSession
@@ -130,6 +132,20 @@ class ProfileRepository(
         return when (result) {
             is ProfileState.Success -> ProfileState.Success.PasswordUpdated(result.data)
             else -> result
+        }
+    }
+
+    suspend fun getUserByPhoneDirect(context: Context, phoneNumber: String): User? {
+        val token = DataStoreManager.getFormattedToken(context)
+        return try {
+            val response = profileService.getUserByPhone(phoneNumber, token)
+            if (response.isSuccessful) {
+                response.body()?.toUser()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
         }
     }
 
