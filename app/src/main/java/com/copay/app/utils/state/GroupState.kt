@@ -25,7 +25,7 @@ sealed class GroupState {
             val groups: List<Group>
                 get() = groupsData.groups.map { GroupMapper.toGroup(it) }
         }
-        data class GroupCreated(val creationData: CreateGroupResponseDTO) : Success()
+        data class GroupCreated(val creationData: GroupMessageResponseDTO) : Success()
         data class GroupUpdated(val updateData: GroupMessageResponseDTO) : Success()
     }
 

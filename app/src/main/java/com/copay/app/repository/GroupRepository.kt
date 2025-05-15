@@ -152,7 +152,7 @@ class GroupRepository(private val groupService: GroupService) {
                 response.body()?.let { body ->
                     when (body) {
                         is GetGroupResponseDTO -> GroupState.Success.GroupsFetched(body)
-                        is CreateGroupResponseDTO -> GroupState.Success.GroupCreated(body)
+                        is GroupMessageResponseDTO -> GroupState.Success.GroupCreated(body)
                         is GroupMessageResponseDTO -> GroupState.Success.GroupUpdated(body)
                         else -> GroupState.Error("Unexpected response type")
                     }

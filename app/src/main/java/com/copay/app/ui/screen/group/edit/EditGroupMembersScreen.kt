@@ -27,6 +27,7 @@ import com.copay.app.ui.components.dialog.RemoveExternalMemberDialog
 import com.copay.app.ui.components.dialog.RemoveRegisteredMemberDialog
 import com.copay.app.ui.components.listitem.ExternalMemberItem
 import com.copay.app.ui.components.listitem.RegisteredMemberItem
+import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -39,15 +40,15 @@ fun EditGroupMembersScreen(
 ) {
     val context = LocalContext.current
     val currentUser by userViewModel.user.collectAsState()
-    val groupState = groupViewModel.group.collectAsState()
-    val group = groupState.value
+    val group by groupViewModel.group.collectAsState()
+    val groupState by groupViewModel.groupState.collectAsState()
     val groupId = group?.groupId ?: return
 
     val registeredMembers by remember(group) {
-        derivedStateOf { group.registeredMembers ?: emptyList() }
+        derivedStateOf { group!!.registeredMembers ?: emptyList() }
     }
     val externalMembers by remember(group) {
-        derivedStateOf { group.externalMembers ?: emptyList() }
+        derivedStateOf { group!!.externalMembers ?: emptyList() }
     }
 
     // State variables to control the visibility of the leave & delete dialogs.
@@ -57,8 +58,38 @@ fun EditGroupMembersScreen(
     var showLeaveDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
+    // Snackbar state
+    var showSnackbar by remember { mutableStateOf(false) }
+    var snackbarMessage by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Monitor group state changes
+    LaunchedEffect(groupState) {
+        when (groupState) {
+            is GroupState.Success.GroupUpdated -> {
+                snackbarMessage = (groupState as GroupState.Success.GroupUpdated).updateData.message
+                showSnackbar = true
+            }
+
+            is GroupState.Error -> {
+                snackbarMessage = (groupState as GroupState.Error).message
+                showSnackbar = true
+            }
+
+            else -> {}
+        }
+    }
+
+    // Show snackbar when needed
+    LaunchedEffect(showSnackbar) {
+        if (showSnackbar) {
+            snackbarHostState.showSnackbar(snackbarMessage)
+            showSnackbar = false
+        }
+    }
+
     EditGroupMembersContent(
-        group = group,
+        group = group!!,
         registeredMembers = registeredMembers,
         externalMembers = externalMembers,
         currentUserId = currentUser?.userId,
@@ -67,7 +98,8 @@ fun EditGroupMembersScreen(
         onDeleteGroup = { showDeleteDialog = true },
         onLeaveGroup = { showLeaveDialog = true },
         onRemoveRegisteredMember = { registeredMemberToRemove = it },
-        onRemoveExternalMember = { externalMemberToRemove = it }
+        onRemoveExternalMember = { externalMemberToRemove = it },
+        snackbarHostState = snackbarHostState
     )
 
     // Add member dialog.
@@ -157,7 +189,8 @@ fun EditGroupMembersContent(
     onDeleteGroup: () -> Unit,
     onLeaveGroup: () -> Unit,
     onRemoveRegisteredMember: (RegisteredMemberDTO) -> Unit,
-    onRemoveExternalMember: (ExternalMemberDTO) -> Unit
+    onRemoveExternalMember: (ExternalMemberDTO) -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
@@ -232,5 +265,13 @@ fun EditGroupMembersContent(
                 )
             }
         }
+
+        // Snackbar host
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
     }
 }
