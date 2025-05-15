@@ -2,11 +2,14 @@ package com.copay.app.ui.components.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.copay.app.ui.components.input.InputField
@@ -23,14 +26,26 @@ fun AddMemberDialog(
     var externalName by remember { mutableStateOf("") }
     var activeTab by remember { mutableStateOf(0) }
 
-    val selectedTabColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+    val selectedTabColor = Color(0xFFD6D6D6)
     val unselectedTabColor = Color.Transparent
     val selectedTextColor = CopayColors.primary
     val unselectedTextColor = CopayColors.onBackground
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Member", style = CopayTypography.title) },
+        title = {
+            Column {
+                Text(
+                    text = "Add Member",
+                    style = CopayTypography.title
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                HorizontalDivider(
+                    color = CopayColors.primary,
+                    thickness = 2.dp
+                )
+            }
+        },
         text = {
             Column {
                 Row(
@@ -89,9 +104,11 @@ fun AddMemberDialog(
                             value = phoneNumber,
                             onValueChange = { phoneNumber = it },
                             label = "Phone Number",
-                            modifier = Modifier.padding(top = 12.dp)
-                        )
+                            modifier = Modifier.padding(top = 12.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            )
                     }
+
                     1 -> {
                         Text(
                             text = "Add a temporary external user by name. They won't need to have a Copay account.",
@@ -116,6 +133,7 @@ fun AddMemberDialog(
                             onAddRegistered(phoneNumber)
                             phoneNumber = ""
                         }
+
                         1 -> {
                             onAddExternal(externalName)
                             externalName = ""
