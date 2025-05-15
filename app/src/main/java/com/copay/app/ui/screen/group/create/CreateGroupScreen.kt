@@ -25,6 +25,7 @@ import com.copay.app.ui.components.input.InputField
 import com.copay.app.ui.components.input.PriceInputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
+import com.copay.app.utils.state.GroupState
 import com.copay.app.utils.state.ProfileState
 import com.copay.app.validation.GroupValidation
 import com.copay.app.viewmodel.GroupViewModel
@@ -71,6 +72,30 @@ fun CreateGroupScreen(
     // Save names.
     val memberNames = remember { mutableStateMapOf<String, String>() }
 
+    val groupState by groupViewModel.groupState.collectAsState()
+
+    // Snackbar state
+    var showSnackbar by remember { mutableStateOf(false) }
+    var snackbarMessage by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Monitor group state changes
+    LaunchedEffect(groupState) {
+        when (groupState) {
+            is GroupState.Success.GroupCreated -> {
+                snackbarMessage = (groupState as GroupState.Success.GroupCreated).creationData.message
+                showSnackbar = true
+            }
+
+            is GroupState.Error -> {
+                snackbarMessage = (groupState as GroupState.Error).message
+                showSnackbar = true
+            }
+
+            else -> {}
+        }
+    }
+
     LaunchedEffect(registeredMembers) {
         registeredMembers
             .filterNotNull()
@@ -84,6 +109,13 @@ fun CreateGroupScreen(
 
     LaunchedEffect(userState) {
         handleUserState(userState, memberNames)
+    }
+
+    LaunchedEffect(showSnackbar) {
+        if (showSnackbar) {
+            snackbarHostState.showSnackbar(snackbarMessage)
+            showSnackbar = false
+        }
     }
 
     // Members list for dropdown
@@ -303,6 +335,14 @@ fun CreateGroupScreen(
 
             }
         }
+
+        // Snackbar host
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
 
         if (showAddMembersDialog) {
             AddMemberDialog(
