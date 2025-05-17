@@ -56,7 +56,7 @@ fun EditUsernameScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateBack() },
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile )},
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)

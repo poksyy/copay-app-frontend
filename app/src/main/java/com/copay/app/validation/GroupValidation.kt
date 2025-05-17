@@ -38,8 +38,8 @@ object GroupValidation {
     }
 
     fun validateGroupDescription(description: String): ValidationResult {
-        return if (description.length >= 50) {
-            ValidationResult(false, "Description cannot exceed 50 characters")
+        return if (description.length >= 150) {
+            ValidationResult(false, "Description cannot exceed 150 characters")
         } else {
             ValidationResult(true, null)
         }

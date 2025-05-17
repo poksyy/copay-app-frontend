@@ -12,6 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.BackButtonTop
+import com.copay.app.ui.screen.HomeScreen
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.viewmodel.GroupViewModel
@@ -35,7 +36,7 @@ fun EditGroupScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateBack() },
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.Home)},
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)

@@ -1,6 +1,5 @@
 package com.copay.app.ui.screen.profile.edit
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -14,14 +13,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
+import com.copay.app.ui.components.dialog.LogoutAfterPhoneChangeDialog
 import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.countriesList
+import com.copay.app.ui.components.input.countriesList
 import com.copay.app.ui.components.input.InputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import com.copay.app.utils.getE164PhoneNumber
 import com.copay.app.utils.state.ProfileState
 import com.copay.app.validation.UserValidation
+import com.copay.app.viewmodel.AuthViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.ProfileViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -32,9 +32,11 @@ fun EditPhoneNumberScreen(
     userViewModel: UserViewModel = hiltViewModel(),
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
+    val authViewModel: AuthViewModel = hiltViewModel()
     val context = LocalContext.current
     val user by userViewModel.user.collectAsState()
     val profileState by profileViewModel.profileState.collectAsState()
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     // Extract country prefix and local number
     val country = countriesList.find { user?.phonePrefix?.startsWith(it.dialCode) == true } ?: countriesList.first()
@@ -49,8 +51,7 @@ fun EditPhoneNumberScreen(
     LaunchedEffect(profileState) {
         when (profileState) {
             is ProfileState.Success.PhoneUpdated -> {
-                navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile)
-                profileViewModel.resetProfileState()
+                authViewModel.logout(context)
             }
 
             is ProfileState.Error -> {
@@ -71,7 +72,7 @@ fun EditPhoneNumberScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button.
         BackButtonTop(
-            onBackClick = { navigationViewModel.navigateBack() },
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile )},
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)
@@ -80,8 +81,8 @@ fun EditPhoneNumberScreen(
         TextButton(
             onClick = {
                 validateInputs()
-                if (phoneNumberError == null ) {
-                    profileViewModel.updatePhoneNumber(context, phoneNumber)
+                if (phoneNumberError == null) {
+                    showLogoutDialog = true
                 }
             }, modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -140,6 +141,15 @@ fun EditPhoneNumberScreen(
                 style = CopayTypography.footer,
                 color = CopayColors.surface,
                 modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        if (showLogoutDialog) {
+            LogoutAfterPhoneChangeDialog(
+                onDismiss = { showLogoutDialog = false },
+                onConfirm = {
+                    profileViewModel.updatePhoneNumber(context, phoneNumber)
+                }
             )
         }
     }

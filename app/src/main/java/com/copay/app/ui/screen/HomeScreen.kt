@@ -76,6 +76,7 @@ fun HomeScreen(
             is GroupState.Success.GroupsFetched -> {
 
                 val groups = (groupState as GroupState.Success.GroupsFetched).groups
+                    .sortedByDescending { it.createdAt }
 
                 HomeContent(
                     onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },

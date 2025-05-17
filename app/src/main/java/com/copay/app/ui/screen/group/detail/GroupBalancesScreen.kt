@@ -150,36 +150,6 @@ fun GroupBalancesScreen(
                     .align(Alignment.TopStart),
                 iconColor = iconColor
             )
-
-            // Edit button.
-            if (group?.isOwner == true) {
-                TextButton(
-                    onClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "Edit",
-                        tint = iconColor,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            } else {
-                TextButton(
-                    onClick = { showLeaveDialog = true },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        "Leave",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
         }
 
         // Screen content
@@ -235,10 +205,10 @@ fun GroupBalancesScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            val totalGroupExpense = expenses.sumOf { it.totalAmount }
+                            val totalGroupExpense = group!!.estimatedPrice
 
                             Text(
-                                text = "Total: ${totalGroupExpense.format(2)} ${group?.currency ?: ""}",
+                                text = "Total $totalGroupExpense ${group?.currency}",
                                 style = CopayTypography.subtitle,
                                 fontWeight = FontWeight.Bold,
                                 color = CopayColors.primary
