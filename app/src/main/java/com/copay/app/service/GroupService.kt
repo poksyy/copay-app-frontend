@@ -45,6 +45,15 @@ class GroupService(private val api: ApiService) {
         return api.updateGroup(groupId, fieldChanges, token)
     }
 
+    // Updates the estimated price in a group.
+    suspend fun updateGroupEstimatedPrice(
+        groupId: Long,
+        request: Map<String, Float>,
+        token: String
+    ): Response<GroupMessageResponseDTO> {
+        return api.updateGroupEstimatedPrice(groupId, request, token)
+    }
+
     // Updates the list of registered members in a group.
     suspend fun updateGroupRegisteredMembers(
         groupId: Long, request: UpdateGroupRegisteredMembersRequestDTO, token: String
