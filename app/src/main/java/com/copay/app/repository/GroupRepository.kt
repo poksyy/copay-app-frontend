@@ -107,6 +107,18 @@ class GroupRepository(private val groupService: GroupService) {
         }
     }
 
+    // Updates estimated price field of a group.
+    suspend fun updateGroupEstimatedPrice(
+        context: Context,
+        groupId: Long,
+        request: Map<String, Float>
+    ): GroupState {
+        val token = DataStoreManager.getFormattedToken(context)
+        return handleApiResponse(context) {
+            groupService.updateGroupEstimatedPrice(groupId, request, token)
+        }
+    }
+
     // Updates the list of registered members in a group.
     suspend fun updateGroupRegisteredMembers(
         context: Context, groupId: Long, invitedRegisteredMembers: List<String>
@@ -159,6 +171,7 @@ class GroupRepository(private val groupService: GroupService) {
                 } ?: GroupState.Error("Empty response body")
             } else {
                 val errorBody = response.errorBody()?.string()
+                Log.e("GroupRepository", "Error Body: $errorBody")
                 val message = extractErrorMessage(errorBody)
                 GroupState.Error(message ?: "Unknown error")
             }
