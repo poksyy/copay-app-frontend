@@ -158,6 +158,24 @@ class GroupViewModel @Inject constructor(
         }
     }
 
+    fun updateGroupEstimatedPrice(context: Context, groupId: Long, estimatedPrice: Float) {
+        viewModelScope.launch {
+            _groupState.value = GroupState.Loading
+
+            val request = mapOf("estimatedPrice" to estimatedPrice)
+            val result = groupRepository.updateGroupEstimatedPrice(context, groupId, request)
+            _groupState.value = result
+
+            if (result is GroupState.Success.GroupUpdated) {
+                val currentGroup = groupSession.group.value
+                currentGroup?.let { group ->
+                    val updatedGroup = group.copy(estimatedPrice = estimatedPrice)
+                    groupSession.setGroup(updatedGroup)
+                }
+            }
+        }
+    }
+
     // Method to update registered members of a group
     fun updateGroupRegisteredMembers(
         context: Context,
@@ -284,4 +302,5 @@ class GroupViewModel @Inject constructor(
         val updatedNames = currentMembers.map { it.name } + newName
         updateGroupExternalMembers(context, groupId, currentMembers, updatedNames)
     }
+
 }
