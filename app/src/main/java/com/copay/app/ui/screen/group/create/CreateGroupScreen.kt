@@ -229,6 +229,8 @@ fun CreateGroupScreen(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
+                Spacer(modifier = Modifier.height(12.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)

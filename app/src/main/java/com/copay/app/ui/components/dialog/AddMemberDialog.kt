@@ -33,16 +33,12 @@ fun AddMemberDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        modifier = Modifier.width(320.dp),
         title = {
             Column {
                 Text(
-                    text = "Add Member",
+                    text = "Add Members",
                     style = CopayTypography.title
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                HorizontalDivider(
-                    color = CopayColors.primary,
-                    thickness = 2.dp
                 )
             }
         },
