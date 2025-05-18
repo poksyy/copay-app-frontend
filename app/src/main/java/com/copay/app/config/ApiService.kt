@@ -146,6 +146,14 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<GroupMessageResponseDTO>
 
+    // Update estimated price group.
+    @PATCH("${BASE_PATH}groups/{groupId}/estimatedprice")
+    suspend fun updateGroupEstimatedPrice(
+        @Path("groupId") groupId: Long,
+        @Body request: Map<String, Float>,
+        @Header("Authorization") token: String
+    ): Response<GroupMessageResponseDTO>
+
     // Update group registered members.
     @PATCH("${BASE_PATH}groups/{groupId}/registeredmembers")
     suspend fun updateGroupRegisteredMembers(

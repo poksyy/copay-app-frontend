@@ -1,5 +1,6 @@
 package com.copay.app.ui.screen.group.edit
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -72,11 +73,12 @@ fun EditGroupPriceScreen(
                         val fieldChanges = mapOf<String, Any>(
                             "estimatedPrice" to groupPrice.toFloat()
                         )
-                        groupViewModel.updateGroup(
+                        groupViewModel.updateGroupEstimatedPrice(
                             context,
                             id,
-                            fieldChanges
+                            groupPrice.toFloat()
                         )
+
                     }
                 }
             },
