@@ -8,20 +8,20 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.BottomNavigationBar
+import com.copay.app.ui.components.bottomNavigationBar
 import com.copay.app.ui.screen.group.create.CreateGroupScreen
-import com.copay.app.ui.screen.group.edit.EditGroupScreen
-import com.copay.app.ui.screen.group.detail.GroupBalancesScreen
-import com.copay.app.ui.screen.group.edit.EditGroupDescriptionScreen
-import com.copay.app.ui.screen.group.edit.EditGroupMembersScreen
-import com.copay.app.ui.screen.group.edit.EditGroupNameScreen
-import com.copay.app.ui.screen.group.edit.EditGroupPriceScreen
-import com.copay.app.ui.screen.profile.edit.EditProfileScreen
-import com.copay.app.ui.screen.profile.ProfileScreen
-import com.copay.app.ui.screen.profile.edit.EditEmailScreen
-import com.copay.app.ui.screen.profile.edit.EditPhoneNumberScreen
-import com.copay.app.ui.screen.profile.edit.EditUsernameScreen
-import com.copay.app.ui.screen.profile.security.ChangePasswordScreen
+import com.copay.app.ui.screen.group.edit.editGroupScreen
+import com.copay.app.ui.screen.group.detail.groupBalancesScreen
+import com.copay.app.ui.screen.group.edit.editGroupDescriptionScreen
+import com.copay.app.ui.screen.group.edit.editGroupMembersScreen
+import com.copay.app.ui.screen.group.edit.editGroupNameScreen
+import com.copay.app.ui.screen.group.edit.editGroupPriceScreen
+import com.copay.app.ui.screen.profile.edit.editProfileScreen
+import com.copay.app.ui.screen.profile.profileScreen
+import com.copay.app.ui.screen.profile.edit.editEmailScreen
+import com.copay.app.ui.screen.profile.edit.editPhoneNumberScreen
+import com.copay.app.ui.screen.profile.edit.editUsernameScreen
+import com.copay.app.ui.screen.profile.security.changePasswordScreen
 import com.copay.app.utils.state.AuthState
 import com.copay.app.viewmodel.AuthViewModel
 import com.copay.app.viewmodel.NavigationViewModel
@@ -31,7 +31,7 @@ import com.copay.app.viewmodel.NavigationViewModel
  */
 
 @Composable
-fun HubScreen(
+fun hubScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     authViewModel: AuthViewModel = hiltViewModel(),
     onLogoutSuccess: () -> Unit
@@ -51,7 +51,7 @@ fun HubScreen(
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(
+            bottomNavigationBar(
                 currentRoute = currentScreen.route,
                 onRouteSelected = { newRoute ->
                     val newScreen = when (newRoute) {
@@ -75,19 +75,19 @@ fun HubScreen(
                 SpaScreens.Home -> HomeScreen()
                 SpaScreens.Plannings -> {} // TODO
                 SpaScreens.Friends -> {} // TODO
-                SpaScreens.Profile -> ProfileScreen()
+                SpaScreens.Profile -> profileScreen()
 
                 // Home subpages.
                 SpaScreens.CreateGroup -> CreateGroupScreen()
-                SpaScreens.BalancesGroup -> GroupBalancesScreen()
+                SpaScreens.BalancesGroup -> groupBalancesScreen()
 
                 // Group editing subpages.
                 is SpaScreens.GroupSubscreen -> when (currentScreen) {
-                    SpaScreens.GroupSubscreen.EditGroup -> EditGroupScreen()
-                    SpaScreens.GroupSubscreen.EditName -> EditGroupNameScreen()
-                    SpaScreens.GroupSubscreen.EditDescription -> EditGroupDescriptionScreen()
-                    SpaScreens.GroupSubscreen.EditPrice -> EditGroupPriceScreen()
-                    SpaScreens.GroupSubscreen.EditMembers -> EditGroupMembersScreen()
+                    SpaScreens.GroupSubscreen.EditGroup -> editGroupScreen()
+                    SpaScreens.GroupSubscreen.EditName -> editGroupNameScreen()
+                    SpaScreens.GroupSubscreen.EditDescription -> editGroupDescriptionScreen()
+                    SpaScreens.GroupSubscreen.EditPrice -> editGroupPriceScreen()
+                    SpaScreens.GroupSubscreen.EditMembers -> editGroupMembersScreen()
                     else -> {}
                 }
 
@@ -95,13 +95,13 @@ fun HubScreen(
                 is SpaScreens.ProfileSubscreen -> when (currentScreen) {
 
                     // Profile Editing.
-                    SpaScreens.ProfileSubscreen.EditProfile -> EditProfileScreen()
-                    SpaScreens.ProfileSubscreen.EditUsername -> EditUsernameScreen()
-                    SpaScreens.ProfileSubscreen.EditEmail -> EditEmailScreen()
-                    SpaScreens.ProfileSubscreen.EditPhoneNumber -> EditPhoneNumberScreen()
+                    SpaScreens.ProfileSubscreen.EditProfile -> editProfileScreen()
+                    SpaScreens.ProfileSubscreen.EditUsername -> editUsernameScreen()
+                    SpaScreens.ProfileSubscreen.EditEmail -> editEmailScreen()
+                    SpaScreens.ProfileSubscreen.EditPhoneNumber -> editPhoneNumberScreen()
 
                     // Profile Security.
-                    SpaScreens.ProfileSubscreen.ChangePassword -> ChangePasswordScreen()
+                    SpaScreens.ProfileSubscreen.ChangePassword -> changePasswordScreen()
 
                     else -> {}
                 }

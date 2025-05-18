@@ -13,14 +13,14 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import com.copay.app.R
 import androidx.compose.ui.unit.dp
-import com.copay.app.ui.components.button.PrimaryButton
-import com.copay.app.ui.components.button.SecondaryButton
-import com.copay.app.ui.components.button.SignInWithGoogleButton
+import com.copay.app.ui.components.button.primaryButton
+import com.copay.app.ui.components.button.secondaryButton
+import com.copay.app.ui.components.button.signInWithGoogleButton
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 
 @Composable
-fun AuthScreen(
+fun authScreen(
     // Redirection to RegisterScreen.
     onSignUpClick: () -> Unit = {},
     // Redirection to LoginScreen.
@@ -73,7 +73,7 @@ fun AuthScreen(
         Spacer(modifier = Modifier.height(30.dp))
 
         // Sign up button.
-        PrimaryButton(
+        primaryButton(
             text = "Sign up",
             onClick = onSignUpClick,
             modifier = Modifier.fillMaxWidth()
@@ -83,7 +83,7 @@ fun AuthScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Log in button.
-        SecondaryButton(
+        secondaryButton(
             text = "Log in",
             onClick = onLogInClick,
             modifier = Modifier.fillMaxWidth()
@@ -93,7 +93,7 @@ fun AuthScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Log in with Google button (Secondary).
-        SignInWithGoogleButton(
+        signInWithGoogleButton(
             text = "Sign in with Google",
             onClick = onLogInClick,
             modifier = Modifier.fillMaxWidth()

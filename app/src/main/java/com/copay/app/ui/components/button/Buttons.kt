@@ -25,7 +25,7 @@ import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 
 @Composable
-fun PrimaryButton(
+fun primaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -50,7 +50,7 @@ fun PrimaryButton(
 }
 
 @Composable
-fun SecondaryButton(
+fun secondaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -75,7 +75,7 @@ fun SecondaryButton(
 }
 
 @Composable
-fun SignInWithGoogleButton(
+fun signInWithGoogleButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -110,7 +110,7 @@ fun SignInWithGoogleButton(
 }
 
 @Composable
-fun LogoutButton(
+fun logoutButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -136,7 +136,7 @@ fun LogoutButton(
 
 // Back Button for the traditional Screens.
 @Composable
-fun BackButtonTop(navController: NavController, modifier: Modifier = Modifier) {
+fun backButtonTop(navController: NavController, modifier: Modifier = Modifier) {
     IconButton(
         onClick = { navController.popBackStack() },
         modifier = modifier
@@ -154,7 +154,7 @@ fun BackButtonTop(navController: NavController, modifier: Modifier = Modifier) {
 
 // Back Button for the SPA Screens.
 @Composable
-fun BackButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier) {
+fun backButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(
         onClick = { onBackClick() },
         modifier = modifier
@@ -168,7 +168,7 @@ fun BackButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier) {
 
 // Back Button for background images.
 @Composable
-fun BackButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier, iconColor: Color) {
+fun backButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier, iconColor: Color) {
     IconButton(
         onClick = { onBackClick() },
         modifier = modifier

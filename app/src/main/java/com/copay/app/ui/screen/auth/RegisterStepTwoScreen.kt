@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.copay.app.ui.components.input.PhoneNumberField
-import com.copay.app.ui.components.button.PrimaryButton
+import com.copay.app.ui.components.input.phoneNumberField
+import com.copay.app.ui.components.button.primaryButton
 import com.copay.app.ui.components.input.countriesList
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.utils.state.AuthState
@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 
 
 @Composable
-fun RegisterStepTwoScreen(
+fun registerStepTwoScreen(
     onRegisterSuccess: () -> Unit = {}
 ) {
     // Use hiltViewModel to obtain the injected AuthViewModel with userRepository and userService.
@@ -73,7 +73,7 @@ fun RegisterStepTwoScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Country code picker.
-        PhoneNumberField(
+        phoneNumberField(
             phoneNumber = phoneNumber,
             onPhoneNumberChange = {
                 phoneNumber = it
@@ -91,7 +91,7 @@ fun RegisterStepTwoScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        PrimaryButton(
+        primaryButton(
             text = "Submit",
             enabled = !isLoading && phoneNumber.isNotEmpty() && phoneNumberError == null,
             onClick = {

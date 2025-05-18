@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -23,7 +23,7 @@ import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 
 @Composable
-fun EditGroupNameScreen(
+fun editGroupNameScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
@@ -61,7 +61,7 @@ fun EditGroupNameScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
-        BackButtonTop(
+        backButtonTop(
             onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup )},
             modifier = Modifier
                 .padding(16.dp)
@@ -107,7 +107,7 @@ fun EditGroupNameScreen(
             )
 
             // Group name input field
-            InputField(
+            inputField(
                 value = groupName,
                 onValueChange = {
                     groupName = it
@@ -146,8 +146,8 @@ fun EditGroupNameScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun EditGroupNameScreenPreview() {
+fun editGroupNameScreenPreview() {
     MaterialTheme {
-        EditGroupNameScreen()
+        editGroupNameScreen()
     }
 }

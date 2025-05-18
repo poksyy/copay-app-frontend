@@ -11,7 +11,7 @@ import retrofit2.Response
 
 object ConnectionManager {
 
-    suspend fun testConnection(): String? {
+    private suspend fun testConnection(): String? {
         try {
             // Make the API call using Retrofit.
             val response: Response<ResponseBody> = RetrofitInstance.api.getConnectionResponse()

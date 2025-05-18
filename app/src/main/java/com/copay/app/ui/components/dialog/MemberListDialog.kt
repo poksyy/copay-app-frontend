@@ -16,13 +16,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.copay.app.ui.components.ScrollIndicator
+import com.copay.app.ui.components.scrollIndicator
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MemberListDialog(
+fun memberListDialog(
     onDismiss: () -> Unit,
     registeredMembers: List<String>,
     externalMembers: List<String>,
@@ -149,7 +148,7 @@ private fun MemberSection(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                ScrollIndicator(
+                scrollIndicator(
                     listState = listState,
                     totalItems = members.size,
                     visibleItemsCount = maxVisibleItems,

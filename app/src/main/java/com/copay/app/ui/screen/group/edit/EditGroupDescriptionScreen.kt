@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -23,7 +23,7 @@ import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 
 @Composable
-fun EditGroupDescriptionScreen(
+fun editGroupDescriptionScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
@@ -61,7 +61,7 @@ fun EditGroupDescriptionScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        BackButtonTop(
+        backButtonTop(
             onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup )},
             modifier = Modifier
                 .padding(16.dp)
@@ -99,7 +99,7 @@ fun EditGroupDescriptionScreen(
                 "Edit Group Description", color = CopayColors.primary, style = CopayTypography.title
             )
 
-            InputField(
+            inputField(
                 value = groupDescription,
                 onValueChange = {
                     groupDescription = it
@@ -136,8 +136,8 @@ fun EditGroupDescriptionScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun EditGroupDescriptionScreenPreview() {
+fun editGroupDescriptionScreenPreview() {
     MaterialTheme {
-        EditGroupDescriptionScreen()
+        editGroupDescriptionScreen()
     }
 }

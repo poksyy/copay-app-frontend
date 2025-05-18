@@ -6,8 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,8 +26,8 @@ import com.copay.app.dto.expense.response.GetExpenseResponseDTO
 import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.dialog.LeaveGroupDialog
+import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.dialog.leaveGroupDialog
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -39,7 +37,7 @@ import com.copay.app.viewmodel.NavigationViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun GroupBalancesScreen(
+fun groupBalancesScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     groupViewModel: GroupViewModel = hiltViewModel(),
     expenseViewModel: ExpenseViewModel = hiltViewModel(),
@@ -141,7 +139,7 @@ fun GroupBalancesScreen(
             )
 
             // Back button
-            BackButtonTop(
+            backButtonTop(
                 onBackClick = {
                     navigationViewModel.navigateBack()
                     groupViewModel.resetGroupSession()
@@ -238,7 +236,7 @@ fun GroupBalancesScreen(
                     ) { member ->
                         // Calculate expense for each member.
                         val memberExpense = calculateMemberExpense(member, expenses)
-                        MemberItem(
+                        memberItem(
                             member = member,
                             expense = memberExpense,
                             currency = group?.currency
@@ -266,7 +264,7 @@ fun GroupBalancesScreen(
 
         // Dialog for confirming leaving the group
         if (showLeaveDialog) {
-            LeaveGroupDialog(
+            leaveGroupDialog(
                 onDismiss = { showLeaveDialog = false },
                 onConfirm = {
                 coroutineScope.launch {
@@ -280,7 +278,7 @@ fun GroupBalancesScreen(
 
 // TODO move this into components or utils but somewhere else.
 @Composable
-private fun MemberItem(member: Any, expense: Double, currency: String?) {
+private fun memberItem(member: Any, expense: Double, currency: String?) {
     val memberName: String
     val memberPhoneNumber: String
 

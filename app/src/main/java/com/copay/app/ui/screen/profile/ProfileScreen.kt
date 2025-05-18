@@ -23,13 +23,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.copay.app.R
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.LogoutButton
+import com.copay.app.ui.components.button.logoutButton
 import com.copay.app.viewmodel.AuthViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
 
 @Composable
-fun ProfileScreen(
+fun profileScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     userViewModel: UserViewModel = hiltViewModel()
 ) {
@@ -48,7 +48,7 @@ fun ProfileScreen(
     )
 
     if (showLogoutDialog) {
-        LogoutDialog(
+        logoutDialog(
             onDismiss = { showLogoutDialog = false },
             onConfirm = {
                 authViewModel.logout(context)
@@ -138,7 +138,7 @@ private fun ProfileContent(
         items(options) { option ->
             val isEnabled = option == "Password & Security"
 
-            ProfileOptionItem(
+            profileOptionItem(
                 option = option,
                 enabled = isEnabled,
                 onClick = {
@@ -152,14 +152,14 @@ private fun ProfileContent(
 
         item {
             Spacer(modifier = Modifier.height(16.dp))
-            LogoutButton(text = "Log out", onClick = onLogoutClick)
+            logoutButton(text = "Log out", onClick = onLogoutClick)
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
 
 @Composable
-fun ProfileOptionItem(
+fun profileOptionItem(
     option: String,
     enabled: Boolean,
     onClick: () -> Unit
@@ -208,7 +208,7 @@ fun ProfileOptionItem(
 }
 
 @Composable
-private fun LogoutDialog(
+private fun logoutDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {

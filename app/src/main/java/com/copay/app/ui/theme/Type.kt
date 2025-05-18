@@ -1,4 +1,4 @@
-package com.copay.app.ui.theme
+    package com.copay.app.ui.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily

@@ -30,7 +30,7 @@ val countriesList = listOf(
 )
 
 @Composable
-fun PhoneNumberField(
+fun phoneNumberField(
     phoneNumber: String,
     onPhoneNumberChange: (String) -> Unit,
     selectedCountry: Country,

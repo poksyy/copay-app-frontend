@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.BackButtonTop
+import com.copay.app.ui.components.button.backButtonTop
 import com.copay.app.ui.screen.HomeScreen
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
@@ -19,7 +19,7 @@ import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 
 @Composable
-fun EditGroupScreen(
+fun editGroupScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
@@ -35,7 +35,7 @@ fun EditGroupScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
-        BackButtonTop(
+        backButtonTop(
             onBackClick = { navigationViewModel.navigateTo(SpaScreens.Home)},
             modifier = Modifier
                 .padding(16.dp)
@@ -123,8 +123,8 @@ fun GroupRow(
 
 @Preview(showBackground = true)
 @Composable
-fun EditGroupScreenPreview() {
+fun editGroupScreenPreview() {
     MaterialTheme {
-        EditGroupScreen()
+        editGroupScreen()
     }
 }

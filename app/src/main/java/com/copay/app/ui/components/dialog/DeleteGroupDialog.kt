@@ -6,7 +6,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 
 @Composable
-fun DeleteGroupDialog(
+fun deleteGroupDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     title: String = "Delete Group",

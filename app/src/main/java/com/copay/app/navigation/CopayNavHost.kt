@@ -12,15 +12,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.copay.app.ui.screen.HubScreen
-import com.copay.app.ui.screen.SplashScreen
+import com.copay.app.ui.screen.hubScreen
+import com.copay.app.ui.screen.splashScreen
 import com.copay.app.ui.screen.auth.*
 import com.copay.app.viewmodel.SplashViewModel
-import com.copay.app.ui.screen.auth.RegisterStepOneScreen
-import com.copay.app.ui.screen.auth.RegisterStepTwoScreen
+import com.copay.app.ui.screen.auth.registerStepOneScreen
+import com.copay.app.ui.screen.auth.registerStepTwoScreen
 
 @Composable
-fun CopayNavHost(
+fun copayNavHost(
     navController: NavHostController,
     toggleTheme: () -> Unit,
     modifier: Modifier = Modifier,
@@ -44,12 +44,12 @@ fun CopayNavHost(
     ) {
         // SplashScreen.
         composable(NavRoutes.SplashScreen.route) {
-            SplashScreen(automaticRedirection = { navController.navigate(NavRoutes.AuthScreen.route) })
+            splashScreen(automaticRedirection = { navController.navigate(NavRoutes.AuthScreen.route) })
         }
 
         // AuthScreen.
         composable(NavRoutes.AuthScreen.route) {
-            AuthScreen(onSignUpClick = {
+            authScreen(onSignUpClick = {
                 navController.navigate(NavRoutes.RegisterStepOneScreen.route) },
                 onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) },
                 onToggleTheme = {
@@ -62,7 +62,7 @@ fun CopayNavHost(
 
         // RegisterStepOneScreen.
         composable(NavRoutes.RegisterStepOneScreen.route) {
-            RegisterStepOneScreen(
+            registerStepOneScreen(
                 navController,
                 onRegisterSuccess = {
                     navController.navigate(NavRoutes.RegisterStepTwoScreen.route) {
@@ -73,7 +73,7 @@ fun CopayNavHost(
 
         // RegisterStepTwoScreen.
         composable(NavRoutes.RegisterStepTwoScreen.route) {
-            RegisterStepTwoScreen(
+            registerStepTwoScreen(
                 onRegisterSuccess = {
                     navController.navigate(NavRoutes.HubScreen.route)
                 },
@@ -84,7 +84,7 @@ fun CopayNavHost(
         // LoginScreen.
         composable(NavRoutes.LoginScreen.route) {
 
-            LoginScreen(
+            loginScreen(
                 navController = navController,
                 onLoginSuccess = {
                     navController.navigate(NavRoutes.HubScreen.route)
@@ -101,12 +101,12 @@ fun CopayNavHost(
 
         // ForgotPasswordScreen.
         composable(NavRoutes.ForgotPasswordScreen.route) {
-            ForgotPasswordScreen(navController = navController)
+            forgotPasswordScreen(navController = navController)
         }
 
         // HubScreen.
         composable(NavRoutes.HubScreen.route) {
-            HubScreen(
+            hubScreen(
                 onLogoutSuccess = {
                     navController.navigate(NavRoutes.AuthScreen.route)
                 }

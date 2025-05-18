@@ -35,7 +35,7 @@ class ProfileRepository(
 
         val token = DataStoreManager.getFormattedToken(context)
 
-        Log.d("ProfileRepository", "$token")
+        Log.d("ProfileRepository", token)
 
         return handleApiResponse(context) {
             profileService.getUserByPhone(phoneNumber, token)

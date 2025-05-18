@@ -6,7 +6,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 
 @Composable
-fun LogoutAfterPhoneChangeDialog(
+fun logoutAfterPhoneChangeDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     title: String = "Warning",

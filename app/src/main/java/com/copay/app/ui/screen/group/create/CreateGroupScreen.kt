@@ -1,6 +1,6 @@
 package com.copay.app.ui.screen.group.create
 
-import MemberListDialog
+import memberListDialog
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,12 +19,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.dto.group.auxiliary.InvitedExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.button.PrimaryButton
-import com.copay.app.ui.components.button.SecondaryButton
-import com.copay.app.ui.components.dialog.AddMemberDialog
-import com.copay.app.ui.components.input.InputField
-import com.copay.app.ui.components.input.PriceInputField
+import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.button.primaryButton
+import com.copay.app.ui.components.button.secondaryButton
+import com.copay.app.ui.components.dialog.addMemberDialog
+import com.copay.app.ui.components.input.inputField
+import com.copay.app.ui.components.input.priceInputField
 import com.copay.app.ui.screen.HomeScreen
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
@@ -171,7 +171,7 @@ fun CreateGroupScreen(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                BackButtonTop(onBackClick = { navigationViewModel.navigateBack() })
+                backButtonTop(onBackClick = { navigationViewModel.navigateBack() })
             }
 
             Text(
@@ -187,7 +187,7 @@ fun CreateGroupScreen(
                     .weight(1f)
                     .fillMaxWidth()
             ) {
-                InputField(
+                inputField(
                     value = groupName,
                     onValueChange = { groupName = it },
                     label = "Group Name",
@@ -198,7 +198,7 @@ fun CreateGroupScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                InputField(
+                inputField(
                     value = groupDescription,
                     onValueChange = { groupDescription = it },
                     label = "Description",
@@ -209,7 +209,7 @@ fun CreateGroupScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                PriceInputField(
+                priceInputField(
                     value = estimatedPriceText,
                     onValueChange = { estimatedPriceText = it },
                     label = "Estimated Price",
@@ -235,12 +235,12 @@ fun CreateGroupScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    SecondaryButton(
+                    secondaryButton(
                         text = "View Members",
                         onClick = { showMembersDialog = true },
                         modifier = Modifier.weight(1f)
                     )
-                    SecondaryButton(
+                    secondaryButton(
                         text = "Add Members",
                         onClick = {
                             showAddMembersDialog = true
@@ -298,7 +298,7 @@ fun CreateGroupScreen(
             }
 
             // Create Group button at the bottom
-            PrimaryButton(
+            primaryButton(
                 text = "Create Group",
                 onClick = {
                     validateInputs()
@@ -323,7 +323,7 @@ fun CreateGroupScreen(
         }
 
         if (showAddMembersDialog) {
-            AddMemberDialog(
+            addMemberDialog(
                 onDismiss = { showAddMembersDialog = false },
                 onAddRegistered = { phone ->
                     registeredMembers.add(phone)
@@ -338,7 +338,7 @@ fun CreateGroupScreen(
         }
 
         if (showMembersDialog) {
-            MemberListDialog(
+            memberListDialog(
                 onDismiss = { showMembersDialog = false },
                 registeredMembers = registeredMembers.filterNotNull(),
                 externalMembers = externalMembers,

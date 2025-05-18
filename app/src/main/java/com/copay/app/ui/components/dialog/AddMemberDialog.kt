@@ -12,12 +12,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 
 @Composable
-fun AddMemberDialog(
+fun addMemberDialog(
     onDismiss: () -> Unit,
     onAddRegistered: (String) -> Unit,
     onAddExternal: (String) -> Unit
@@ -96,7 +96,7 @@ fun AddMemberDialog(
                             style = CopayTypography.footer,
                             color = CopayColors.onBackground
                         )
-                        InputField(
+                        inputField(
                             value = phoneNumber,
                             onValueChange = { phoneNumber = it },
                             label = "Phone Number",
@@ -111,7 +111,7 @@ fun AddMemberDialog(
                             style = CopayTypography.footer,
                             color = CopayColors.onBackground
                         )
-                        InputField(
+                        inputField(
                             value = externalName,
                             onValueChange = { externalName = it },
                             label = "Name",

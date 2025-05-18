@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ScrollIndicator(
+fun scrollIndicator(
     listState: LazyListState,
     totalItems: Int,
     visibleItemsCount: Int,

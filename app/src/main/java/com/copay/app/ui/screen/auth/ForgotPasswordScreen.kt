@@ -10,9 +10,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.copay.app.repository.PasswordRepository
-import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.input.InputField
-import com.copay.app.ui.components.button.PrimaryButton
+import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.input.inputField
+import com.copay.app.ui.components.button.primaryButton
 import com.copay.app.config.RetrofitInstance
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
@@ -20,7 +20,7 @@ import com.copay.app.viewmodel.ForgotPasswordViewModel
 import com.copay.app.viewmodel.ForgotPasswordViewModelFactory
 
 @Composable
-fun ForgotPasswordScreen(navController: NavController) {
+fun forgotPasswordScreen(navController: NavController) {
     val repository = PasswordRepository(RetrofitInstance.api)
 
     val viewModel: ForgotPasswordViewModel = viewModel(
@@ -37,7 +37,7 @@ fun ForgotPasswordScreen(navController: NavController) {
     ) {
         // Back button in the top-left corner.
         Box(modifier = Modifier.padding(top = 16.dp)) {
-            BackButtonTop(navController)
+            backButtonTop(navController)
         }
 
         Column (
@@ -65,7 +65,7 @@ fun ForgotPasswordScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            InputField(
+            inputField(
                 value = email,
                 onValueChange = {
                     email = it
@@ -78,7 +78,7 @@ fun ForgotPasswordScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            PrimaryButton(
+            primaryButton(
                 text = "Send",
                 onClick = {
                     if (emailError == null && email.isNotBlank()) {

@@ -13,9 +13,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.input.InputField
-import com.copay.app.ui.components.button.PrimaryButton
+import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.input.inputField
+import com.copay.app.ui.components.button.primaryButton
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.AuthState
@@ -23,7 +23,7 @@ import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthViewModel
 
 @Composable
-fun LoginScreen(
+fun loginScreen(
     navController: NavController,
     onLoginSuccess: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {}
@@ -56,7 +56,7 @@ fun LoginScreen(
     ) {
         // Back button in the top-left corner
         Box(modifier = Modifier.padding(top = 16.dp)) {
-            BackButtonTop(navController)
+            backButtonTop(navController)
         }
 
         Column(
@@ -83,7 +83,7 @@ fun LoginScreen(
                 passwordError = UserValidation.validateNotEmpty(password, "Password").errorMessage
             }
 
-            InputField(
+            inputField(
                 value = phone,
                 onValueChange = {
                     phone = it
@@ -96,7 +96,7 @@ fun LoginScreen(
                 )
             Spacer(modifier = Modifier.height(12.dp))
 
-            InputField(
+            inputField(
                 value = password,
                 onValueChange = {
                     password = it
@@ -111,7 +111,7 @@ fun LoginScreen(
 
             val context = LocalContext.current
 
-            PrimaryButton(
+            primaryButton(
                 text = "Log in",
                 onClick = {
                     validateInputs()

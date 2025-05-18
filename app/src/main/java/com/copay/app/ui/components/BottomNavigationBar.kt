@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun BottomNavigationBar(
+fun bottomNavigationBar(
     // Current route to indicate the selected item.
     currentRoute: String,
     // Callback to handle route selection.

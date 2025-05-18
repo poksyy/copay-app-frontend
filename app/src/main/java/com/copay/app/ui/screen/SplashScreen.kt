@@ -14,17 +14,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.copay.app.R
-import com.copay.app.navigation.NavRoutes
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.viewmodel.SplashViewModel
 
 @Composable
-fun SplashScreen(
+fun splashScreen(
     // Redirection to AuthScreen.
     automaticRedirection: () -> Unit = {},
     viewModel: SplashViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
@@ -36,11 +33,11 @@ fun SplashScreen(
             automaticRedirection()
         }
     }
-    SplashScreenContent()
+    splashScreenContent()
 }
 
 @Composable
-fun SplashScreenContent() {
+fun splashScreenContent() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,

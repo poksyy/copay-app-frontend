@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.copay.app.ui.theme.CopayColors
 
 @Composable
-fun PriceInputField(
+fun priceInputField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,

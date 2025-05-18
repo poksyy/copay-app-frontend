@@ -13,10 +13,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.dialog.LogoutAfterPhoneChangeDialog
-import com.copay.app.ui.components.button.BackButtonTop
+import com.copay.app.ui.components.dialog.logoutAfterPhoneChangeDialog
+import com.copay.app.ui.components.button.backButtonTop
 import com.copay.app.ui.components.input.countriesList
-import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.ProfileState
@@ -27,7 +27,7 @@ import com.copay.app.viewmodel.ProfileViewModel
 import com.copay.app.viewmodel.UserViewModel
 
 @Composable
-fun EditPhoneNumberScreen(
+fun editPhoneNumberScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     userViewModel: UserViewModel = hiltViewModel(),
     profileViewModel: ProfileViewModel = hiltViewModel()
@@ -71,7 +71,7 @@ fun EditPhoneNumberScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button.
-        BackButtonTop(
+        backButtonTop(
             onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile )},
             modifier = Modifier
                 .padding(16.dp)
@@ -109,7 +109,7 @@ fun EditPhoneNumberScreen(
             )
 
             // Text field for phone number
-            InputField(
+            inputField(
                 value = phoneNumber,
                 onValueChange = {
                     phoneNumber = it
@@ -145,7 +145,7 @@ fun EditPhoneNumberScreen(
         }
 
         if (showLogoutDialog) {
-            LogoutAfterPhoneChangeDialog(
+            logoutAfterPhoneChangeDialog(
                 onDismiss = { showLogoutDialog = false },
                 onConfirm = {
                     profileViewModel.updatePhoneNumber(context, phoneNumber)
@@ -157,9 +157,9 @@ fun EditPhoneNumberScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun EditPhoneNumberScreenPreview() {
+fun editPhoneNumberScreenPreview() {
     MaterialTheme {
-        EditPhoneNumberScreen(
+        editPhoneNumberScreen(
             navigationViewModel = NavigationViewModel()
         )
     }

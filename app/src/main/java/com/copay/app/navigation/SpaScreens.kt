@@ -11,6 +11,7 @@ sealed class SpaScreens(val route: String) {
     // HomeScreen subpages inside the SPA.
     data object CreateGroup : SpaScreens("create_group")
     data object BalancesGroup : SpaScreens("balances_group")
+
     // Group editing screens
     sealed class GroupSubscreen(route: String) : SpaScreens(route) {
         data object EditGroup : GroupSubscreen("group/edit")

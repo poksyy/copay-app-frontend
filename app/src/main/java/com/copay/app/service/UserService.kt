@@ -25,7 +25,7 @@ class UserService @Inject constructor() {
         Log.d("UserService", "User JSON: $userJson")
 
         return when (val data = response.user) {
-            // Backend response when an user log in.
+            // Backend response when a user log in.
             is LoginResponseDTO -> {
                 Log.d("UserService", "LoginResponseDTO received: " +
                         "phoneNumber=${data.phoneNumber}, userId=${data.userId}, " +

@@ -8,7 +8,7 @@ import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 
 @Composable
-fun RemoveRegisteredMemberDialog(
+fun removeRegisteredMemberDialog(
     member: RegisteredMemberDTO?,
     onDismiss: () -> Unit,
     onConfirm: (RegisteredMemberDTO) -> Unit,

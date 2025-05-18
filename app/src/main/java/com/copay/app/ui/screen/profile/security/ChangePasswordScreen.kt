@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.ProfileState
@@ -22,7 +22,7 @@ import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.ProfileViewModel
 
 @Composable
-fun ChangePasswordScreen(
+fun changePasswordScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
@@ -68,7 +68,7 @@ fun ChangePasswordScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
-        BackButtonTop(
+        backButtonTop(
             onBackClick = { navigationViewModel.navigateBack() },
             modifier = Modifier
                 .padding(16.dp)
@@ -107,7 +107,7 @@ fun ChangePasswordScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             // Current password field
-            InputField(
+            inputField(
                 value = currentPassword,
                 onValueChange = {
                     currentPassword = it
@@ -121,7 +121,7 @@ fun ChangePasswordScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             // New password field
-            InputField(
+            inputField(
                 value = newPassword, onValueChange = {
                     newPassword = it
                     newPasswordError = UserValidation.validatePassword(it).errorMessage
@@ -131,7 +131,7 @@ fun ChangePasswordScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             // Retype password field
-            InputField(
+            inputField(
                 value = confirmPassword,
                 onValueChange = {
                     confirmPassword = it
@@ -183,9 +183,9 @@ fun ChangePasswordScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun ChangePasswordScreenPreview() {
+fun changePasswordScreenPreview() {
     MaterialTheme {
-        ChangePasswordScreen(
+        changePasswordScreen(
             navigationViewModel = NavigationViewModel()
         )
     }

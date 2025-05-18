@@ -6,7 +6,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 
 @Composable
-fun LeaveGroupDialog(
+fun leaveGroupDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     title: String = "Leave Group",

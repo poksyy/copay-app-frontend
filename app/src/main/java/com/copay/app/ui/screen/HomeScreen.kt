@@ -20,8 +20,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.dialog.DeleteGroupDialog
-import com.copay.app.ui.components.dialog.LeaveGroupDialog
+import com.copay.app.ui.components.dialog.deleteGroupDialog
+import com.copay.app.ui.components.dialog.leaveGroupDialog
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -121,7 +121,7 @@ fun HomeScreen(
         }
 
         if (showDeleteDialog) {
-            DeleteGroupDialog(
+            deleteGroupDialog(
                 onDismiss = { showDeleteDialog = false },
                 onConfirm = {
                     groupSelected?.groupId?.let { groupId ->
@@ -135,7 +135,7 @@ fun HomeScreen(
         }
 
         if (showLeaveDialog) {
-            LeaveGroupDialog(
+            leaveGroupDialog(
                 onDismiss = { showLeaveDialog = false },
                 onConfirm = {
                     groupSelected?.groupId?.let { groupId ->

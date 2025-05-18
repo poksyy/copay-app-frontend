@@ -7,10 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,12 +17,12 @@ import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.dialog.AddMemberDialog
-import com.copay.app.ui.components.dialog.DeleteGroupDialog
-import com.copay.app.ui.components.dialog.LeaveGroupDialog
+import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.dialog.addMemberDialog
+import com.copay.app.ui.components.dialog.deleteGroupDialog
+import com.copay.app.ui.components.dialog.leaveGroupDialog
 import com.copay.app.ui.components.dialog.RemoveExternalMemberDialog
-import com.copay.app.ui.components.dialog.RemoveRegisteredMemberDialog
+import com.copay.app.ui.components.dialog.removeRegisteredMemberDialog
 import com.copay.app.ui.components.listitem.ExternalMemberItem
 import com.copay.app.ui.components.listitem.RegisteredMemberItem
 import com.copay.app.viewmodel.GroupViewModel
@@ -32,7 +30,7 @@ import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
 
 @Composable
-fun EditGroupMembersScreen(
+fun editGroupMembersScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     groupViewModel: GroupViewModel = hiltViewModel(),
     userViewModel: UserViewModel = hiltViewModel()
@@ -72,7 +70,7 @@ fun EditGroupMembersScreen(
 
     // Add member dialog.
     if (showAddMemberDialog) {
-        AddMemberDialog(
+        addMemberDialog(
             onDismiss = { showAddMemberDialog = false },
             onAddRegistered = { phoneNumber ->
                 groupViewModel.addRegisteredMember(context, groupId, registeredMembers, phoneNumber)
@@ -87,7 +85,7 @@ fun EditGroupMembersScreen(
 
     // Delete group confirmation dialog.
     if (showDeleteDialog) {
-        DeleteGroupDialog(
+        deleteGroupDialog(
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
                 groupViewModel.deleteGroup(context, groupId) {
@@ -100,7 +98,7 @@ fun EditGroupMembersScreen(
 
     // Leave group confirmation dialog.
     if (showLeaveDialog) {
-        LeaveGroupDialog(
+        leaveGroupDialog(
             onDismiss = { showLeaveDialog = false },
             onConfirm = {
                 groupViewModel.leaveGroup(context, groupId) {
@@ -112,7 +110,7 @@ fun EditGroupMembersScreen(
     }
 
     // Remove registered member confirmation dialog
-    RemoveRegisteredMemberDialog(
+    removeRegisteredMemberDialog(
         member = registeredMemberToRemove,
         onDismiss = { registeredMemberToRemove = null },
         onConfirm = { member ->
@@ -161,7 +159,7 @@ fun EditGroupMembersContent(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
-        BackButtonTop(
+        backButtonTop(
             onBackClick = onBack,
             modifier = Modifier
                 .padding(16.dp)

@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.sp
 import com.copay.app.ui.theme.CopayColors
 
 @Composable
-fun InputField(
+fun inputField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,

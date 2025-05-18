@@ -18,14 +18,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.R
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.BackButtonTop
+import com.copay.app.ui.components.button.backButtonTop
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
 
 @Composable
-fun EditProfileScreen(
+fun editProfileScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     userViewModel: UserViewModel = hiltViewModel()
 ) {
@@ -39,7 +39,7 @@ fun EditProfileScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Back button
-        BackButtonTop(
+        backButtonTop(
             onBackClick = { navigationViewModel.navigateTo(SpaScreens.Profile )},
             modifier = Modifier
                 .zIndex(1f)
@@ -89,7 +89,7 @@ fun EditProfileScreen(
             // TODO: Edit profile image
 
             item {
-                ProfileRow(
+                profileRow(
                     label = "Username",
                     value = username,
                     onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditUsername) }
@@ -97,7 +97,7 @@ fun EditProfileScreen(
             }
 
             item {
-                ProfileRow(
+                profileRow(
                     label = "Email",
                     value = email,
                     onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditEmail) }
@@ -105,7 +105,7 @@ fun EditProfileScreen(
             }
 
             item {
-                ProfileRow(
+                profileRow(
                     label = "Phone",
                     value = phoneNumber,
                     onClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditPhoneNumber) }
@@ -116,7 +116,7 @@ fun EditProfileScreen(
 }
 
 @Composable
-fun ProfileRow(
+fun profileRow(
     label: String,
     value: String,
     onClick: () -> Unit
@@ -145,8 +145,8 @@ fun ProfileRow(
 
 @Preview(showBackground = true)
 @Composable
-fun EditProfileScreenPreview() {
+fun editProfileScreenPreview() {
     MaterialTheme {
-        EditProfileScreen()
+        editProfileScreen()
     }
 }

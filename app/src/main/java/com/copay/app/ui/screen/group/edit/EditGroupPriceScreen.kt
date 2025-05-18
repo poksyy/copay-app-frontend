@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.BackButtonTop
-import com.copay.app.ui.components.input.InputField
+import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -23,7 +23,7 @@ import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 
 @Composable
-fun EditGroupPriceScreen(
+fun editGroupPriceScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
@@ -59,7 +59,7 @@ fun EditGroupPriceScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        BackButtonTop(
+        backButtonTop(
             onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup )},
             modifier = Modifier
                 .padding(16.dp)
@@ -104,7 +104,7 @@ fun EditGroupPriceScreen(
                 style = CopayTypography.title
             )
 
-            InputField(
+            inputField(
                 value = groupPrice,
                 onValueChange = {
                     groupPrice = it
