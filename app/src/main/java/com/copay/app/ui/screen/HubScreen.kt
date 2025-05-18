@@ -72,7 +72,7 @@ fun hubScreen(
             when (currentScreen) {
 
                 // Main pages.
-                SpaScreens.Home -> HomeScreen()
+                SpaScreens.Home -> homeScreen()
                 SpaScreens.Plannings -> {} // TODO
                 SpaScreens.Friends -> {} // TODO
                 SpaScreens.Profile -> profileScreen()

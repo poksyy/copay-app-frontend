@@ -67,7 +67,7 @@ fun loginScreen(
             horizontalAlignment = Alignment.Start
         ) {
 
-            Spacer(modifier = Modifier.height(128.dp))
+            Spacer(modifier = Modifier.height(100.dp))
 
             Text(text = "Log in", style = CopayTypography.title, color = CopayColors.primary)
 

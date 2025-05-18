@@ -30,7 +30,7 @@ import com.copay.app.R
 import com.copay.app.model.Group
 
 @Composable
-fun GroupItem(
+fun groupItem(
     group: Group,
     onItemClick: () -> Unit,
     onEditClick: (Group) -> Unit = {},

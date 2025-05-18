@@ -84,7 +84,7 @@ fun registerStepOneScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Text(
                 "Welcome to Copay!",
@@ -152,6 +152,31 @@ fun registerStepOneScreen(
                 isError = passwordMatchError != null,
                 errorMessage = passwordMatchError
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Password requirements
+            Column(
+                modifier = Modifier.padding(top = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    "• Must be at least 8 characters long",
+                    style = CopayTypography.footer,
+                    color = CopayColors.surface,
+                )
+                Text(
+                    "• Must contain at least one uppercase letter",
+                    style = CopayTypography.footer,
+                    color = CopayColors.surface,
+                )
+                Text(
+                    "• Must contain at least one number",
+                    style = CopayTypography.footer,
+                    color = CopayColors.surface,
+                )
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             primaryButton(

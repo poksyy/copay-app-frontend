@@ -28,10 +28,10 @@ import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
-import com.copay.app.ui.components.listitem.GroupItem
+import com.copay.app.ui.components.listitem.groupItem
 
 @Composable
-fun HomeScreen(
+fun homeScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     userViewModel: UserViewModel = hiltViewModel(),
     groupViewModel: GroupViewModel = hiltViewModel()
@@ -247,7 +247,7 @@ private fun HomeContent(
             Text("You do not have any groups.", modifier = Modifier.padding(vertical = 16.dp))
         } else {
             groups.forEach { group ->
-                GroupItem(group = group,
+                groupItem(group = group,
                     onItemClick = { onDetailClick(group) },
                     onEditClick = { onEditClick(group) },
                     onDeleteClick = { onDeleteClick(group) },

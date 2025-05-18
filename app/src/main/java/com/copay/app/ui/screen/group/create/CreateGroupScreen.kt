@@ -25,7 +25,7 @@ import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.dialog.addMemberDialog
 import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.components.input.priceInputField
-import com.copay.app.ui.screen.HomeScreen
+import com.copay.app.ui.screen.homeScreen
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
