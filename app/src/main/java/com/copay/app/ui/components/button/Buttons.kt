@@ -99,7 +99,7 @@ fun SignInWithGoogleButton(
             modifier = Modifier.size(24.dp)
         )
 
-        // Space between the google image and the text.
+        // Space between the Google image and the text.
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(
@@ -118,7 +118,7 @@ fun LogoutButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = Color.White,
+            containerColor = CopayColors.secondary,
             contentColor = Color.Red
         ),
         modifier = modifier
