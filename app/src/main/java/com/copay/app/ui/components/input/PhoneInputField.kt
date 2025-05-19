@@ -106,16 +106,7 @@ fun phoneNumberField(
                         onPhoneNumberChange(it)
                     }
                 },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = CopayColors.onBackground,
-                    unfocusedTextColor = CopayColors.onBackground,
-                    cursorColor = CopayColors.primary,
-                    focusedContainerColor = CopayColors.onPrimary,
-                    unfocusedContainerColor = CopayColors.onPrimary,
-                    focusedBorderColor = CopayColors.primary,
-                    unfocusedBorderColor = CopayColors.surface.copy(alpha = 0.3f),
-                    errorBorderColor = MaterialTheme.colorScheme.error
-                ),
+                colors = copayOutlinedTextFieldColors(isError),
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
