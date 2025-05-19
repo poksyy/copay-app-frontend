@@ -17,14 +17,10 @@ import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.backButtonTop
-import com.copay.app.ui.components.dialog.addMemberDialog
-import com.copay.app.ui.components.dialog.deleteGroupDialog
-import com.copay.app.ui.components.dialog.leaveGroupDialog
-import com.copay.app.ui.components.dialog.RemoveExternalMemberDialog
-import com.copay.app.ui.components.dialog.removeRegisteredMemberDialog
+import com.copay.app.ui.components.dialog.*
 import com.copay.app.ui.components.listitem.ExternalMemberItem
 import com.copay.app.ui.components.listitem.RegisteredMemberItem
+import com.copay.app.ui.components.topNavBar
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -55,7 +51,7 @@ fun editGroupMembersScreen(
     var showLeaveDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    EditGroupMembersContent(
+    editGroupMembersContent(
         group = group,
         registeredMembers = registeredMembers,
         externalMembers = externalMembers,
@@ -114,7 +110,6 @@ fun editGroupMembersScreen(
         member = registeredMemberToRemove,
         onDismiss = { registeredMemberToRemove = null },
         onConfirm = { member ->
-
             // Obtain the list of registered members excluding the member to be eliminated
             val newRegisteredMember = registeredMembers
                 .filter { it.registeredMemberId != member.registeredMemberId }
@@ -127,11 +122,10 @@ fun editGroupMembersScreen(
     )
 
     // Remove external member confirmation dialog
-    RemoveExternalMemberDialog(
+    removeExternalMemberDialog(
         member = externalMemberToRemove,
         onDismiss = { externalMemberToRemove = null },
         onConfirm = { member ->
-            
             // Obtain the list of external members excluding the member to be eliminated
             val newExternalMembers = externalMembers
                 .filter { it.externalMembersId != member.externalMembersId }
@@ -145,7 +139,7 @@ fun editGroupMembersScreen(
 }
 
 @Composable
-fun EditGroupMembersContent(
+fun editGroupMembersContent(
     group: Group,
     registeredMembers: List<RegisteredMemberDTO>,
     externalMembers: List<ExternalMemberDTO>,
@@ -158,42 +152,30 @@ fun EditGroupMembersContent(
     onRemoveExternalMember: (ExternalMemberDTO) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Back button
-        backButtonTop(
+        topNavBar(
+            title = "Edit group members",
             onBackClick = onBack,
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopStart)
+            modifier = Modifier.align(Alignment.TopCenter)
         )
 
-        // Add member button
-        IconButton(
+        FloatingActionButton(
             onClick = onAddMemberClick,
             modifier = Modifier
+                .align(Alignment.BottomEnd)
                 .padding(16.dp)
-                .align(Alignment.TopEnd)
-        ) {
+            ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_add_member),
                 contentDescription = "Add Member"
             )
         }
 
-        // Main content
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 72.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+                .padding(top = 90.dp, start = 16.dp, end = 16.dp, bottom = 80.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                Text(
-                    "Edit Members",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
-
             item {
                 Text(
                     "Registered Members",
