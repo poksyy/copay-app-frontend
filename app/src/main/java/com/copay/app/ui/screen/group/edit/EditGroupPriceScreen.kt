@@ -1,6 +1,5 @@
 package com.copay.app.ui.screen.group.edit
 
-import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -9,11 +8,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.button.secondaryButton
+import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
@@ -43,12 +44,10 @@ fun editGroupPriceScreen(
                 navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
                 groupViewModel.resetGroupState()
             }
-
             is GroupState.Error -> {
                 apiErrorMessage = (groupState as GroupState.Error).message
                 groupViewModel.resetGroupState()
             }
-
             else -> {}
         }
     }
@@ -59,51 +58,20 @@ fun editGroupPriceScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        backButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup )},
+        topNavBar(
+            title = "Edit group price",
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
             modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopStart)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         )
-
-        TextButton(
-            onClick = {
-                if (validateInputs()) {
-                    selectedGroup?.groupId?.let { id ->
-                        val fieldChanges = mapOf<String, Any>(
-                            "estimatedPrice" to groupPrice.toFloat()
-                        )
-                        groupViewModel.updateGroupEstimatedPrice(
-                            context,
-                            id,
-                            groupPrice.toFloat()
-                        )
-
-                    }
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Done",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 72.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(horizontal = 16.dp)
+                .padding(top = 90.dp, bottom = 16.dp),
         ) {
-            Text(
-                text = "Edit Group Price",
-                color = CopayColors.primary,
-                style = CopayTypography.title
-            )
-
             inputField(
                 value = groupPrice,
                 onValueChange = {
@@ -125,14 +93,41 @@ fun editGroupPriceScreen(
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium
                 )
-
-                Text(
-                    text = "Set a fair monthly price for the group subscription. The price must be a number between 0.00 and 99.99 €.",
-                    style = CopayTypography.footer,
-                    color = CopayColors.surface,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
             }
+
+            Text(
+                text = "Set an estimated price for the group's initial expense. The price must be a positive number and cannot be negative.",
+                style = CopayTypography.footer,
+                color = CopayColors.surface,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            secondaryButton(
+                text = "Save changes",
+                onClick = {
+                    if (validateInputs()) {
+                        selectedGroup?.groupId?.let { id ->
+                            val priceFloat = groupPrice.toFloatOrNull()
+                            if (priceFloat != null) {
+                                groupViewModel.updateGroupEstimatedPrice(context, id, priceFloat)
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun editGroupPriceScreenPreview() {
+    MaterialTheme {
+        editGroupPriceScreen()
     }
 }
