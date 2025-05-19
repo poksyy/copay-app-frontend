@@ -157,7 +157,7 @@ fun backButtonTop(navController: NavController, modifier: Modifier = Modifier) {
 fun backButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(
         onClick = { onBackClick() },
-        modifier = modifier
+        modifier = modifier,
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_back),

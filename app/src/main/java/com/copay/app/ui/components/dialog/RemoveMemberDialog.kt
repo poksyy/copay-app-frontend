@@ -41,7 +41,7 @@ fun removeRegisteredMemberDialog(
 }
 
 @Composable
-fun RemoveExternalMemberDialog(
+fun removeExternalMemberDialog(
     member: ExternalMemberDTO?,
     onDismiss: () -> Unit,
     onConfirm: (ExternalMemberDTO) -> Unit,
