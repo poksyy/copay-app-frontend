@@ -13,7 +13,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.input.inputField
+import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.ProfileState
@@ -67,44 +69,27 @@ fun changePasswordScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Back button
-        backButtonTop(
+        topNavBar(
+            title = "Change password",
             onBackClick = { navigationViewModel.navigateBack() },
             modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopStart)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         )
-
-        TextButton(
-            onClick = {
-                validateInputs()
-                if (currentPasswordError == null && newPasswordError == null && passwordMatchError == null) {
-                    profileViewModel.updatePassword(
-                        context, currentPassword, newPassword, confirmPassword
-                    )
-                }
-            }, modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-        ) {
-            Text(
-                "Done",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
 
         // Screen content
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 24.dp, end = 24.dp, top = 72.dp)
+                .padding(horizontal = 24.dp)
+                .padding(top = 90.dp),
         ) {
             Text(
-                "Change password", color = CopayColors.primary, style = CopayTypography.title
+                "Change password",
+                color = MaterialTheme.colorScheme.primary,
+                style = CopayTypography.title,
+                modifier = Modifier.fillMaxWidth()
             )
-
-            Spacer(modifier = Modifier.height(32.dp))
 
             // Current password field
             inputField(
@@ -112,51 +97,67 @@ fun changePasswordScreen(
                 onValueChange = {
                     currentPassword = it
                     currentPasswordError = null
+                    apiErrorMessage = null
                 },
                 label = "Current password",
                 isPassword = true,
                 isError = currentPasswordError != null
             )
+            currentPasswordError?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // New password field
             inputField(
-                value = newPassword, onValueChange = {
+                value = newPassword,
+                onValueChange = {
                     newPassword = it
                     newPasswordError = UserValidation.validatePassword(it).errorMessage
-                }, label = "New password", isPassword = true, isError = newPasswordError != null
+                    apiErrorMessage = null
+                },
+                label = "New password",
+                isPassword = true,
+                isError = newPasswordError != null
             )
+            newPasswordError?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Retype password field
             inputField(
                 value = confirmPassword,
                 onValueChange = {
                     confirmPassword = it
                     passwordMatchError =
                         UserValidation.validatePasswordMatch(newPassword, it).errorMessage
+                    apiErrorMessage = null
                 },
                 label = "Retype password",
                 isPassword = true,
                 isError = passwordMatchError != null
             )
-
-            // Show error messages if any
-            listOfNotNull(
-                currentPasswordError, passwordMatchError, apiErrorMessage
-            ).forEach { errorMsg ->
+            passwordMatchError?.let {
                 Text(
-                    text = errorMsg,
+                    text = it,
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            apiErrorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
-            // Password requirements
             Column(
                 modifier = Modifier.padding(top = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -164,19 +165,36 @@ fun changePasswordScreen(
                 Text(
                     "• Must be at least 8 characters long",
                     style = CopayTypography.footer,
-                    color = CopayColors.surface,
+                    color = CopayColors.surface
                 )
                 Text(
                     "• Must contain at least one uppercase letter",
                     style = CopayTypography.footer,
-                    color = CopayColors.surface,
+                    color = CopayColors.surface
                 )
                 Text(
                     "• Must contain at least one number",
                     style = CopayTypography.footer,
-                    color = CopayColors.surface,
+                    color = CopayColors.surface
                 )
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            secondaryButton(
+                text = "Save changes",
+                onClick = {
+                    validateInputs()
+                    if (currentPasswordError == null && newPasswordError == null && passwordMatchError == null) {
+                        profileViewModel.updatePassword(
+                            context, currentPassword, newPassword, confirmPassword
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            )
         }
     }
 }
