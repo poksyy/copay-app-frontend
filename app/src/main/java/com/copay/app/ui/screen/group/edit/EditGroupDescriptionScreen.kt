@@ -13,8 +13,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.input.inputField
+import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -32,9 +33,7 @@ fun editGroupDescriptionScreen(
     val groupState by groupViewModel.groupState.collectAsState()
 
     var groupDescription by remember(selectedGroup?.description) {
-        mutableStateOf(
-            selectedGroup?.description ?: ""
-        )
+        mutableStateOf(selectedGroup?.description ?: "")
     }
     var descriptionError by remember { mutableStateOf<String?>(null) }
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
@@ -61,44 +60,21 @@ fun editGroupDescriptionScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        backButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup )},
+        topNavBar(
+            title = "Edit group description",
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
             modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopStart)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         )
-
-        TextButton(
-            onClick = {
-                if (validateInputs()) {
-                    selectedGroup?.let { group ->
-                        group.groupId?.let { id ->
-                            val fieldChanges = mapOf<String, Any>(
-                                "description" to groupDescription
-                            )
-                            groupViewModel.updateGroup(
-                                context, id, fieldChanges
-                            )
-                        }
-                    }
-                }
-            }, modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-        ) {
-            Text("Done", style = MaterialTheme.typography.bodyLarge)
-        }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 72.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = 90.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Text(
-                "Edit Group Description", color = CopayColors.primary, style = CopayTypography.title
-            )
-
             inputField(
                 value = groupDescription,
                 onValueChange = {
@@ -129,6 +105,23 @@ fun editGroupDescriptionScreen(
                 style = CopayTypography.footer,
                 color = CopayColors.surface,
                 modifier = Modifier.padding(top = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            secondaryButton(
+                text = "Save changes",
+                onClick = {
+                    if (validateInputs()) {
+                        selectedGroup?.groupId?.let { id ->
+                            val fieldChanges = mapOf<String, Any>("description" to groupDescription)
+                            groupViewModel.updateGroup(context, id, fieldChanges)
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
             )
         }
     }
