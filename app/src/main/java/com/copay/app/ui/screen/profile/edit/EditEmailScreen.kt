@@ -14,7 +14,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.input.inputField
+import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.ProfileState
@@ -44,12 +46,10 @@ fun editEmailScreen(
                 navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile)
                 profileViewModel.resetProfileState()
             }
-
             is ProfileState.Error -> {
                 apiErrorMessage = (profileState as ProfileState.Error).message
                 profileViewModel.resetProfileState()
             }
-
             else -> {}
         }
     }
@@ -60,44 +60,21 @@ fun editEmailScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Back button
-        backButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile )},
+        topNavBar(
+            title = "Edit email",
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile) },
             modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopStart)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         )
-
-        TextButton(
-            onClick = {
-                validateInputs()
-                if (emailError == null ) {
-                    profileViewModel.updateEmail(context, email)
-                }
-            }, modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-        ) {
-            Text(
-                "Done",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
 
         // Screen content.
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 72.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(horizontal = 24.dp)
+                .padding(top = 90.dp),
         ) {
-            Text(
-                "Edit Email",
-                color = CopayColors.primary,
-                style = CopayTypography.title
-            )
-
             // Text field for email.
             inputField(
                 value = email,
@@ -119,18 +96,31 @@ fun editEmailScreen(
                 Text(
                     text = errorMsg,
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 
             // Email's description.
             Text(
-                "Your email is used to send notifications, updates, and important information " +
-                        "related to your account. It should be a valid and accessible email " +
-                        "address that you check regularly.",
+                text = "Your email is used to send notifications, updates, and important information related to your account. It should be a valid and accessible email address that you check regularly.",
                 style = CopayTypography.footer,
                 color = CopayColors.surface,
                 modifier = Modifier.padding(top = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            secondaryButton(
+                text = "Save changes",
+                onClick = {
+                    validateInputs()
+                    if (emailError == null) {
+                        profileViewModel.updateEmail(context, email)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
             )
         }
     }
