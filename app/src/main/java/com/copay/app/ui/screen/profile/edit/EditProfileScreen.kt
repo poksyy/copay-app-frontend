@@ -19,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.R
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.viewmodel.NavigationViewModel
@@ -37,32 +38,20 @@ fun editProfileScreen(
     val email = user?.email ?: "Email"
     val phoneNumber = user?.phoneNumber ?: "Phone number"
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        // Back button
-        backButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.Profile )},
-            modifier = Modifier
-                .zIndex(1f)
-                .padding(16.dp)
-                .align(Alignment.TopStart)
+    Column(modifier = Modifier.fillMaxSize()) {
+        topNavBar(
+            title = "Edit Profile",
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.Profile) },
+            modifier = Modifier.fillMaxWidth()
         )
-
         // Main content
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
-            contentPadding = PaddingValues(top = 72.dp, bottom = 32.dp),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                Text(
-                    "Edit Profile",
-                    color = CopayColors.primary,
-                    style = CopayTypography.title
-                )
-            }
-
             item {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,

@@ -11,8 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.backButtonTop
-import com.copay.app.ui.screen.homeScreen
+import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.viewmodel.GroupViewModel
@@ -23,7 +22,7 @@ fun editGroupScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
-    // Get selected group from GroupSession
+    // Get selected group from GroupSession.
     val selectedGroup by groupViewModel.group.collectAsState()
 
     // Default values if group does not have a data.
@@ -34,55 +33,43 @@ fun editGroupScreen(
             "${selectedGroup?.externalMembers?.size ?: 0} external"
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Back button
-        backButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.Home)},
+        topNavBar(
+            title = "Edit group",
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.Home) },
             modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopStart)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         )
 
-        // Main content
+        // Main content.
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 72.dp)
+                .padding(horizontal = 16.dp)
+                .padding(top = 90.dp)
         ) {
-            Text(
-                "Edit Group",
-                color = CopayColors.primary,
-                style = CopayTypography.title
-            )
-
-            // Group Name Row
-            GroupRow(
+            groupRow(
                 label = "Name",
                 value = name,
                 onClick = {
                     navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditName)
                 }
             )
-
-            // Description Row
-            GroupRow(
+            groupRow(
                 label = "Description",
                 value = description,
                 onClick = {
                     navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditDescription)
                 }
             )
-
-            // Estimated Price Row
-            GroupRow(
+            groupRow(
                 label = "Estimated Price",
                 value = estimatedPrice,
                 onClick = {
                     navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditPrice)
                 }
             )
-
-            // Members Row
-            GroupRow(
+            groupRow(
                 label = "Members",
                 value = members,
                 onClick = {
@@ -94,7 +81,7 @@ fun editGroupScreen(
 }
 
 @Composable
-fun GroupRow(
+fun groupRow(
     label: String,
     value: String,
     onClick: () -> Unit

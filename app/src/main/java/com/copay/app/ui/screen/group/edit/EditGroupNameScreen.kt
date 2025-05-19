@@ -13,7 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.button.secondaryButton
+import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
@@ -43,12 +44,10 @@ fun editGroupNameScreen(
                 navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
                 groupViewModel.resetGroupState()
             }
-
             is GroupState.Error -> {
                 apiErrorMessage = (groupState as GroupState.Error).message
                 groupViewModel.resetGroupState()
             }
-
             else -> {}
         }
     }
@@ -60,52 +59,20 @@ fun editGroupNameScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Back button
-        backButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup )},
+        topNavBar(
+            title = "Edit group name",
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
             modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopStart)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         )
 
-        // Done button
-        TextButton(
-            onClick = {
-                if (validateInputs()) {
-                    selectedGroup?.let { group ->
-                        group.groupId?.let { id ->
-                            val fieldChanges = mapOf<String, Any>(
-                                "name" to groupName
-                            )
-                            groupViewModel.updateGroup(
-                                context,
-                                id,
-                                fieldChanges
-                            )
-                        }
-                    }
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-        ) {
-            Text("Done", style = MaterialTheme.typography.bodyLarge)
-        }
-
-        // Main content
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 72.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(horizontal = 16.dp)
+                .padding(top = 90.dp, bottom = 16.dp),
         ) {
-            Text(
-                "Edit Group Name",
-                color = CopayColors.primary,
-                style = CopayTypography.title
-            )
-
             // Group name input field
             inputField(
                 value = groupName,
@@ -139,6 +106,23 @@ fun editGroupNameScreen(
                 style = CopayTypography.footer,
                 color = CopayColors.surface,
                 modifier = Modifier.padding(top = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            secondaryButton(
+                text = "Save changes",
+                onClick = {
+                    if (validateInputs()) {
+                        selectedGroup?.groupId?.let { id ->
+                            val fieldChanges = mapOf<String, Any>("name" to groupName)
+                            groupViewModel.updateGroup(context, id, fieldChanges)
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
             )
         }
     }

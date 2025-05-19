@@ -13,8 +13,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.input.inputField
+import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.ProfileState
@@ -34,7 +35,7 @@ fun editUsernameScreen(
     val profileState by profileViewModel.profileState.collectAsState()
 
     // Local states for managing the username value and errors
-    var username by remember(user?.username) { mutableStateOf(user?.username?: "") }
+    var username by remember(user?.username) { mutableStateOf(user?.username ?: "") }
     var usernameError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(profileState) {
@@ -54,44 +55,20 @@ fun editUsernameScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Back button
-        backButtonTop(
-            onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile )},
+        topNavBar(
+            title = "Edit username",
+            onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile) },
             modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.TopStart)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         )
-
-        TextButton(
-            onClick = {
-                validateInputs()
-                if (usernameError == null ) {
-                    profileViewModel.updateUsername(context, username)
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-        ) {
-            Text(
-                "Done",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 72.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(horizontal = 24.dp)
+                .padding(top = 90.dp)
         ) {
-            Text(
-                "Edit Username",
-                color = CopayColors.primary,
-                style = CopayTypography.title
-            )
-
             inputField(
                 value = username,
                 onValueChange = {
@@ -122,6 +99,21 @@ fun editUsernameScreen(
                 style = CopayTypography.footer,
                 color = CopayColors.surface,
                 modifier = Modifier.padding(top = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            secondaryButton(
+                text = "Save changes",
+                onClick = {
+                    validateInputs()
+                    if (usernameError == null) {
+                        profileViewModel.updateUsername(context, username)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
             )
         }
     }

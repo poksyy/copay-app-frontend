@@ -2,6 +2,7 @@ package com.copay.app.ui.screen.group.create
 
 import memberListDialog
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -25,6 +26,7 @@ import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.dialog.addMemberDialog
 import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.components.input.priceInputField
+import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.screen.homeScreen
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
@@ -159,27 +161,20 @@ fun CreateGroupScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        Column {
+            topNavBar(
+                title = "Create new group",
+                onBackClick = { navigationViewModel.navigateBack() }
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
+                .padding(top = 70.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                backButtonTop(onBackClick = { navigationViewModel.navigateBack() })
-            }
-
-            Text(
-                text = "Create New Group",
-                style = CopayTypography.title,
-                color = CopayColors.primary,
-                modifier = Modifier.padding(bottom = 24.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Content in a scrollable column
             Column(
@@ -187,6 +182,12 @@ fun CreateGroupScreen(
                     .weight(1f)
                     .fillMaxWidth()
             ) {
+                Text(
+                    text = "Group details",
+                    style = CopayTypography.subtitle,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
                 inputField(
                     value = groupName,
                     onValueChange = { groupName = it },
@@ -224,7 +225,7 @@ fun CreateGroupScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Group Members",
+                    text = "Group members",
                     style = CopayTypography.subtitle,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )

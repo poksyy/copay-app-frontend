@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 
 object CopayColors {
     val primary: Color
@@ -37,6 +38,9 @@ object CopayColors {
 object CopayTypography {
     val title: TextStyle
         @Composable get() = MaterialTheme.typography.titleLarge
+
+    val navTitle: TextStyle
+        @Composable get() = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
 
     val subtitle: TextStyle
         @Composable get() = MaterialTheme.typography.titleMedium
