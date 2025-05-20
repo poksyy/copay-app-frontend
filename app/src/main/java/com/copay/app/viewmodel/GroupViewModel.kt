@@ -50,6 +50,10 @@ class GroupViewModel @Inject constructor(
         groupSession.setGroup(group)
     }
 
+    fun getCurrentUserId(): Long? {
+        return userSession.user.value?.userId
+    }
+
     // Fetches groups for the current user.
     fun getGroupsByUser(context: Context) {
         viewModelScope.launch {

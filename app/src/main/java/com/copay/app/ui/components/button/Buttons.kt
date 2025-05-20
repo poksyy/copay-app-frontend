@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import com.copay.app.R
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
+import androidx.compose.foundation.layout.PaddingValues
 
 @Composable
 fun primaryButton(
@@ -178,6 +179,23 @@ fun backButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier, iconCo
             contentDescription = "Back",
             tint = iconColor
         )
+    }
+}
+
+// Pay debts Button for group balance.
+@Composable
+fun payDebtsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF4CAF50),
+            contentColor = CopayColors.secondary
+        ),
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+    ) {
+        Text(text = "Pay your debts", maxLines = 1, softWrap = false)
     }
 }
 
