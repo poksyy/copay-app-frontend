@@ -14,5 +14,8 @@ data class CreateGroupResponseDTO(
     val userIsOwner: Boolean,
     val groupOwner: GroupOwnerDTO,
     val registeredMembers: List<RegisteredMemberDTO>,
-    val externalMembers: List<ExternalMemberDTO>
+    val externalMembers: List<ExternalMemberDTO>,
+
+    // Message in case of any error in the backend.
+    val message: String? = null
 )

@@ -20,7 +20,9 @@ import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.dialog.*
 import com.copay.app.ui.components.listitem.ExternalMemberItem
 import com.copay.app.ui.components.listitem.RegisteredMemberItem
+import com.copay.app.ui.components.snackbar.GreenSnackbarHost
 import com.copay.app.ui.components.topNavBar
+import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -33,15 +35,15 @@ fun editGroupMembersScreen(
 ) {
     val context = LocalContext.current
     val currentUser by userViewModel.user.collectAsState()
-    val groupState = groupViewModel.group.collectAsState()
-    val group = groupState.value
+    val groupState by groupViewModel.groupState.collectAsState()
+    val group by groupViewModel.group.collectAsState()
     val groupId = group?.groupId ?: return
 
     val registeredMembers by remember(group) {
-        derivedStateOf { group.registeredMembers ?: emptyList() }
+        derivedStateOf { group!!.registeredMembers ?: emptyList() }
     }
     val externalMembers by remember(group) {
-        derivedStateOf { group.externalMembers ?: emptyList() }
+        derivedStateOf { group!!.externalMembers ?: emptyList() }
     }
 
     // State variables to control the visibility of the leave & delete dialogs.
@@ -51,8 +53,38 @@ fun editGroupMembersScreen(
     var showLeaveDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
+    // Snackbar state
+    var showSnackbar by remember { mutableStateOf(false) }
+    var screenSnackbarMessage by remember { mutableStateOf("") }
+    val screenSnackbarHostState = remember { SnackbarHostState() }
+
+    // Handle the state when user updates the members.
+    LaunchedEffect(groupState) {
+        when (groupState) {
+            is GroupState.Success.GroupUpdated -> {
+                screenSnackbarMessage = (groupState as GroupState.Success.GroupUpdated).updateData.message
+                showSnackbar = true
+            }
+
+            is GroupState.Error -> {
+                screenSnackbarMessage = (groupState as GroupState.Error).message
+                showSnackbar = true
+            }
+
+            else -> {}
+        }
+    }
+
+    // Show in the screen the snackbar message.
+    LaunchedEffect(showSnackbar) {
+        if (showSnackbar) {
+            screenSnackbarHostState.showSnackbar(screenSnackbarMessage)
+            showSnackbar = false
+        }
+    }
+
     editGroupMembersContent(
-        group = group,
+        group = group!!,
         registeredMembers = registeredMembers,
         externalMembers = externalMembers,
         currentUserId = currentUser?.userId,
@@ -61,7 +93,8 @@ fun editGroupMembersScreen(
         onDeleteGroup = { showDeleteDialog = true },
         onLeaveGroup = { showLeaveDialog = true },
         onRemoveRegisteredMember = { registeredMemberToRemove = it },
-        onRemoveExternalMember = { externalMemberToRemove = it }
+        onRemoveExternalMember = { externalMemberToRemove = it },
+        screenSnackbarHostState = screenSnackbarHostState
     )
 
     // Add member dialog.
@@ -70,11 +103,9 @@ fun editGroupMembersScreen(
             onDismiss = { showAddMemberDialog = false },
             onAddRegistered = { phoneNumber ->
                 groupViewModel.addRegisteredMember(context, groupId, registeredMembers, phoneNumber)
-                showAddMemberDialog = false
             },
             onAddExternal = { name ->
                 groupViewModel.addExternalMember(context, groupId, externalMembers, name)
-                showAddMemberDialog = false
             }
         )
     }
@@ -149,7 +180,8 @@ fun editGroupMembersContent(
     onDeleteGroup: () -> Unit,
     onLeaveGroup: () -> Unit,
     onRemoveRegisteredMember: (RegisteredMemberDTO) -> Unit,
-    onRemoveExternalMember: (ExternalMemberDTO) -> Unit
+    onRemoveExternalMember: (ExternalMemberDTO) -> Unit,
+    screenSnackbarHostState: SnackbarHostState
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         topNavBar(
@@ -212,5 +244,13 @@ fun editGroupMembersContent(
                 )
             }
         }
+
+        // Snackbar host is shown when user removes a member.
+        GreenSnackbarHost(
+            hostState = screenSnackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
     }
 }
