@@ -1,6 +1,7 @@
 package com.copay.app.ui.screen.group.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,15 +27,14 @@ import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.backButtonTop
-import com.copay.app.ui.components.dialog.leaveGroupDialog
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.ui.components.button.payDebtsButton
+import com.copay.app.ui.components.pillTabRow
 import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun groupBalancesScreen(
@@ -165,128 +165,122 @@ fun groupBalancesScreen(
         }
 
         // Screen content
-        when {
-            groupState is GroupState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+        if (group != null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 170.dp)
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = group?.description ?: "Description",
+                        style = CopayTypography.body,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
-            group != null -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = 24.dp, end = 24.dp, top = 170.dp)
-                ) {
-                    // Group Header
-                    item {
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            text = group?.description ?: "Description",
-                            style = CopayTypography.body,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                    Text(
+                        text = "Members: ${(group?.registeredMembers?.size ?: 0) + (group?.externalMembers?.size ?: 0)}",
+                        style = CopayTypography.body,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            text = "Members: ${(group?.registeredMembers?.size ?: 0) + (group?.externalMembers?.size ?: 0)}",
-                            style = CopayTypography.body,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                    Text(
+                        text = "Total ${group!!.estimatedPrice} ${group?.currency}",
+                        style = CopayTypography.subtitle,
+                        fontWeight = FontWeight.Bold,
+                        color = CopayColors.primary
+                    )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        val totalGroupExpense = group!!.estimatedPrice
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val buttonModifier = Modifier.weight(1f)
 
-                        Text(
-                            text = "Total $totalGroupExpense ${group?.currency}",
-                            style = CopayTypography.subtitle,
-                            fontWeight = FontWeight.Bold,
-                            color = CopayColors.primary
-                        )
+                        if (!isCreditor) {
+                            payDebtsButton(
+                                onClick = { /* TODO */ },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
 
+                        if (isCreator) {
+                            Button(
+                                onClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditMembers) },
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = buttonModifier,
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                            ) {
+                                Text(text = "Manage members", maxLines = 1, softWrap = false)
+                            }
+                        }
                     }
+                }
 
-                    // Members Section Header
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            val buttonModifier = Modifier.weight(1f)
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
 
-                            if (!isCreditor) {
-                                payDebtsButton(
-                                    onClick = { //TODO: Add logic to pay debts
-                                    },
-                                    modifier = Modifier.weight(1f)
-                                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    // Tabs
+                    var selectedTabIndex by remember { mutableStateOf(0) }
+                    val tabs = listOf("Members", "Balances")
+
+                    pillTabRow(
+                        tabs = tabs,
+                        selectedTabIndex = selectedTabIndex,
+                        onTabSelected = { selectedTabIndex = it },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        when (selectedTabIndex) {
+                            0 -> {
+                                val registered = group?.registeredMembers.orEmpty()
+                                val external = group?.externalMembers.orEmpty()
+
+                                items(registered) { member ->
+                                    val expense = calculateMemberExpense(member, expenses)
+                                    memberItem(member, expense, group?.currency)
+                                }
+
+                                items(external) { member ->
+                                    val expense = calculateMemberExpense(member, expenses)
+                                    memberItem(member, expense, group?.currency)
+                                }
                             }
 
-                            if (isCreator) {
-                                Button(
-                                    onClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditMembers) },
-                                    shape = RoundedCornerShape(8.dp),
-                                    modifier = buttonModifier,
-                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                            1 -> item {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Text(text = "Manage members", maxLines = 1, softWrap = false)
+                                    Text(
+                                        text = "Balances content will be implemented later",
+                                        style = CopayTypography.body,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
                         }
-
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                    }
-
-                    // Members List
-                    items(
-                        (group?.registeredMembers ?: emptyList()) + (group?.externalMembers
-                            ?: emptyList())
-                    ) { member ->
-                        // Calculate expense for each member.
-                        val memberExpense = calculateMemberExpense(member, expenses)
-                        memberItem(
-                            member = member,
-                            expense = memberExpense,
-                            currency = group?.currency
-                        )
                     }
                 }
             }
-
-            else -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-                ) {
-                    Text("Group not found or error loading group details")
-                }
-            }
-        }
-
-        // Snackbar host
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(16.dp)
-        )
-
-        // Dialog for confirming leaving the group
-        if (showLeaveDialog) {
-            leaveGroupDialog(
-                onDismiss = { showLeaveDialog = false },
-                onConfirm = {
-                    coroutineScope.launch {
-                        groupViewModel.leaveGroup(context, group?.groupId ?: 0)
-                    }
-                    showLeaveDialog = false
-                })
         }
     }
 }
