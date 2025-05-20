@@ -1,7 +1,6 @@
 package com.copay.app.ui.screen.group.detail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,7 +30,6 @@ import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.ui.components.button.payDebtsButton
 import com.copay.app.ui.components.pillTabRow
-import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
@@ -43,10 +41,6 @@ fun groupBalancesScreen(
     expenseViewModel: ExpenseViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-
-    // Group state.
-    val groupState by groupViewModel.groupState.collectAsState()
 
     // Values from Group Session.
     val group by groupViewModel.group.collectAsState()
@@ -54,16 +48,6 @@ fun groupBalancesScreen(
     // Expense state,
     val expensesState by expenseViewModel.expenseState.collectAsState()
     val expenses by expenseViewModel.expenses.collectAsState()
-
-    // Dialog states
-    var showLeaveDialog by remember { mutableStateOf(false) }
-    var showAddMemberDialog by remember { mutableStateOf(false) }
-    var newMemberEmail by remember { mutableStateOf("") }
-
-    // Snackbar state
-    var showSnackbar by remember { mutableStateOf(false) }
-    var snackbarMessage by remember { mutableStateOf("") }
-    val snackbarHostState = remember { SnackbarHostState() }
 
     // Get current user
     val currentUserId = groupViewModel.getCurrentUserId()
@@ -74,33 +58,6 @@ fun groupBalancesScreen(
     LaunchedEffect(Unit) {
         groupViewModel.getGroupsByUser(context)
         group?.groupId?.let { expenseViewModel.getExpensesByGroup(context, it) }
-    }
-
-    // Monitor group state changes
-    LaunchedEffect(groupState) {
-        when (groupState) {
-            is GroupState.Success.GroupUpdated -> {
-                snackbarMessage = (groupState as GroupState.Success.GroupUpdated).updateData.message
-                showSnackbar = true
-                navigationViewModel.navigateTo(SpaScreens.Home)
-                groupViewModel.resetGroupState()
-            }
-
-            is GroupState.Error -> {
-                snackbarMessage = (groupState as GroupState.Error).message
-                showSnackbar = true
-            }
-
-            else -> {}
-        }
-    }
-
-    // Show snackbar when needed
-    LaunchedEffect(showSnackbar) {
-        if (showSnackbar) {
-            snackbarHostState.showSnackbar(snackbarMessage)
-            showSnackbar = false
-        }
     }
 
     // Detects if banner image color is dark or not
@@ -352,13 +309,13 @@ private fun memberItem(member: Any, expense: Double, currency: String?) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "Manage debts",
-                            color = Color(0xFF4CAF50),
+                            color = CopayColors.success,
                             fontSize = 12.sp
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.ic_forward),
                             contentDescription = "Forward arrow",
-                            tint = Color(0xFF4CAF50)
+                            tint = CopayColors.success
                         )
                     }
                 }
