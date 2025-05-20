@@ -190,7 +190,7 @@ fun payDebtsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF4CAF50),
+            containerColor = CopayColors.success,
             contentColor = CopayColors.secondary
         ),
         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
