@@ -4,17 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,6 +29,7 @@ import com.copay.app.ui.components.button.backButtonTop
 import com.copay.app.ui.components.dialog.leaveGroupDialog
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
+import com.copay.app.ui.components.button.payDebtsButton
 import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.GroupViewModel
@@ -65,6 +65,10 @@ fun groupBalancesScreen(
     var snackbarMessage by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Get current user
+    val currentUserId = groupViewModel.getCurrentUserId()
+    val isCreditor = expenses.any { it.creditorUserId == currentUserId }
+    val isCreator = group?.isOwner == true
 
     // Load groups when entering the screen
     LaunchedEffect(Unit) {
@@ -125,7 +129,6 @@ fun groupBalancesScreen(
                 modifier = Modifier.fillMaxSize()
             )
 
-            // TODO: Move the style for group's banner in another place
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -133,17 +136,28 @@ fun groupBalancesScreen(
                         brush = Brush.verticalGradient(
                             colors = listOf(
                                 Color.Transparent, Color.Black.copy(alpha = 3f)
-                            ), startY = 0f, endY = Float.POSITIVE_INFINITY
+                            ),
+                            startY = 0f,
+                            endY = Float.POSITIVE_INFINITY
                         )
                     )
             )
 
-            // Back button
+            Text(
+                text = group?.name ?: "Group",
+                color = Color.White,
+                style = CopayTypography.title,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 16.dp, bottom = 16.dp)
+            )
+
             backButtonTop(
                 onBackClick = {
                     navigationViewModel.navigateBack()
                     groupViewModel.resetGroupSession()
-                }, modifier = Modifier
+                },
+                modifier = Modifier
                     .padding(16.dp)
                     .align(Alignment.TopStart),
                 iconColor = iconColor
@@ -170,14 +184,6 @@ fun groupBalancesScreen(
                     item {
 
                         Text(
-                            text = group?.name ?: "Group",
-                            color = CopayColors.primary,
-                            style = CopayTypography.title
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text(
                             text = group?.description ?: "Description",
                             style = CopayTypography.body,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -192,6 +198,16 @@ fun groupBalancesScreen(
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
+
+                        val totalGroupExpense = group!!.estimatedPrice
+
+                        Text(
+                            text = "Total $totalGroupExpense ${group?.currency}",
+                            style = CopayTypography.subtitle,
+                            fontWeight = FontWeight.Bold,
+                            color = CopayColors.primary
+                        )
+
                     }
 
                     // Members Section Header
@@ -200,29 +216,28 @@ fun groupBalancesScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            val totalGroupExpense = group!!.estimatedPrice
+                            val buttonModifier = Modifier.weight(1f)
 
-                            Text(
-                                text = "Total $totalGroupExpense ${group?.currency}",
-                                style = CopayTypography.subtitle,
-                                fontWeight = FontWeight.Bold,
-                                color = CopayColors.primary
-                            )
-
-                            // TODO move this small button into component.
-                            Button(
-                                onClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditMembers) },
-                                shape = RoundedCornerShape(8.dp),
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
-                            ) {
-                                Text(
-                                    text = "Manage members",
-                                    maxLines = 1,
-                                    softWrap = false
+                            if (!isCreditor) {
+                                payDebtsButton(
+                                    onClick = { //TODO: Add logic to pay debts
+                                    },
+                                    modifier = Modifier.weight(1f)
                                 )
+                            }
+
+                            if (isCreator) {
+                                Button(
+                                    onClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditMembers) },
+                                    shape = RoundedCornerShape(8.dp),
+                                    modifier = buttonModifier,
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                                ) {
+                                    Text(text = "Manage members", maxLines = 1, softWrap = false)
+                                }
                             }
                         }
 
@@ -267,11 +282,11 @@ fun groupBalancesScreen(
             leaveGroupDialog(
                 onDismiss = { showLeaveDialog = false },
                 onConfirm = {
-                coroutineScope.launch {
-                    groupViewModel.leaveGroup(context, group?.groupId ?: 0)
-                }
-                showLeaveDialog = false
-            })
+                    coroutineScope.launch {
+                        groupViewModel.leaveGroup(context, group?.groupId ?: 0)
+                    }
+                    showLeaveDialog = false
+                })
         }
     }
 }
@@ -282,7 +297,6 @@ private fun memberItem(member: Any, expense: Double, currency: String?) {
     val memberName: String
     val memberPhoneNumber: String
 
-    // Check if it is a registered or external member.
     when (member) {
         is RegisteredMemberDTO -> {
             memberName = member.username
@@ -300,52 +314,61 @@ private fun memberItem(member: Any, expense: Double, currency: String?) {
         }
     }
 
+    val isCreditor = expense < 0
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         shape = RoundedCornerShape(8.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .padding(12.dp)
-                .height(48.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Avatar placeholder.
-            Surface(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape),
-                color = CopayColors.primary.copy(alpha = 0.2f)
+        Column(modifier = Modifier.padding(12.dp)) {
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = memberName.firstOrNull().toString(),
-                    modifier = Modifier.wrapContentSize(Alignment.Center),
-                    style = CopayTypography.title,
-                    color = CopayColors.primary
+                    text = memberName,
+                    fontWeight = FontWeight.Medium,
+                )
+                Text(
+                    text = "${expense.format(2)} $currency",
+                    fontWeight = FontWeight.Bold,
+                    color = if (isCreditor) MaterialTheme.colorScheme.error else CopayColors.primary
                 )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = memberName, fontWeight = FontWeight.Medium
-                )
-
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = memberPhoneNumber,
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                TextButton(
+                    onClick = { /* TODO */ },
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier.height(36.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Manage debts",
+                            color = Color(0xFF4CAF50),
+                            fontSize = 12.sp
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_forward),
+                            contentDescription = "Forward arrow",
+                            tint = Color(0xFF4CAF50)
+                        )
+                    }
+                }
             }
-
-            Text(
-                text = "${expense.format(2)} $currency",
-                fontWeight = FontWeight.Bold,
-                color = if (expense < 0) MaterialTheme.colorScheme.error else CopayColors.primary
-            )
         }
     }
 }
