@@ -8,6 +8,7 @@ import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.InvitedExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
+import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.repository.ProfileRepository
 import com.copay.app.model.Group
 import com.copay.app.repository.GroupRepository
@@ -36,6 +37,12 @@ class GroupViewModel @Inject constructor(
 
     val group = groupSession.group
 
+    // Save the list of groups to avoid unnecessary reloads (Caché).
+    private var cachedGroupsDTO: GetGroupResponseDTO? = null
+
+    // Notice if there are new fetched groups different from cached .
+    val hasNewGroups = MutableStateFlow(false)
+
     // Resets the UI state to idle.
     fun resetGroupState() {
         _groupState.value = GroupState.Idle
@@ -55,16 +62,30 @@ class GroupViewModel @Inject constructor(
     }
 
     // Fetches groups for the current user.
-    fun getGroupsByUser(context: Context) {
+    fun getGroupsByUser(context: Context, forceRefresh: Boolean = false) {
         viewModelScope.launch {
-            _groupState.value = GroupState.Loading
 
             val userId = userSession.user.value?.userId ?: run {
                 _groupState.value = GroupState.Error("User not logged in")
                 return@launch
             }
 
+            // If cache is available, use it and silently refresh in the background.
+            if (!forceRefresh && cachedGroupsDTO != null) {
+                _groupState.value = GroupState.Success.GroupsFetched(cachedGroupsDTO!!)
+                refreshGroupsSilently(context, userId)
+                return@launch
+            }
+
+            // Full fetch if there's no cached data
+            _groupState.value = GroupState.Loading
+
             val backendResponse = groupRepository.getGroupsByUser(context, userId)
+
+            if (backendResponse is GroupState.Success.GroupsFetched) {
+                cachedGroupsDTO = backendResponse.groupsData
+                hasNewGroups.value = false
+            }
 
             _groupState.value = backendResponse
         }
@@ -307,4 +328,35 @@ class GroupViewModel @Inject constructor(
         updateGroupExternalMembers(context, groupId, currentMembers, updatedNames)
     }
 
+    // Method to refresh group in background.
+    private fun refreshGroupsSilently(context: Context, userId: Long) {
+        viewModelScope.launch {
+            val backendResponse = groupRepository.getGroupsByUser(context, userId)
+
+            if (backendResponse is GroupState.Success.GroupsFetched) {
+                val newGroups = backendResponse.groupsData
+
+                // Compares group IDs to detect if there are new groups.
+                val newGroupIds = newGroups.groups.mapNotNull { it.groupId }.toSet()
+                val cachedIds = cachedGroupsDTO?.groups?.mapNotNull { it.groupId }?.toSet() ?: emptySet()
+
+                if (newGroupIds != cachedIds) {
+                    hasNewGroups.value = true
+                }
+
+            }
+        }
+    }
+
+    // Method to auto-refresh continuously every 5 seconds.
+    fun autoRefresh(context: Context) {
+        viewModelScope.launch {
+            val userId = getCurrentUserId() ?: return@launch
+
+            while (true) {
+                refreshGroupsSilently(context, userId)
+                kotlinx.coroutines.delay(5_000)
+            }
+        }
+    }
 }

@@ -13,11 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.copay.app.R
 import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.dialog.deleteGroupDialog
@@ -29,6 +31,7 @@ import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
 import com.copay.app.ui.components.listitem.groupItem
+import com.copay.app.ui.components.snackbar.GreenSnackbarHost
 
 @Composable
 fun homeScreen(
@@ -42,6 +45,12 @@ fun homeScreen(
     val username = user?.username ?: "Username"
 
     val context = LocalContext.current
+
+    // Variable from Group VW to detect the state if there are new groups.
+    val hasNewGroups by groupViewModel.hasNewGroups.collectAsState()
+
+    // Snackbar.
+    val snackbarHostState = remember { SnackbarHostState() }
 
     // Group state.
     val groupState by groupViewModel.groupState.collectAsState()
@@ -57,6 +66,20 @@ fun homeScreen(
     // Trigger group loading when the screen is first composed
     LaunchedEffect(Unit) {
         groupViewModel.getGroupsByUser(context)
+        groupViewModel.autoRefresh(context)
+    }
+
+    // Trigger when
+    LaunchedEffect(hasNewGroups) {
+        if (hasNewGroups) {
+            val result = snackbarHostState.showSnackbar(
+                message = "New groups available.",
+                actionLabel = "Update"
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                groupViewModel.getGroupsByUser(context, forceRefresh = true)
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -79,6 +102,7 @@ fun homeScreen(
                     .sortedByDescending { it.createdAt }
 
                 HomeContent(
+                    onRefreshClick = { groupViewModel.getGroupsByUser(context, forceRefresh = true) },
                     onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
                     onDetailClick = { group ->
                         groupViewModel.selectGroup(group)
@@ -103,6 +127,7 @@ fun homeScreen(
 
             else -> {
                 HomeContent(
+                    onRefreshClick = { groupViewModel.getGroupsByUser(context, forceRefresh = true) },
                     onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
                     onDetailClick = { navigationViewModel.navigateTo(SpaScreens.BalancesGroup) },
                     onEditClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
@@ -120,13 +145,20 @@ fun homeScreen(
             }
         }
 
+        GreenSnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp)
+        )
+
         if (showDeleteDialog) {
             deleteGroupDialog(
                 onDismiss = { showDeleteDialog = false },
                 onConfirm = {
                     groupSelected?.groupId?.let { groupId ->
                         groupViewModel.deleteGroup(context, groupId) {
-                            groupViewModel.getGroupsByUser(context)
+                            groupViewModel.getGroupsByUser(context, forceRefresh = true)
                         }
                     }
                     showDeleteDialog = false
@@ -140,7 +172,7 @@ fun homeScreen(
                 onConfirm = {
                     groupSelected?.groupId?.let { groupId ->
                         groupViewModel.leaveGroup(context, groupId) {
-                            groupViewModel.getGroupsByUser(context)
+                            groupViewModel.getGroupsByUser(context, forceRefresh = true)
                         }
                     }
                     showLeaveDialog = false
@@ -153,6 +185,7 @@ fun homeScreen(
 @Composable
 private fun HomeContent(
     // Receives the callbacks from HomeViewModel.
+    onRefreshClick: () -> Unit,
     onCreateClick: () -> Unit,
     onDetailClick: (Group) -> Unit,
     onEditClick: (Group) -> Unit,
@@ -232,13 +265,24 @@ private fun HomeContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "My groups", color = CopayColors.primary, style = CopayTypography.subtitle
-            )
-            Row {
-                TextButton(onClick = onCreateClick) {
-                    Text("Create")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "My groups",
+                    color = CopayColors.primary,
+                    style = CopayTypography.subtitle
+                )
+
+                IconButton(onClick = onRefreshClick) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_refresh),
+                        contentDescription = "Refresh",
+                        tint = CopayColors.primary
+                    )
                 }
+            }
+
+            TextButton(onClick = onCreateClick) {
+                Text("Create")
             }
         }
 
