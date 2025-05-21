@@ -2,6 +2,8 @@ package com.copay.app.ui.screen.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.copay.app.ui.components.button.backButtonTop
-import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.components.button.primaryButton
+import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.AuthState
@@ -29,17 +31,21 @@ fun registerStepOneScreen(
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.authState.collectAsState()
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
+    // Form input values
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
+    // Validation errors
     var usernameError by remember { mutableStateOf<String?>(null) }
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var passwordMatchError by remember { mutableStateOf<String?>(null) }
 
+    // API error message
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
 
     // Effect triggered when the authentication state changes.
@@ -80,12 +86,12 @@ fun registerStepOneScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .verticalScroll(scrollState)
+                .padding(24.dp)
+                .imePadding(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
-
             Text(
                 "Welcome to Copay!",
                 style = CopayTypography.title,
@@ -97,7 +103,7 @@ fun registerStepOneScreen(
                 color = CopayColors.primary
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             inputField(
                 value = username,
@@ -137,23 +143,6 @@ fun registerStepOneScreen(
                 isError = passwordError != null,
                 errorMessage = passwordError
             )
-            Spacer(modifier = Modifier.height(12.dp))
-
-            inputField(
-                value = confirmPassword,
-                onValueChange = {
-                    confirmPassword = it
-                    passwordMatchError =
-                        UserValidation.validatePasswordMatch(password, it).errorMessage
-                },
-                label = "Confirm Password",
-                isRequired = true,
-                isPassword = true,
-                isError = passwordMatchError != null,
-                errorMessage = passwordMatchError
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
 
             // Password requirements
             Column(
@@ -176,6 +165,21 @@ fun registerStepOneScreen(
                     color = CopayColors.surface,
                 )
             }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            inputField(
+                value = confirmPassword,
+                onValueChange = {
+                    confirmPassword = it
+                    passwordMatchError =
+                        UserValidation.validatePasswordMatch(password, it).errorMessage
+                },
+                label = "Confirm Password",
+                isRequired = true,
+                isPassword = true,
+                isError = passwordMatchError != null,
+                errorMessage = passwordMatchError
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
