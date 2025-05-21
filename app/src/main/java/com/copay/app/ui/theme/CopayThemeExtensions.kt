@@ -33,6 +33,10 @@ object CopayColors {
 
     val outline: Color
         @Composable get() = MaterialTheme.colorScheme.outline
+
+    // Success/Green color
+    val success: Color
+        @Composable get() = SuccessGreen
 }
 
 object CopayTypography {

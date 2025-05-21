@@ -7,10 +7,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.Alignment
 import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.components.pillTabRow
+import com.copay.app.ui.components.snackbar.GreenSnackbarHost
+import com.copay.app.ui.components.snackbar.RedSnackbarHost
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
+import kotlinx.coroutines.launch
 
 @Composable
 fun addMemberDialog(
@@ -22,19 +27,27 @@ fun addMemberDialog(
     var externalName by remember { mutableStateOf("") }
     var activeTab by remember { mutableStateOf(0) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        modifier = Modifier.width(320.dp),
-        title = {
-            Column {
-                Text(
-                    text = "Add Members",
-                    style = CopayTypography.title
-                )
-            }
-        },
-        text = {
-            Column {
+    // Show snackbar messages.
+    val localErrorSnackbarHostState = remember { SnackbarHostState() }
+    val localSuccessSnackbarHostState = remember { SnackbarHostState() }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            tonalElevation = 8.dp,
+            shape = MaterialTheme.shapes.medium,
+            color = CopayColors.onPrimary
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .width(320.dp)
+            ) {
+                Text("Add Members", style = CopayTypography.title)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 pillTabRow(
                     tabs = listOf("Users", "Guests"),
                     selectedTabIndex = activeTab,
@@ -56,8 +69,8 @@ fun addMemberDialog(
                             onValueChange = { phoneNumber = it },
                             label = "Phone Number",
                             modifier = Modifier.padding(top = 12.dp),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            )
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
                     }
 
                     1 -> {
@@ -74,36 +87,64 @@ fun addMemberDialog(
                         )
                     }
                 }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    when (activeTab) {
-                        0 -> {
-                            onAddRegistered(phoneNumber)
-                            phoneNumber = ""
-                        }
 
-                        1 -> {
-                            onAddExternal(externalName)
-                            externalName = ""
-                        }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
                     }
-                },
-                enabled = when (activeTab) {
-                    0 -> phoneNumber.isNotBlank()
-                    1 -> externalName.isNotBlank()
-                    else -> false
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(onClick = {
+                        when (activeTab) {
+                            0 -> {
+                                if (phoneNumber.length < 9) {
+                                    coroutineScope.launch {
+                                        localErrorSnackbarHostState.showSnackbar("Invalid phone number")
+                                    }
+                                } else {
+                                    onAddRegistered(phoneNumber)
+                                    phoneNumber = ""
+                                    coroutineScope.launch {
+                                        localSuccessSnackbarHostState.showSnackbar("Member added")
+                                    }
+                                }
+                            }
+
+                            1 -> {
+                                if (externalName.isBlank()) {
+                                    coroutineScope.launch {
+                                        localErrorSnackbarHostState.showSnackbar("Name cannot be empty")
+                                    }
+                                } else {
+                                    onAddExternal(externalName)
+                                    externalName = ""
+                                    coroutineScope.launch {
+                                        localSuccessSnackbarHostState.showSnackbar("Member added")
+                                    }
+                                }
+                            }
+                        }
+                    }) {
+                        Text("Add")
+                    }
                 }
-            ) {
-                Text("Add", style = CopayTypography.body)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel", style = CopayTypography.body)
+
+                // Snackbar host.
+                RedSnackbarHost(
+                    hostState = localErrorSnackbarHostState,
+                    modifier = Modifier.align(Alignment.End)
+                )
+
+                GreenSnackbarHost(
+                    hostState = localSuccessSnackbarHostState,
+                    modifier = Modifier.align(Alignment.End)
+                )
             }
         }
-    )
+    }
 }

@@ -1,13 +1,10 @@
 package com.copay.app.ui.screen.group.create
 
 import memberListDialog
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,14 +17,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.dto.group.auxiliary.InvitedExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.backButtonTop
 import com.copay.app.ui.components.button.primaryButton
 import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.dialog.addMemberDialog
 import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.components.input.priceInputField
+import com.copay.app.ui.components.snackbar.RedSnackbarHost
 import com.copay.app.ui.components.topNavBar
-import com.copay.app.ui.screen.homeScreen
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -61,6 +57,10 @@ fun CreateGroupScreen(
     val imageUrl by remember { mutableStateOf("") } // TODO: Store image
     val imageProvider by remember { mutableStateOf("") }
 
+    // Handle states.
+    val userState by userViewModel.userState.collectAsState()
+    val groupState by groupViewModel.groupState.collectAsState()
+
     // Price parsed to Float.
     val estimatedPriceFloat = estimatedPriceText.toFloatOrNull() ?: 0f
 
@@ -74,23 +74,27 @@ fun CreateGroupScreen(
     val registeredMembers = remember { mutableStateListOf(userPhoneNumber) }
     val externalMembers = remember { mutableStateListOf<String>() }
 
-    // Save names.
+    // Save members names for the group.
     val memberNames = remember { mutableStateMapOf<String, String>() }
 
-    LaunchedEffect(registeredMembers) {
-        registeredMembers
-            .filterNotNull()
-            .filter { it != userPhoneNumber && !memberNames.containsKey(it) }
-            .forEach { phone ->
-                userViewModel.getUserByPhone(context, phone)
-            }
-    }
+    // Save the phoneNumber in a variable to add it in the list through LaunchedEffect.
+    var lastSearchedPhone by remember { mutableStateOf<String?>(null) }
 
-    val userState by userViewModel.userState.collectAsState()
+    // Snackbar state
+    var showSnackbar by remember { mutableStateOf(false) }
+    var screenSnackbarMessage by remember { mutableStateOf("") }
+    val screenSnackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(userState) {
-        handleUserState(userState, memberNames)
-    }
+    // Dialogs
+    var showMembersDialog by remember { mutableStateOf(false) }
+    var showAddMembersDialog by remember { mutableStateOf(false) }
+
+    // Dropdown creditor.
+    var selectedCreditorPhone by remember { mutableStateOf<String?>(userPhoneNumber) }
+    var selectedCreditor by remember { mutableStateOf<String?>("Me") }
+    var dropdownExpanded by remember { mutableStateOf(false) }
+
+    val currencyList = listOf("USD", "EUR", "GBP", "JPY", "MXN")
 
     // Members list for dropdown
     val membersList = remember {
@@ -114,36 +118,6 @@ fun CreateGroupScreen(
         }
     }
 
-    val groupState by groupViewModel.groupState.collectAsState()
-
-    LaunchedEffect(groupState) {
-        if (groupState is GroupState.Success.GroupCreated) {
-            navigationViewModel.navigateTo(SpaScreens.Home)
-            groupViewModel.resetGroupState()
-        }
-    }
-
-    // Dialogs
-    var showMembersDialog by remember { mutableStateOf(false) }
-    var showAddMembersDialog by remember { mutableStateOf(false) }
-
-    // Dropdown creditor.
-    var selectedCreditorPhone by remember { mutableStateOf<String?>(userPhoneNumber) }
-    var selectedCreditor by remember { mutableStateOf<String?>("Me") }
-    var dropdownExpanded by remember { mutableStateOf(false) }
-
-    val currencyList = listOf("USD", "EUR", "GBP", "JPY", "MXN")
-
-    fun validateInputs() {
-        groupNameError = GroupValidation.validateGroupName(groupName).errorMessage
-        estimatedPriceError =
-            GroupValidation.validateEstimatedPrice(estimatedPriceText).errorMessage
-        groupDescriptionError =
-            GroupValidation.validateGroupDescription(groupDescription).errorMessage
-        currencyError = GroupValidation.validateCurrency(selectedCurrency).errorMessage
-    }
-
-    // TODO: Could move this method into another package. Maybe utils?
     fun updateInvitedMembers() {
         invitedRegisteredMembers = registeredMembers.map { phone ->
             InvitedRegisteredMemberDTO(
@@ -158,6 +132,71 @@ fun CreateGroupScreen(
                 creditor = name == selectedCreditorPhone
             )
         }
+    }
+
+    LaunchedEffect(registeredMembers) {
+        registeredMembers
+            .filterNotNull()
+            .filter { it != userPhoneNumber && !memberNames.containsKey(it) }
+            .forEach { phone ->
+                userViewModel.getUserByPhone(context, phone)
+            }
+    }
+
+    LaunchedEffect(userState) {
+        when (userState) {
+            is ProfileState.Success.GetUser -> {
+                lastSearchedPhone.let { phone ->
+                    if (!registeredMembers.contains(phone)) {
+                        registeredMembers.add(phone)
+                        updateInvitedMembers()
+                    }
+                }
+                updateInvitedMembers()
+            }
+            is ProfileState.Error -> {
+                screenSnackbarMessage = (userState as ProfileState.Error).message
+                showSnackbar = true
+                lastSearchedPhone = null
+            }
+            else -> {}
+        }
+    }
+
+    // Handle the state when a user tries to create a group.
+    LaunchedEffect(groupState) {
+        when (groupState) {
+            is GroupState.Success.GroupCreated -> {
+                screenSnackbarMessage = (groupState as GroupState.Success.GroupCreated).creationData.message.toString()
+                showSnackbar = true
+                navigationViewModel.navigateTo(SpaScreens.Home)
+                groupViewModel.resetGroupState()
+            }
+
+            is GroupState.Error -> {
+                screenSnackbarMessage = (groupState as GroupState.Error).message
+                showSnackbar = true
+            }
+
+            else -> {}
+        }
+    }
+
+    // Show in the screen the snackbar message.
+    LaunchedEffect(showSnackbar) {
+        if (showSnackbar) {
+            screenSnackbarHostState.showSnackbar(screenSnackbarMessage)
+            showSnackbar = false
+        }
+    }
+
+    fun validateInputs() {
+        groupNameError = GroupValidation.validateGroupName(groupName).errorMessage
+        estimatedPriceError =
+            GroupValidation.validateEstimatedPrice(estimatedPriceText).errorMessage
+        groupDescriptionError =
+            GroupValidation.validateGroupDescription(groupDescription).errorMessage
+        currencyError = GroupValidation.validateCurrency(selectedCurrency).errorMessage
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -324,18 +363,26 @@ fun CreateGroupScreen(
         }
 
         if (showAddMembersDialog) {
-            addMemberDialog(
-                onDismiss = { showAddMembersDialog = false },
-                onAddRegistered = { phone ->
-                    registeredMembers.add(phone)
-                    userViewModel.getUserByPhone(context, phone)
-                    updateInvitedMembers()
-                },
-                onAddExternal = { name ->
-                    externalMembers.add(name)
-                    updateInvitedMembers()
-                }
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                addMemberDialog(
+                    onDismiss = { showAddMembersDialog = false },
+                    onAddRegistered = { phone ->
+                        if (!registeredMembers.contains(phone)) {
+                            lastSearchedPhone = phone
+                            userViewModel.getUserByPhone(context, phone)
+                        }
+                    },
+                    onAddExternal = { name ->
+                        externalMembers.add(name)
+                        updateInvitedMembers()
+                    }
+                )
+            }
         }
 
         if (showMembersDialog) {
@@ -354,6 +401,14 @@ fun CreateGroupScreen(
                 currentUserPhone = userPhoneNumber
             )
         }
+
+        // Snackbar host is shown when user creates a group with invalid format.
+        RedSnackbarHost(
+            hostState = screenSnackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
     }
 }
 
@@ -374,15 +429,5 @@ sealed class GroupMember {
     data class ExternalMember(val name: String) : GroupMember() {
         override fun displayText(): String = "$name (External)"
         override val identifier: String = name
-    }
-}
-
-
-fun handleUserState(state: ProfileState, memberNames: MutableMap<String, String>) {
-    if (state is ProfileState.Success.GetUser) {
-        val user = state.data
-        user.let {
-            memberNames[it.phoneNumber] = it.username
-        }
     }
 }
