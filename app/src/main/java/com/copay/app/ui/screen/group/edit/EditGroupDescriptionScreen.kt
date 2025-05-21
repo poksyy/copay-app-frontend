@@ -64,7 +64,6 @@ fun editGroupDescriptionScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
                 .padding(top = 90.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             inputField(
                 value = groupDescription,
