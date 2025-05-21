@@ -82,6 +82,7 @@ fun changePasswordScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
+                .padding(bottom = 12.dp)
                 .padding(top = 90.dp),
         ) {
             Text(
@@ -138,7 +139,7 @@ fun changePasswordScreen(
                         UserValidation.validatePasswordMatch(newPassword, it).errorMessage
                     apiErrorMessage = null
                 },
-                label = "Retype password",
+                label = "Confirm password",
                 isPassword = true,
                 isError = passwordMatchError != null
             )
