@@ -64,7 +64,7 @@ fun editProfileScreen(
             }
             is ProfileState.Error -> {
                 coroutineScope.launch {
-                    errorSnackbarHostState.showSnackbar("Failed to update profile")
+                    errorSnackbarHostState.showSnackbar("Failed to update profile information. Please try again.")
                 }
                 profileViewModel.resetProfileState()
             }
@@ -138,6 +138,7 @@ fun editProfileScreen(
                 }
             }
         }
+
         // Snackbar host.
         redSnackbarHost(
             hostState = errorSnackbarHostState,
