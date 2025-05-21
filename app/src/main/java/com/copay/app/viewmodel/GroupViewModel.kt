@@ -124,37 +124,42 @@ class GroupViewModel @Inject constructor(
                 imageProvider
             )
 
+            // Update the view of the list of groups after creating a new group.
+            if (backendResponse is GroupState.Success.GroupCreated) {
+                getGroupsByUser(context, forceRefresh = true)
+            }
+
             _groupState.value = backendResponse
         }
     }
 
     // Method to delete a group
-    fun deleteGroup(context: Context, groupId: Long, onSuccess: () -> Unit = {}) {
+    fun deleteGroup(context: Context, groupId: Long) {
         viewModelScope.launch {
             _groupState.value = GroupState.Loading
 
             val backendResponse = groupRepository.deleteGroup(context, groupId)
 
             if (backendResponse is GroupState.Success.GroupUpdated) {
-                onSuccess()
+                getGroupsByUser(context, forceRefresh = true)
+            } else {
+                _groupState.value = backendResponse
             }
-
-            _groupState.value = backendResponse
         }
     }
 
     // Method to leave a group
-    fun leaveGroup(context: Context, groupId: Long, onSuccess: () -> Unit = {}) {
+    fun leaveGroup(context: Context, groupId: Long) {
         viewModelScope.launch {
             _groupState.value = GroupState.Loading
 
             val backendResponse = groupRepository.leaveGroup(context, groupId)
 
             if (backendResponse is GroupState.Success.GroupUpdated) {
-                onSuccess()
+                getGroupsByUser(context, forceRefresh = true)
+            } else {
+                _groupState.value = backendResponse
             }
-
-            _groupState.value = backendResponse
         }
     }
 
