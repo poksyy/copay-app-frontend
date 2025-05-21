@@ -115,9 +115,7 @@ fun editGroupMembersScreen(
         deleteGroupDialog(
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
-                groupViewModel.deleteGroup(context, groupId) {
-                    groupViewModel.getGroupsByUser(context)
-                }
+                groupViewModel.deleteGroup(context, groupId)
                 navigationViewModel.navigateTo(SpaScreens.Home)
             }
         )
@@ -128,9 +126,7 @@ fun editGroupMembersScreen(
         leaveGroupDialog(
             onDismiss = { showLeaveDialog = false },
             onConfirm = {
-                groupViewModel.leaveGroup(context, groupId) {
-                    groupViewModel.getGroupsByUser(context)
-                }
+                groupViewModel.leaveGroup(context, groupId)
                 navigationViewModel.navigateTo(SpaScreens.Home)
             }
         )

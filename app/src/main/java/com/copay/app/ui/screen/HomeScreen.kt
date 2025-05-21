@@ -157,9 +157,7 @@ fun homeScreen(
                 onDismiss = { showDeleteDialog = false },
                 onConfirm = {
                     groupSelected?.groupId?.let { groupId ->
-                        groupViewModel.deleteGroup(context, groupId) {
-                            groupViewModel.getGroupsByUser(context, forceRefresh = true)
-                        }
+                        groupViewModel.deleteGroup(context, groupId)
                     }
                     showDeleteDialog = false
                 }
@@ -171,9 +169,7 @@ fun homeScreen(
                 onDismiss = { showLeaveDialog = false },
                 onConfirm = {
                     groupSelected?.groupId?.let { groupId ->
-                        groupViewModel.leaveGroup(context, groupId) {
-                            groupViewModel.getGroupsByUser(context, forceRefresh = true)
-                        }
+                        groupViewModel.leaveGroup(context, groupId)
                     }
                     showLeaveDialog = false
                 }
