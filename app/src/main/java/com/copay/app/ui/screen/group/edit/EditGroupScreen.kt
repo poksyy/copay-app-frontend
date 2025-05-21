@@ -11,11 +11,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
+import com.copay.app.ui.components.snackbar.greenSnackbarHost
+import com.copay.app.ui.components.snackbar.redSnackbarHost
 import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
+import com.copay.app.utils.state.GroupState
+import com.copay.app.utils.state.ProfileState
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun editGroupScreen(
@@ -31,6 +36,30 @@ fun editGroupScreen(
     val estimatedPrice = "${selectedGroup?.estimatedPrice ?: "0"} ${selectedGroup?.currency ?: "€"}"
     val members = "${selectedGroup?.registeredMembers?.size ?: 0} registered, " +
             "${selectedGroup?.externalMembers?.size ?: 0} external"
+
+    val groupState by groupViewModel.groupState.collectAsState()
+
+    val successSnackbarHostState = remember { SnackbarHostState() }
+    val errorSnackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(groupState) {
+        when (groupState) {
+            is GroupState.Success.GroupUpdated -> {
+                coroutineScope.launch {
+                    successSnackbarHostState.showSnackbar("Group information updated successfully")
+                }
+                groupViewModel.resetGroupState()
+            }
+            is GroupState.Error -> {
+                coroutineScope.launch {
+                    errorSnackbarHostState.showSnackbar("An error occurred while updating group information")
+                }
+                groupViewModel.resetGroupState()
+            }
+            else -> {}
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         topNavBar(
@@ -77,6 +106,17 @@ fun editGroupScreen(
                 }
             )
         }
+
+        // Snackbar host.
+        redSnackbarHost(
+            hostState = errorSnackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+
+        greenSnackbarHost(
+            hostState = successSnackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
