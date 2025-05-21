@@ -94,7 +94,7 @@ fun editGroupNameScreen(
             Text(
                 text = "The group name should be unique and descriptive enough for members " +
                         "to easily identify it. Avoid using special characters and keep it " +
-                        "between 3 and 50 characters.",
+                        "between 3 and 25 characters.",
                 style = CopayTypography.footer,
                 color = CopayColors.surface,
                 modifier = Modifier.padding(top = 8.dp)
