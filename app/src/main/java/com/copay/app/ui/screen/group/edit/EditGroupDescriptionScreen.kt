@@ -38,19 +38,10 @@ fun editGroupDescriptionScreen(
     var descriptionError by remember { mutableStateOf<String?>(null) }
     var apiErrorMessage by remember { mutableStateOf<String?>(null) }
 
+    // Handle group state changes
     LaunchedEffect(groupState) {
-        when (groupState) {
-            is GroupState.Success.GroupUpdated -> {
-                navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
-                groupViewModel.resetGroupState()
-            }
-
-            is GroupState.Error -> {
-                apiErrorMessage = (groupState as GroupState.Error).message
-                groupViewModel.resetGroupState()
-            }
-
-            else -> {}
+        if (groupState is GroupState.Success.GroupUpdated || groupState is GroupState.Error) {
+            navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
         }
     }
 
