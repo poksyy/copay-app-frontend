@@ -22,7 +22,7 @@ import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.dialog.addMemberDialog
 import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.components.input.priceInputField
-import com.copay.app.ui.components.snackbar.RedSnackbarHost
+import com.copay.app.ui.components.snackbar.redSnackbarHost
 import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
@@ -403,7 +403,7 @@ fun CreateGroupScreen(
         }
 
         // Snackbar host is shown when user creates a group with invalid format.
-        RedSnackbarHost(
+        redSnackbarHost(
             hostState = screenSnackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)

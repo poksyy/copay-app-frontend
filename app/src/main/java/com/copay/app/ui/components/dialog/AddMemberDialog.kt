@@ -11,8 +11,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.Alignment
 import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.components.pillTabRow
-import com.copay.app.ui.components.snackbar.GreenSnackbarHost
-import com.copay.app.ui.components.snackbar.RedSnackbarHost
+import com.copay.app.ui.components.snackbar.greenSnackbarHost
+import com.copay.app.ui.components.snackbar.redSnackbarHost
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import kotlinx.coroutines.launch
@@ -135,12 +135,12 @@ fun addMemberDialog(
                 }
 
                 // Snackbar host.
-                RedSnackbarHost(
+                redSnackbarHost(
                     hostState = localErrorSnackbarHostState,
                     modifier = Modifier.align(Alignment.End)
                 )
 
-                GreenSnackbarHost(
+                greenSnackbarHost(
                     hostState = localSuccessSnackbarHostState,
                     modifier = Modifier.align(Alignment.End)
                 )
