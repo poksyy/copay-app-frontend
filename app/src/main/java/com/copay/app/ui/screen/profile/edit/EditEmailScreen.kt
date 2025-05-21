@@ -44,11 +44,9 @@ fun editEmailScreen(
         when (profileState) {
             is ProfileState.Success.EmailUpdated -> {
                 navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile)
-                profileViewModel.resetProfileState()
             }
             is ProfileState.Error -> {
-                apiErrorMessage = (profileState as ProfileState.Error).message
-                profileViewModel.resetProfileState()
+                navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile)
             }
             else -> {}
         }
