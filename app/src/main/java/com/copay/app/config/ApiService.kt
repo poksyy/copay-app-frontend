@@ -1,5 +1,6 @@
 package com.copay.app.config
 
+import com.copay.app.dto.MessageResponseDTO
 import com.copay.app.dto.expense.response.GetExpenseResponseDTO
 import com.copay.app.dto.group.request.CreateGroupRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
@@ -18,6 +19,10 @@ import com.copay.app.dto.auth.response.LoginResponseDTO
 import com.copay.app.dto.auth.response.RegisterStepTwoResponseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.dto.group.response.GroupMessageResponseDTO
+import com.copay.app.dto.paymentconfirmation.request.ConfirmPaymentRequestDTO
+import com.copay.app.dto.paymentconfirmation.request.DeletePaymentConfirmationRequestDTO
+import com.copay.app.dto.paymentconfirmation.response.ListUnconfirmedPaymentConfirmationResponseDTO
+import com.copay.app.dto.paymentconfirmation.response.PaymentResponseDTO
 import com.copay.app.dto.profile.response.EmailResponseDTO
 import com.copay.app.dto.profile.response.PasswordResponseDTO
 import com.copay.app.dto.profile.response.PhoneNumberResponseDTO
@@ -183,4 +188,49 @@ interface ApiService {
         @Path("groupId") groupId: Long,
         @Header("Authorization") token: String
     ): Response<List<GetExpenseResponseDTO>>
+
+    /** API Calls to Payment Confirmations **/
+    // Get userExpenseIds for current user in a specific group
+    @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/user-expenses/ids")
+    suspend fun getUserExpenseIds(
+        @Path("groupId") groupId: Long, @Header("Authorization") token: String
+    ): Response<List<PaymentResponseDTO>>
+
+    // Get all user expenses for a specific group
+    @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/user-expenses")
+    suspend fun getAllUserExpensesByGroup(
+        @Path("groupId") groupId: Long, @Header("Authorization") token: String
+    ): Response<List<PaymentResponseDTO>>
+
+    // Get all unconfirmed payment confirmations in a group
+    @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/unconfirmed")
+    suspend fun getUnconfirmedPaymentConfirmations(
+        @Path("groupId") groupId: Long
+    ): Response<List<ListUnconfirmedPaymentConfirmationResponseDTO>>
+
+    // Request a payment confirmation (from user side)
+    @POST("${BASE_PATH}payment-confirmations/request-payment")
+    suspend fun requestPaymentConfirmation(
+        @Body request: ConfirmPaymentRequestDTO, @Header("Authorization") token: String
+    ): Response<PaymentResponseDTO>
+
+    // Confirm payment (group creator confirms)
+    @POST("${BASE_PATH}payment-confirmations/confirm")
+    suspend fun confirmPayment(
+        @Body request: ConfirmPaymentRequestDTO, @Header("Authorization") token: String
+    ): Response<PaymentResponseDTO>
+
+    // Mark a payment confirmation as confirmed (used by backend)
+    @PATCH("${BASE_PATH}payment-confirmations/confirm/{confirmationId}")
+    suspend fun markPaymentAsConfirmed(
+        @Path("confirmationId") confirmationId: Long, @Header("Authorization") token: String
+    ): Response<PaymentResponseDTO>
+
+    // Delete payment confirmation
+    @DELETE("${BASE_PATH}payment-confirmations/{paymentConfirmationId}")
+    suspend fun deletePaymentConfirmation(
+        @Path("paymentConfirmationId") paymentConfirmationId: Long,
+        @Body request: DeletePaymentConfirmationRequestDTO,
+        @Header("Authorization") token: String
+    ): Response<MessageResponseDTO>
 }
