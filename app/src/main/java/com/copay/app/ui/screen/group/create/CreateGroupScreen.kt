@@ -145,16 +145,25 @@ fun CreateGroupScreen(
             }
     }
 
+    // Handle the state to identify if the number (user) is alrady in the database.
     LaunchedEffect(userState) {
         when (userState) {
-            is ProfileState.Success.GetUser -> {
-                lastSearchedPhone.let { phone ->
-                    if (!registeredMembers.contains(phone)) {
-                        registeredMembers.add(phone)
-                        updateInvitedMembers()
+            is ProfileState.Success -> {
+                when (userState) {
+                    is ProfileState.Success.GetUser -> {
+                        val userDto = (userState as ProfileState.Success.GetUser).data
+                        val phone = userDto.phoneNumber
+
+                        if (!registeredMembers.contains(phone)) {
+                            phone?.let {
+                                registeredMembers.add(it)
+                                memberNames[it] = userDto.username ?: it
+                                updateInvitedMembers()
+                            }
+                        }
                     }
+                    else -> {}
                 }
-                updateInvitedMembers()
             }
 
             is ProfileState.Error -> {
@@ -170,8 +179,8 @@ fun CreateGroupScreen(
     // Handle the state when a user tries to create a group.
     LaunchedEffect(groupState) {
         when (groupState) {
-            is GroupState.Success.GroupCreated -> {
-                screenSnackbarMessage = (groupState as GroupState.Success.GroupCreated).creationData.message.toString()
+            is GroupState.Success.GroupResponse -> {
+                screenSnackbarMessage = (groupState as GroupState.Success.GroupResponse).groupData.message.toString()
                 showSnackbar = true
                 navigationViewModel.navigateTo(SpaScreens.Home)
                 groupViewModel.resetGroupState()
