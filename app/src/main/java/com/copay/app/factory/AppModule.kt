@@ -1,14 +1,8 @@
 package com.copay.app.factory
 
 import com.copay.app.config.RetrofitInstance
-import com.copay.app.repository.ExpenseRepository
-import com.copay.app.repository.GroupRepository
-import com.copay.app.repository.ProfileRepository
-import com.copay.app.repository.UserRepository
-import com.copay.app.service.AuthService
-import com.copay.app.service.ExpenseService
-import com.copay.app.service.GroupService
-import com.copay.app.service.ProfileService
+import com.copay.app.repository.*
+import com.copay.app.service.*
 import com.copay.app.utils.session.UserSession
 import dagger.Module
 import dagger.Provides
@@ -79,6 +73,12 @@ object AppModule {
         return ExpenseService(RetrofitInstance.api)
     }
 
+    @Provides
+    @Singleton
+    fun providePaymentConfirmationService(): PaymentConfirmationService {
+        // Instantiates and returns PaymentConfirmationService using RetrofitInstance.
+        return PaymentConfirmationService(RetrofitInstance.api)
+    }
     /*    ========================================================================
           =========================== REPOSITORIES =============================
           ========================================================================
@@ -125,5 +125,12 @@ object AppModule {
     fun provideExpenseRepository(expenseService: ExpenseService): ExpenseRepository {
         // Instantiates and returns ProfileRepository with injected ProfileService.
         return ExpenseRepository(expenseService)
+    }
+
+    @Provides
+    @Singleton
+    fun providePaymentConfirmationRepository(paymentConfirmationService: PaymentConfirmationService): PaymentConfirmationRepository {
+        // Instantiates and returns PaymentConfirmationRepository with injected ProfileService.
+        return PaymentConfirmationRepository(paymentConfirmationService)
     }
 }
