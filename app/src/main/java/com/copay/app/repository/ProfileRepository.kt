@@ -37,9 +37,11 @@ class ProfileRepository(
 
         Log.d("ProfileRepository", token)
 
-        return handleApiResponse(context) {
-            profileService.getUserByPhone(phoneNumber, token)
-        }
+        return handleApiResponse(
+            context,
+            apiCall = { profileService.getUserByPhone(phoneNumber, token) },
+            onSuccess = { body -> ProfileState.Success.GetUser(body) }
+        )
     }
 
     // Updates the username of the user.
@@ -54,15 +56,13 @@ class ProfileRepository(
         val token = DataStoreManager.getFormattedToken(context)
 
         val request = UpdateUsernameDTO(username = newUsername)
-        val result = handleApiResponse(context) {
-            profileService.updateUsername(userId, request, token)
-        }
 
         // Handles the result of the API call and returns the appropriate ProfileState.
-        return when (result) {
-            is ProfileState.Success -> ProfileState.Success.UsernameUpdated(result.data)
-            else -> result
-        }
+        return handleApiResponse(
+            context,
+            apiCall = { profileService.updateUsername(userId, request, token) },
+            onSuccess = { ProfileState.Success.UsernameUpdated(it) }
+        )
     }
 
     // Updates the phone number of the user.
@@ -77,15 +77,13 @@ class ProfileRepository(
         val token = DataStoreManager.getFormattedToken(context)
 
         val request = UpdatePhoneNumberDTO(phoneNumber = newPhoneNumber)
-        val result = handleApiResponse(context) {
-            profileService.updatePhoneNumber(userId, request, token)
-        }
 
         // Handles the result of the API call and returns the appropriate ProfileState.
-        return when (result) {
-            is ProfileState.Success -> ProfileState.Success.PhoneUpdated(result.data)
-            else -> result
-        }
+        return handleApiResponse(
+            context,
+            apiCall = { profileService.updatePhoneNumber(userId, request, token) },
+            onSuccess = { ProfileState.Success.PhoneUpdated(it) }
+        )
     }
 
     // Updates the email of the user.
@@ -100,15 +98,13 @@ class ProfileRepository(
         val token = DataStoreManager.getFormattedToken(context)
 
         val request = UpdateEmailDTO(email = newEmail)
-        val result = handleApiResponse(context) {
-            profileService.updateEmail(userId, request, token)
-        }
 
         // Handles the result of the API call and returns the appropriate ProfileState.
-        return when (result) {
-            is ProfileState.Success -> ProfileState.Success.EmailUpdated(result.data)
-            else -> result
-        }
+        return handleApiResponse(
+            context,
+            apiCall = { profileService.updateEmail(userId, request, token) },
+            onSuccess = { ProfileState.Success.EmailUpdated(it) }
+        )
     }
 
     // Updates the password of the user
@@ -124,15 +120,12 @@ class ProfileRepository(
 
         val token = DataStoreManager.getFormattedToken(context)
 
-        val result = handleApiResponse(context) {
-            profileService.updatePassword(request, token)
-        }
-
         // Handles the result of the API call and returns the appropriate ProfileState.
-        return when (result) {
-            is ProfileState.Success -> ProfileState.Success.PasswordUpdated(result.data)
-            else -> result
-        }
+        return handleApiResponse(
+            context,
+            apiCall = { profileService.updatePassword(request, token) },
+            onSuccess = { ProfileState.Success.PasswordUpdated(it) }
+        )
     }
 
     suspend fun getUserByPhoneDirect(context: Context, phoneNumber: String): User? {
@@ -151,17 +144,21 @@ class ProfileRepository(
 
     // Handles the API response for the profile update operations.
     private suspend fun <T> handleApiResponse(
-        context: Context, apiCall: suspend () -> Response<T>
+        context: Context,
+        apiCall: suspend () -> Response<T>,
+        onSuccess: (T) -> ProfileState
     ): ProfileState {
-
         return try {
             val response = apiCall()
 
-            // If response is successful, process body.
             if (response.isSuccessful) {
-                ProfileState.Success(response.body())
+                val body = response.body()
+                if (body != null) {
+                    onSuccess(body)
+                } else {
+                    ProfileState.Error("Empty response body")
+                }
             } else {
-                // If the response is an error, parse and return the error message.
                 val errorBody = response.errorBody()?.string()
                 val message = extractErrorMessage(errorBody)
                 ProfileState.Error(message ?: "Unknown error")
