@@ -21,7 +21,7 @@ import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.model.Group
 
 @Composable
-fun RegisteredMemberItem(
+fun registeredMemberItem(
     member: RegisteredMemberDTO,
     group: Group,
     isCurrentUser: Boolean,

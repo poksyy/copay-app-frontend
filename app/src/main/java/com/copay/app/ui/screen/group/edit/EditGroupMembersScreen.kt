@@ -18,8 +18,8 @@ import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.dialog.*
-import com.copay.app.ui.components.listitem.ExternalMemberItem
-import com.copay.app.ui.components.listitem.RegisteredMemberItem
+import com.copay.app.ui.components.listitem.externalMemberItem
+import com.copay.app.ui.components.listitem.registeredMemberItem
 import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.ui.components.topNavBar
 import com.copay.app.utils.state.GroupState
@@ -213,7 +213,7 @@ fun editGroupMembersContent(
             }
 
             items(registeredMembers) { member ->
-                RegisteredMemberItem(
+                registeredMemberItem(
                     member = member,
                     group = group,
                     isCurrentUser = member.registeredMemberId == currentUserId,
@@ -233,7 +233,7 @@ fun editGroupMembersContent(
             }
 
             items(externalMembers) { member ->
-                ExternalMemberItem(
+                externalMemberItem(
                     member = member,
                     group = group,
                     onRemove = { onRemoveExternalMember(member) }

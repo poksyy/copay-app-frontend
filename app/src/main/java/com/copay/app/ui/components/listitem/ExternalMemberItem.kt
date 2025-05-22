@@ -21,7 +21,7 @@ import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.model.Group
 
 @Composable
-fun ExternalMemberItem(
+fun externalMemberItem(
     member: ExternalMemberDTO,
     group: Group,
     onRemove: () -> Unit
