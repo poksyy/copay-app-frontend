@@ -1,12 +1,12 @@
 package com.copay.app.mappers
 
-import com.copay.app.dto.group.response.CreateGroupResponseDTO
+import com.copay.app.dto.group.response.GroupResponseDTO
 import com.copay.app.model.Group
 
 /**
  * Maps a GroupResponseDTO to a domain Group model
  */
-fun CreateGroupResponseDTO.toGroup(): Group {
+fun GroupResponseDTO.toGroup(): Group {
     return Group(
         groupId = this.groupId,
         name = this.name,

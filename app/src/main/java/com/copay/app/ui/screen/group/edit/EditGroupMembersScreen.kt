@@ -58,6 +58,10 @@ fun editGroupMembersScreen(
     var screenSnackbarMessage by remember { mutableStateOf("") }
     val screenSnackbarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(Unit) {
+        groupViewModel.getGroupByGroupId(context, groupId)
+    }
+
     // Handle the state when user updates the members.
     LaunchedEffect(groupState) {
         when (groupState) {
