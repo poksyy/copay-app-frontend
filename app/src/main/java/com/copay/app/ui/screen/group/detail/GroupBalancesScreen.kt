@@ -13,19 +13,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.copay.app.R
-import com.copay.app.dto.expense.response.GetExpenseResponseDTO
-import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
-import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
+import com.copay.app.utils.ExpenseUtils
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.memberItem
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.ui.components.button.manageDebtsButton
@@ -210,7 +207,7 @@ fun groupBalancesScreen(
                                 val external = group?.externalMembers.orEmpty()
 
                                 items(registered) { member ->
-                                    val expense = calculateMemberExpense(member, expenses)
+                                    val expense = ExpenseUtils.calculateMemberExpense(member, expenses)
                                     memberItem(
                                         member = member,
                                         expense = expense,
@@ -220,7 +217,7 @@ fun groupBalancesScreen(
                                 }
 
                                 items(external) { member ->
-                                    val expense = calculateMemberExpense(member, expenses)
+                                    val expense = ExpenseUtils.calculateMemberExpense(member, expenses)
                                     memberItem(
                                         member = member,
                                         expense = expense,
@@ -252,128 +249,4 @@ fun groupBalancesScreen(
     }
 }
 
-// TODO move this into components or utils but somewhere else.
-@Composable
-private fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: Long?) {
-    val memberName: String
-    val memberPhoneNumber: String
-
-    when (member) {
-        is RegisteredMemberDTO -> {
-            memberName = member.username
-            memberPhoneNumber = member.phoneNumber
-        }
-
-        is ExternalMemberDTO -> {
-            memberName = member.name
-            memberPhoneNumber = "External Member"
-        }
-
-        else -> {
-            memberName = "Unknown"
-            memberPhoneNumber = "Unknown"
-        }
-    }
-
-    val isCreditor = expense < 0
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = memberName,
-                    fontWeight = FontWeight.Medium,
-                )
-                Text(
-                    text = "${expense.format(2)} $currency",
-                    fontWeight = FontWeight.Bold,
-                    color = if (isCreditor) MaterialTheme.colorScheme.error else CopayColors.primary
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = memberPhoneNumber,
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                val isCurrentUser = when (member) {
-                    is RegisteredMemberDTO -> member.registeredMemberId == currentUserId
-                    else -> false
-                }
-
-                if (isCurrentUser && expense > 0) {
-                    TextButton(
-                        onClick = { /* TODO */ },
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.height(36.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "Pay your debts",
-                                color = CopayColors.success,
-                                fontSize = 12.sp
-                            )
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_forward),
-                                contentDescription = "Forward arrow",
-                                tint = CopayColors.success
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// TODO: Move this into components or somewhere else.
-private fun calculateMemberExpense(member: Any, expenses: List<GetExpenseResponseDTO>): Double {
-    return expenses.sumOf { expense ->
-        when (member) {
-            is RegisteredMemberDTO -> {
-                val paid = if (expense.creditorUserId == member.registeredMemberId) {
-                    -expense.totalAmount
-                } else 0.0
-
-                val owes = expense.registeredMembers
-                    .filter { it.debtorUserId == member.registeredMemberId }
-                    .sumOf { it.amount }
-
-                paid + owes
-            }
-
-            is ExternalMemberDTO -> {
-                val paid = if (expense.creditorExternalMemberId == member.externalMembersId) {
-                    -expense.totalAmount
-                } else 0.0
-
-                val owes = expense.externalMembers
-                    .filter { it.debtorExternalMemberId == member.externalMembersId }
-                    .sumOf { it.amount }
-
-                paid + owes
-            }
-
-            else -> 0.0
-        }
-    }
-}
-
-// TODO: We could move this into utils.
 fun Double.format(digits: Int) = "%.${digits}f".format(this)
