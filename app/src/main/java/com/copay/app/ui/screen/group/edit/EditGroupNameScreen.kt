@@ -39,16 +39,8 @@ fun editGroupNameScreen(
 
     // Handle group state changes
     LaunchedEffect(groupState) {
-        when (groupState) {
-            is GroupState.Success.GroupUpdated -> {
-                navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
-                groupViewModel.resetGroupState()
-            }
-            is GroupState.Error -> {
-                apiErrorMessage = (groupState as GroupState.Error).message
-                groupViewModel.resetGroupState()
-            }
-            else -> {}
+        if (groupState is GroupState.Success.GroupUpdated || groupState is GroupState.Error) {
+            navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
         }
     }
 
@@ -102,7 +94,7 @@ fun editGroupNameScreen(
             Text(
                 text = "The group name should be unique and descriptive enough for members " +
                         "to easily identify it. Avoid using special characters and keep it " +
-                        "between 3 and 50 characters.",
+                        "between 3 and 25 characters.",
                 style = CopayTypography.footer,
                 color = CopayColors.surface,
                 modifier = Modifier.padding(top = 8.dp)

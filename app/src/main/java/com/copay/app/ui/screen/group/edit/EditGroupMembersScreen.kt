@@ -20,7 +20,7 @@ import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.dialog.*
 import com.copay.app.ui.components.listitem.ExternalMemberItem
 import com.copay.app.ui.components.listitem.RegisteredMemberItem
-import com.copay.app.ui.components.snackbar.GreenSnackbarHost
+import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.ui.components.topNavBar
 import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.GroupViewModel
@@ -242,7 +242,7 @@ fun editGroupMembersContent(
         }
 
         // Snackbar host is shown when user removes a member.
-        GreenSnackbarHost(
+        greenSnackbarHost(
             hostState = screenSnackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)

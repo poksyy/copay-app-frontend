@@ -3,12 +3,11 @@ package com.copay.app.validation
 object GroupValidation {
 
     fun validateGroupName(name: String): ValidationResult {
-        return if (name.isBlank()) {
-            ValidationResult(false, "Group name cannot be empty")
-        } else if (name.length > 25) {
-            ValidationResult(false, "Group name cannot exceed 25 characters")
-        } else {
-            ValidationResult(true, null)
+        return when {
+            name.isBlank() -> ValidationResult(false, "Group name cannot be empty")
+            name.length < 3 -> ValidationResult(false, "Group name must be at least 3 characters")
+            name.length > 25 -> ValidationResult(false, "Group name cannot exceed 25 characters")
+            else -> ValidationResult(true, null)
         }
     }
 
@@ -26,8 +25,8 @@ object GroupValidation {
         } else {
             try {
                 val priceValue = price.toFloat()
-                if (priceValue < 0 || priceValue > 10000000) {
-                    ValidationResult(false, "Price must be between 0 and 10,000,000")
+                if (priceValue < 0) {
+                    ValidationResult(false, "Price cannot be negative")
                 } else {
                     ValidationResult(true, null)
                 }

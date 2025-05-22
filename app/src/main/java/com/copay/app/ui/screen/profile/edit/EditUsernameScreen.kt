@@ -42,9 +42,10 @@ fun editUsernameScreen(
         when (profileState) {
             is ProfileState.Success.UsernameUpdated -> {
                 navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile)
-                profileViewModel.resetProfileState()
             }
-
+            is ProfileState.Error -> {
+                navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile)
+            }
             else -> {}
         }
     }
