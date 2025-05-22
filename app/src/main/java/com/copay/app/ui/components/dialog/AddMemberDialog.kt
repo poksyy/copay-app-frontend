@@ -107,6 +107,7 @@ fun addMemberDialog(
                                         localErrorSnackbarHostState.showSnackbar("Invalid phone number")
                                     }
                                 } else {
+                                    // TODO Message will throw this even the user does not exist because the length is higher
                                     onAddRegistered(phoneNumber)
                                     phoneNumber = ""
                                     coroutineScope.launch {
