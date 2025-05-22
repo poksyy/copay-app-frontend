@@ -49,10 +49,10 @@ fun editProfileScreen(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(profileState) {
-        val message = when (profileState) {
+        val message = when (val state = profileState) {
             is ProfileState.Success.UsernameUpdated -> "Username updated successfully"
             is ProfileState.Success.EmailUpdated -> "Email updated successfully"
-            is ProfileState.Error -> "Failed to update profile information. Please try again."
+            is ProfileState.Error -> state.message
             else -> null
         }
 
