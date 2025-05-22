@@ -4,7 +4,7 @@ import com.copay.app.dto.expense.response.GetExpenseResponseDTO
 import com.copay.app.dto.group.request.CreateGroupRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupRegisteredMembersRequestDTO
-import com.copay.app.dto.group.response.CreateGroupResponseDTO
+import com.copay.app.dto.group.response.GroupResponseDTO
 import com.copay.app.dto.password.ForgotPasswordDTO
 import com.copay.app.dto.auth.request.UserLoginRequestDTO
 import com.copay.app.dto.auth.request.UserRegisterStepTwoDTO
@@ -117,12 +117,19 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<GetGroupResponseDTO>
 
+    // Retrieve a group by its group ID.
+    @GET("${BASE_PATH}groups/{groupId}/group")
+    suspend fun getGroupByGroupId(
+        @Path("groupId") groupId: Long,
+        @Header("Authorization") token: String
+    ): Response<GroupResponseDTO>
+
     // Create group.
     @POST("${BASE_PATH}groups")
     suspend fun createGroup(
         @Body request: CreateGroupRequestDTO,
         @Header("Authorization") token: String
-    ): Response<CreateGroupResponseDTO>
+    ): Response<GroupResponseDTO>
 
     // Delete group.
     @DELETE("${BASE_PATH}groups/{groupId}")
