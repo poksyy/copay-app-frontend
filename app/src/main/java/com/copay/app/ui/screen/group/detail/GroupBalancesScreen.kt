@@ -28,7 +28,7 @@ import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.backButtonTop
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import com.copay.app.ui.components.button.payDebtsButton
+import com.copay.app.ui.components.button.manageDebtsButton
 import com.copay.app.ui.components.pillTabRow
 import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.GroupViewModel
@@ -163,7 +163,7 @@ fun groupBalancesScreen(
                         val buttonModifier = Modifier.weight(1f)
 
                         if (!isCreditor) {
-                            payDebtsButton(
+                            manageDebtsButton(
                                 onClick = { /* TODO */ },
                                 modifier = Modifier.weight(1f)
                             )
@@ -211,12 +211,22 @@ fun groupBalancesScreen(
 
                                 items(registered) { member ->
                                     val expense = calculateMemberExpense(member, expenses)
-                                    memberItem(member, expense, group?.currency)
+                                    memberItem(
+                                        member = member,
+                                        expense = expense,
+                                        currency = group?.currency,
+                                        currentUserId = currentUserId
+                                    )
                                 }
 
                                 items(external) { member ->
                                     val expense = calculateMemberExpense(member, expenses)
-                                    memberItem(member, expense, group?.currency)
+                                    memberItem(
+                                        member = member,
+                                        expense = expense,
+                                        currency = group?.currency,
+                                        currentUserId = currentUserId
+                                    )
                                 }
                             }
 
@@ -244,7 +254,7 @@ fun groupBalancesScreen(
 
 // TODO move this into components or utils but somewhere else.
 @Composable
-private fun memberItem(member: Any, expense: Double, currency: String?) {
+private fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: Long?) {
     val memberName: String
     val memberPhoneNumber: String
 
@@ -301,22 +311,30 @@ private fun memberItem(member: Any, expense: Double, currency: String?) {
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                TextButton(
-                    onClick = { /* TODO */ },
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.height(36.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Manage debts",
-                            color = CopayColors.success,
-                            fontSize = 12.sp
-                        )
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_forward),
-                            contentDescription = "Forward arrow",
-                            tint = CopayColors.success
-                        )
+
+                val isCurrentUser = when (member) {
+                    is RegisteredMemberDTO -> member.registeredMemberId == currentUserId
+                    else -> false
+                }
+
+                if (isCurrentUser && expense > 0) {
+                    TextButton(
+                        onClick = { /* TODO */ },
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.height(36.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Pay your debts",
+                                color = CopayColors.success,
+                                fontSize = 12.sp
+                            )
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_forward),
+                                contentDescription = "Forward arrow",
+                                tint = CopayColors.success
+                            )
+                        }
                     }
                 }
             }

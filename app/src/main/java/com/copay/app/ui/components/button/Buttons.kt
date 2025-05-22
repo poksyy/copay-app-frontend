@@ -184,7 +184,7 @@ fun backButtonTop(onBackClick: () -> Unit, modifier: Modifier = Modifier, iconCo
 
 // Pay debts Button for group balance.
 @Composable
-fun payDebtsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun manageDebtsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         onClick = onClick,
         modifier = modifier,
@@ -195,7 +195,7 @@ fun payDebtsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         ),
         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
     ) {
-        Text(text = "Pay your debts", maxLines = 1, softWrap = false)
+        Text(text = "Manage debts", maxLines = 1, softWrap = false)
     }
 }
 
