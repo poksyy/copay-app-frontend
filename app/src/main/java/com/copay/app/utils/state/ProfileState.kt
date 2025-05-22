@@ -14,12 +14,12 @@ sealed class ProfileState {
     data object Loading : ProfileState()
 
     // Profile updated successfully
-    open class Success(open val data: Any?) : ProfileState() {
-        class GetUser(override val data: UserResponseDTO) : Success(data)
-        class EmailUpdated(override val data: Any?) : Success(data)
-        class UsernameUpdated(override val data: Any?) : Success(data)
-        class PhoneUpdated(override val data: Any?) : Success(data)
-        class PasswordUpdated(override val data: Any?) : Success(data)
+    open class Success : ProfileState() {
+        class GetUser(val data: UserResponseDTO) : Success()
+        class EmailUpdated(val data: Any?) : Success()
+        class UsernameUpdated(val data: Any?) : Success()
+        class PhoneUpdated(val data: Any?) : Success()
+        class PasswordUpdated(val data: Any?) : Success()
     }
 
     // An error occurred while updating profile
