@@ -12,7 +12,7 @@ import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 
 @Composable
-fun RedSnackbarHost(
+fun redSnackbarHost(
     hostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {

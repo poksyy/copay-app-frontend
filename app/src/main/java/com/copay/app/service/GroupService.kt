@@ -5,7 +5,7 @@ import com.copay.app.dto.group.request.CreateGroupRequestDTO
 import com.copay.app.dto.group.request.GetGroupRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupRegisteredMembersRequestDTO
-import com.copay.app.dto.group.response.CreateGroupResponseDTO
+import com.copay.app.dto.group.response.GroupResponseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.dto.group.response.GroupMessageResponseDTO
 import retrofit2.Response
@@ -23,8 +23,13 @@ class GroupService(private val api: ApiService) {
         return api.getGroupsByUser(request.userId, token)
     }
 
+    // Fetch a single group with a specific group ID.
+    suspend fun getGroupsByGroupId(groupId: Long, token: String): Response<GroupResponseDTO> {
+        return  api.getGroupByGroupId(groupId, token)
+    }
+
     // Sends a request to create a new group with the provided details.
-    suspend fun createGroup(request: CreateGroupRequestDTO, token: String): Response<CreateGroupResponseDTO> {
+    suspend fun createGroup(request: CreateGroupRequestDTO, token: String): Response<GroupResponseDTO> {
         return api.createGroup(request, token)
     }
 

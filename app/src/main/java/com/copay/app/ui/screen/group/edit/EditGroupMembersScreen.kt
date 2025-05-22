@@ -18,9 +18,9 @@ import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.dialog.*
-import com.copay.app.ui.components.listitem.ExternalMemberItem
-import com.copay.app.ui.components.listitem.RegisteredMemberItem
-import com.copay.app.ui.components.snackbar.GreenSnackbarHost
+import com.copay.app.ui.components.listitem.externalMemberItem
+import com.copay.app.ui.components.listitem.registeredMemberItem
+import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.ui.components.topNavBar
 import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.GroupViewModel
@@ -57,6 +57,10 @@ fun editGroupMembersScreen(
     var showSnackbar by remember { mutableStateOf(false) }
     var screenSnackbarMessage by remember { mutableStateOf("") }
     val screenSnackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        groupViewModel.getGroupByGroupId(context, groupId)
+    }
 
     // Handle the state when user updates the members.
     LaunchedEffect(groupState) {
@@ -213,7 +217,7 @@ fun editGroupMembersContent(
             }
 
             items(registeredMembers) { member ->
-                RegisteredMemberItem(
+                registeredMemberItem(
                     member = member,
                     group = group,
                     isCurrentUser = member.registeredMemberId == currentUserId,
@@ -233,7 +237,7 @@ fun editGroupMembersContent(
             }
 
             items(externalMembers) { member ->
-                ExternalMemberItem(
+                externalMemberItem(
                     member = member,
                     group = group,
                     onRemove = { onRemoveExternalMember(member) }
@@ -242,7 +246,7 @@ fun editGroupMembersContent(
         }
 
         // Snackbar host is shown when user removes a member.
-        GreenSnackbarHost(
+        greenSnackbarHost(
             hostState = screenSnackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)

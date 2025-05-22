@@ -31,7 +31,7 @@ import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
 import com.copay.app.ui.components.listitem.groupItem
-import com.copay.app.ui.components.snackbar.GreenSnackbarHost
+import com.copay.app.ui.components.snackbar.greenSnackbarHost
 
 @Composable
 fun homeScreen(
@@ -101,7 +101,7 @@ fun homeScreen(
                 val groups = (groupState as GroupState.Success.GroupsFetched).groups
                     .sortedByDescending { it.createdAt }
 
-                HomeContent(
+                homeContent(
                     onRefreshClick = { groupViewModel.getGroupsByUser(context, forceRefresh = true) },
                     onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
                     onDetailClick = { group ->
@@ -126,7 +126,7 @@ fun homeScreen(
             }
 
             else -> {
-                HomeContent(
+                homeContent(
                     onRefreshClick = { groupViewModel.getGroupsByUser(context, forceRefresh = true) },
                     onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
                     onDetailClick = { navigationViewModel.navigateTo(SpaScreens.BalancesGroup) },
@@ -145,7 +145,7 @@ fun homeScreen(
             }
         }
 
-        GreenSnackbarHost(
+        greenSnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -179,7 +179,7 @@ fun homeScreen(
 }
 
 @Composable
-private fun HomeContent(
+private fun homeContent(
     // Receives the callbacks from HomeViewModel.
     onRefreshClick: () -> Unit,
     onCreateClick: () -> Unit,

@@ -1,6 +1,6 @@
 package com.copay.app.utils.state
 
-import com.copay.app.dto.group.response.CreateGroupResponseDTO
+import com.copay.app.dto.group.response.GroupResponseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.dto.group.response.GroupMessageResponseDTO
 import com.copay.app.mappers.toGroup
@@ -25,7 +25,7 @@ sealed class GroupState {
             val groups: List<Group>
                 get() = groupsData.groups.map { it.toGroup() }
         }
-        data class GroupCreated(val creationData: CreateGroupResponseDTO) : Success()
+        data class GroupResponse(val groupData: GroupResponseDTO) : Success()
         data class GroupUpdated(val updateData: GroupMessageResponseDTO) : Success()
     }
 

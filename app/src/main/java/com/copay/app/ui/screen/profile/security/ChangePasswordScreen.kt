@@ -82,15 +82,9 @@ fun changePasswordScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
+                .padding(bottom = 12.dp)
                 .padding(top = 90.dp),
         ) {
-            Text(
-                "Change password",
-                color = MaterialTheme.colorScheme.primary,
-                style = CopayTypography.title,
-                modifier = Modifier.fillMaxWidth()
-            )
-
             // Current password field
             inputField(
                 value = currentPassword,
@@ -130,34 +124,7 @@ fun changePasswordScreen(
                 )
             }
 
-            inputField(
-                value = confirmPassword,
-                onValueChange = {
-                    confirmPassword = it
-                    passwordMatchError =
-                        UserValidation.validatePasswordMatch(newPassword, it).errorMessage
-                    apiErrorMessage = null
-                },
-                label = "Retype password",
-                isPassword = true,
-                isError = passwordMatchError != null
-            )
-            passwordMatchError?.let {
-                Text(
-                    text = it,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            apiErrorMessage?.let {
-                Text(
-                    text = it,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
+            // Password requirements
             Column(
                 modifier = Modifier.padding(top = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -176,6 +143,34 @@ fun changePasswordScreen(
                     "• Must contain at least one number",
                     style = CopayTypography.footer,
                     color = CopayColors.surface
+                )
+            }
+
+            inputField(
+                value = confirmPassword,
+                onValueChange = {
+                    confirmPassword = it
+                    passwordMatchError =
+                        UserValidation.validatePasswordMatch(newPassword, it).errorMessage
+                    apiErrorMessage = null
+                },
+                label = "Confirm password",
+                isPassword = true,
+                isError = passwordMatchError != null
+            )
+            passwordMatchError?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            apiErrorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 

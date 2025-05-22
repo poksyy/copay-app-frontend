@@ -45,7 +45,6 @@ class ProfileService(private val api: ApiService) {
     suspend fun updatePassword(
         request: UpdatePasswordDTO, token: String
     ): Response<PasswordResponseDTO> {
-        Log.d("DataStoreManager", "update password SENDING TOKEN TO BACKEND $token")
         return api.updatePassword(request, token)
     }
 }

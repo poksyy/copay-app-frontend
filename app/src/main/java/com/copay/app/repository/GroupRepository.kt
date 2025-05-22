@@ -9,7 +9,7 @@ import com.copay.app.dto.group.request.CreateGroupRequestDTO
 import com.copay.app.dto.group.request.GetGroupRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupRegisteredMembersRequestDTO
-import com.copay.app.dto.group.response.CreateGroupResponseDTO
+import com.copay.app.dto.group.response.GroupResponseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.dto.group.response.GroupMessageResponseDTO
 import com.copay.app.service.GroupService
@@ -37,6 +37,19 @@ class GroupRepository(private val groupService: GroupService) {
 
         return handleApiResponse(context) { groupService.getGroupsByUser(request, token) }
     }
+
+    // Fetch a single group with a specific group ID.
+    suspend fun getGroupByGroupId(
+        context: Context, groupId: Long
+    ): GroupState {
+
+        val token = DataStoreManager.getFormattedToken(context)
+
+        return handleApiResponse(context) {
+            groupService.getGroupsByGroupId(groupId, token)
+        }
+    }
+
 
     // Creates a new group with specified details and invited members.
     suspend fun createGroup(
@@ -164,7 +177,7 @@ class GroupRepository(private val groupService: GroupService) {
                 response.body()?.let { body ->
                     when (body) {
                         is GetGroupResponseDTO -> GroupState.Success.GroupsFetched(body)
-                        is CreateGroupResponseDTO -> GroupState.Success.GroupCreated(body)
+                        is GroupResponseDTO -> GroupState.Success.GroupResponse(body)
                         is GroupMessageResponseDTO -> GroupState.Success.GroupUpdated(body)
                         else -> GroupState.Error("Unexpected response type")
                     }
