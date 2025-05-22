@@ -85,13 +85,6 @@ fun changePasswordScreen(
                 .padding(bottom = 12.dp)
                 .padding(top = 90.dp),
         ) {
-            Text(
-                "Change password",
-                color = MaterialTheme.colorScheme.primary,
-                style = CopayTypography.title,
-                modifier = Modifier.fillMaxWidth()
-            )
-
             // Current password field
             inputField(
                 value = currentPassword,
@@ -131,6 +124,28 @@ fun changePasswordScreen(
                 )
             }
 
+            // Password requirements
+            Column(
+                modifier = Modifier.padding(top = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    "• Must be at least 8 characters long",
+                    style = CopayTypography.footer,
+                    color = CopayColors.surface
+                )
+                Text(
+                    "• Must contain at least one uppercase letter",
+                    style = CopayTypography.footer,
+                    color = CopayColors.surface
+                )
+                Text(
+                    "• Must contain at least one number",
+                    style = CopayTypography.footer,
+                    color = CopayColors.surface
+                )
+            }
+
             inputField(
                 value = confirmPassword,
                 onValueChange = {
@@ -156,27 +171,6 @@ fun changePasswordScreen(
                     text = it,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            Column(
-                modifier = Modifier.padding(top = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    "• Must be at least 8 characters long",
-                    style = CopayTypography.footer,
-                    color = CopayColors.surface
-                )
-                Text(
-                    "• Must contain at least one uppercase letter",
-                    style = CopayTypography.footer,
-                    color = CopayColors.surface
-                )
-                Text(
-                    "• Must contain at least one number",
-                    style = CopayTypography.footer,
-                    color = CopayColors.surface
                 )
             }
 
