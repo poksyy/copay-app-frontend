@@ -17,6 +17,7 @@ import com.copay.app.dto.profile.request.UpdateUsernameDTO
 import com.copay.app.dto.auth.response.RegisterStepOneResponseDTO
 import com.copay.app.dto.auth.response.LoginResponseDTO
 import com.copay.app.dto.auth.response.RegisterStepTwoResponseDTO
+import com.copay.app.dto.expense.response.UserExpenseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.dto.group.response.GroupMessageResponseDTO
 import com.copay.app.dto.paymentconfirmation.request.ConfirmPaymentRequestDTO
@@ -197,10 +198,11 @@ interface ApiService {
     ): Response<List<PaymentResponseDTO>>
 
     // Get all user expenses for a specific group
-    @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/user-expenses")
-    suspend fun getAllUserExpensesByGroup(
-        @Path("groupId") groupId: Long, @Header("Authorization") token: String
-    ): Response<List<PaymentResponseDTO>>
+    @GET("${BASE_PATH}expenses/{groupId}/user-expenses")
+    suspend fun getUserExpensesByGroupId(
+        @Path("groupId") groupId: Long,
+        @Header("Authorization") token: String
+    ): Response<List<UserExpenseDTO>>
 
     // Get all unconfirmed payment confirmations in a group
     @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/unconfirmed")
