@@ -21,13 +21,6 @@ class PaymentConfirmationService(private val api: ApiService) {
         return api.getUserExpenseIds(groupId, token)
     }
 
-    // Get all user expenses by group ID
-    suspend fun getAllUserExpensesByGroup(
-        groupId: Long, token: String
-    ): Response<List<PaymentResponseDTO>> {
-        return api.getAllUserExpensesByGroup(groupId, token)
-    }
-
     // Get all unconfirmed payment confirmations for a group
     suspend fun getUnconfirmedPaymentConfirmations(
         groupId: Long
