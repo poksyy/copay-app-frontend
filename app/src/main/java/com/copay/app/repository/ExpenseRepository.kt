@@ -4,9 +4,13 @@ import android.content.Context
 import android.util.Log
 import com.copay.app.dto.expense.request.GetExpenseRequestDTO
 import com.copay.app.dto.expense.response.GetExpenseResponseDTO
+import com.copay.app.dto.expense.response.UserExpenseDTO
+import com.copay.app.dto.paymentconfirmation.response.ListUnconfirmedPaymentConfirmationResponseDTO
+import com.copay.app.dto.paymentconfirmation.response.PaymentResponseDTO
 import com.copay.app.service.ExpenseService
 import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.ExpenseState
+import com.copay.app.utils.state.PaymentState
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import retrofit2.Response
@@ -32,6 +36,11 @@ class ExpenseRepository(private val expenseService: ExpenseService) {
         return handleApiResponse(context) { expenseService.getExpenses(request, token) }
     }
 
+    suspend fun getAllUserExpensesByGroup(context: Context, groupId: Long): Response<List<UserExpenseDTO>> {
+        val token = DataStoreManager.getFormattedToken(context)
+        return expenseService.getAllUserExpensesByGroup(groupId, token)
+    }
+
     // Handles the API response for expense operations.
     private suspend fun <T> handleApiResponse(
         context: Context,
@@ -41,20 +50,27 @@ class ExpenseRepository(private val expenseService: ExpenseService) {
             val response = apiCall()
 
             if (response.isSuccessful) {
-                response.body()?.let { body ->
-                    when (body) {
-                        is List<*> -> {
-                            if (body.isNotEmpty() && body[0] is GetExpenseResponseDTO) {
-                                @Suppress("UNCHECKED_CAST")
-                                ExpenseState.Success.ExpensesFetched(body as List<GetExpenseResponseDTO>)
-                            } else {
-                                ExpenseState.Error("Invalid response format")
-                            }
+                val body = response.body()
+
+                when (body) {
+                    is List<*> -> when {
+                        body.all { it is UserExpenseDTO } -> {
+                            ExpenseState.Success.ExpenseMembersIds(
+                                body.filterIsInstance<UserExpenseDTO>()
+                            )
                         }
 
-                        else -> ExpenseState.Error("Unexpected response type")
+                        body.all { it is GetExpenseResponseDTO } -> {
+                            ExpenseState.Success.ExpensesFetched(
+                                body.filterIsInstance<GetExpenseResponseDTO>()
+                            )
+                        }
+
+                        else -> ExpenseState.Error("Unsupported list response type")
                     }
-                } ?: ExpenseState.Error("Empty response body")
+
+                    else -> ExpenseState.Error("Unexpected response type")
+                }
             } else {
                 val errorBody = response.errorBody()?.string()
                 val message = extractErrorMessage(errorBody) ?: run {
