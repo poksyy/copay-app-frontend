@@ -159,7 +159,7 @@ fun groupBalancesScreen(
                     ) {
                         val buttonModifier = Modifier.weight(1f)
 
-                        if (!isCreditor) {
+                        if (isCreditor) {
                             manageDebtsButton(
                                 onClick = { /* TODO */ },
                                 modifier = Modifier.weight(1f)
@@ -204,7 +204,14 @@ fun groupBalancesScreen(
                         when (selectedTabIndex) {
                             0 -> {
                                 val registered = group?.registeredMembers.orEmpty()
+                                    .sortedByDescending { member ->
+                                        val isMemberCreditor = expenses.any { it.creditorUserId == member.registeredMemberId }
+                                        val isCurrentUser = member.registeredMemberId == currentUserId
+                                        (if (isMemberCreditor) 2 else if (isCurrentUser) 1 else 0)
+                                    }
+
                                 val external = group?.externalMembers.orEmpty()
+                                    .sortedByDescending { member -> expenses.any { it.creditorUserId == member.externalMembersId } }
 
                                 items(registered) { member ->
                                     val expense = ExpenseUtils.calculateMemberExpense(member, expenses)
