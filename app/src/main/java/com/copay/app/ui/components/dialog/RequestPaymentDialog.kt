@@ -53,7 +53,6 @@ fun requestPaymentDialog(
                     isLoading = true
                     val amountFloat = amount.toFloatOrNull() ?: 0f
                     onRequestSent(amountFloat)
-                    onDismiss()
                     isLoading = false
                 }
             ) {

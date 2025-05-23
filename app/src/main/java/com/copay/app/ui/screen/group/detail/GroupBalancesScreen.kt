@@ -17,24 +17,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import android.util.Log
 import coil.compose.AsyncImage
 import com.copay.app.R
 import com.copay.app.dto.paymentconfirmation.request.ConfirmPaymentRequestDTO
-import com.copay.app.ui.components.dialog.requestPaymentDialog
-import com.copay.app.utils.ExpenseUtils
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.button.manageDebtsButton
+import com.copay.app.ui.components.dialog.requestPaymentDialog
 import com.copay.app.ui.components.memberItem
+import com.copay.app.ui.components.pillTabRow
+import com.copay.app.ui.components.snackbar.greenSnackbarHost
+import com.copay.app.ui.components.snackbar.redSnackbarHost
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import com.copay.app.ui.components.button.manageDebtsButton
-import com.copay.app.ui.components.pillTabRow
+import com.copay.app.utils.ExpenseUtils
 import com.copay.app.utils.state.PaymentState
 import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.PaymentConfirmationViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun groupBalancesScreen(
@@ -45,14 +47,11 @@ fun groupBalancesScreen(
 ) {
     val context = LocalContext.current
 
-    // Values from Group Session.
     val group by groupViewModel.group.collectAsState()
-
-    // Expense state,
     val expenses by expenseViewModel.expenses.collectAsState()
     val userExpenses by expenseViewModel.userExpenses.collectAsState()
+    val paymentState by paymentConfirmationViewModel.paymentState.collectAsState()
 
-    // Get current user
     val currentUserId = groupViewModel.getCurrentUserId()
     val isCreditor = expenses.any { it.creditorUserId == currentUserId }
     val isCreator = group?.isOwner == true
@@ -65,7 +64,28 @@ fun groupBalancesScreen(
         }
     }
 
-    // Detects if banner image color is dark or not
+    val successSnackbarHostState = remember { SnackbarHostState() }
+    val errorSnackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(paymentState) {
+        when (paymentState) {
+            is PaymentState.Success -> {
+                coroutineScope.launch {
+                    successSnackbarHostState.showSnackbar("Payment requested successfully")
+                }
+                paymentConfirmationViewModel.resetPaymentState()
+            }
+            is PaymentState.Error -> {
+                coroutineScope.launch {
+                    errorSnackbarHostState.showSnackbar((paymentState as PaymentState.Error).message)
+                }
+                paymentConfirmationViewModel.resetPaymentState()
+            }
+            else -> {}
+        }
+    }
+
     fun isBackgroundDark(imageUrl: String?): Boolean {
         return imageUrl == null || imageUrl.contains("dark", ignoreCase = true)
     }
@@ -73,15 +93,10 @@ fun groupBalancesScreen(
     var showRequestDialog by remember { mutableStateOf(false) }
     var selectedMemberId by remember { mutableStateOf<Long?>(null) }
 
-    val iconColor = if (isBackgroundDark(group?.imageUrl)) {
-        Color.White
-    } else {
-        Color.Black
-    }
+    val iconColor = if (isBackgroundDark(group?.imageUrl)) Color.White else Color.Black
 
     // Show the screen content
     Box(modifier = Modifier.fillMaxSize()) {
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -216,7 +231,8 @@ fun groupBalancesScreen(
                             0 -> {
                                 val registered = group?.registeredMembers.orEmpty()
                                     .sortedByDescending { member ->
-                                        val isMemberCreditor = expenses.any { it.creditorUserId == member.registeredMemberId }
+                                        val isMemberCreditor =
+                                            expenses.any { it.creditorUserId == member.registeredMemberId }
                                         val isCurrentUser = member.registeredMemberId == currentUserId
                                         (if (isMemberCreditor) 2 else if (isCurrentUser) 1 else 0)
                                     }
@@ -280,6 +296,7 @@ fun groupBalancesScreen(
                                 amount = amount,
                                 onAmountChange = { amount = it },
                                 onDismiss = {
+                                    navigationViewModel.navigateTo(SpaScreens.BalancesGroup)
                                     showRequestDialog = false
                                     selectedMemberId = null
                                     amount = ""
@@ -296,14 +313,24 @@ fun groupBalancesScreen(
                                     amount = ""
                                 }
                             )
-                        } else {
-                            Log.d("GroupBalancesScreen", "userExpenseId for memberId $memberId: $userExpenseId")
                         }
                     }
                 }
             }
         }
+
+        greenSnackbarHost(
+            hostState = successSnackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+
+        redSnackbarHost(
+            hostState = errorSnackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
+
+
 
 fun Double.format(digits: Int) = "%.${digits}f".format(this)
