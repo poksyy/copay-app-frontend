@@ -34,6 +34,17 @@ class PaymentConfirmationViewModel @Inject constructor(
         }
     }
 
+    fun getAllUserExpensesByGroup(context: Context, groupId: Long) {
+        viewModelScope.launch {
+
+            _paymentState.value = PaymentState.Loading
+
+            val response = repository.getAllUserExpensesByGroup(context, groupId)
+
+            _paymentState.value = response
+        }
+    }
+
     fun getUnconfirmedPaymentConfirmations(context: Context, groupId: Long) {
         viewModelScope.launch {
 
