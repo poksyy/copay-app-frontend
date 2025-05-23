@@ -166,12 +166,6 @@ fun CreateGroupScreen(
                 }
             }
 
-            is ProfileState.Error -> {
-                screenSnackbarMessage = (userState as ProfileState.Error).message
-                showSnackbar = true
-                lastSearchedPhone = null
-            }
-
             else -> {}
         }
     }
@@ -388,7 +382,9 @@ fun CreateGroupScreen(
                     onAddExternal = { name ->
                         externalMembers.add(name)
                         updateInvitedMembers()
-                    }
+                    },
+                    userState = userState,
+                    userViewModel = userViewModel
                 )
             }
         }

@@ -15,13 +15,17 @@ import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.ui.components.snackbar.redSnackbarHost
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
+import com.copay.app.utils.state.ProfileState
+import com.copay.app.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun addMemberDialog(
     onDismiss: () -> Unit,
     onAddRegistered: (String) -> Unit,
-    onAddExternal: (String) -> Unit
+    onAddExternal: (String) -> Unit,
+    userState: ProfileState,
+    userViewModel: UserViewModel
 ) {
     var phoneNumber by remember { mutableStateOf("") }
     var externalName by remember { mutableStateOf("") }
@@ -32,6 +36,26 @@ fun addMemberDialog(
     val localSuccessSnackbarHostState = remember { SnackbarHostState() }
 
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(userState) {
+        when (userState) {
+            is ProfileState.Success.GetUser -> {
+                coroutineScope.launch {
+                    localSuccessSnackbarHostState.showSnackbar("Member added")
+                }
+                userViewModel.userState.value = ProfileState.Idle
+                onDismiss()
+            }
+            is ProfileState.Error -> {
+                coroutineScope.launch {
+                    localErrorSnackbarHostState.showSnackbar(userState.message)
+                }
+                userViewModel.userState.value = ProfileState.Idle
+            }
+            else -> {}
+        }
+    }
+
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -107,12 +131,8 @@ fun addMemberDialog(
                                         localErrorSnackbarHostState.showSnackbar("Invalid phone number")
                                     }
                                 } else {
-                                    // TODO Message will throw this even the user does not exist because the length is higher
                                     onAddRegistered(phoneNumber)
                                     phoneNumber = ""
-                                    coroutineScope.launch {
-                                        localSuccessSnackbarHostState.showSnackbar("Member added")
-                                    }
                                 }
                             }
 

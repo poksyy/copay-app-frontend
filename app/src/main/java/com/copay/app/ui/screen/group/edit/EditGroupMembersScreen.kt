@@ -23,6 +23,7 @@ import com.copay.app.ui.components.listitem.registeredMemberItem
 import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.ui.components.topNavBar
 import com.copay.app.utils.state.GroupState
+import com.copay.app.utils.state.ProfileState
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -35,9 +36,12 @@ fun editGroupMembersScreen(
 ) {
     val context = LocalContext.current
     val currentUser by userViewModel.user.collectAsState()
-    val groupState by groupViewModel.groupState.collectAsState()
     val group by groupViewModel.group.collectAsState()
     val groupId = group?.groupId ?: return
+
+    // Handle states.
+    val userState by userViewModel.userState.collectAsState()
+    val groupState by groupViewModel.groupState.collectAsState()
 
     val registeredMembers by remember(group) {
         derivedStateOf { group!!.registeredMembers ?: emptyList() }
@@ -67,11 +71,6 @@ fun editGroupMembersScreen(
         when (groupState) {
             is GroupState.Success.GroupUpdated -> {
                 screenSnackbarMessage = (groupState as GroupState.Success.GroupUpdated).updateData.message
-                showSnackbar = true
-            }
-
-            is GroupState.Error -> {
-                screenSnackbarMessage = (groupState as GroupState.Error).message
                 showSnackbar = true
             }
 
@@ -106,11 +105,14 @@ fun editGroupMembersScreen(
         addMemberDialog(
             onDismiss = { showAddMemberDialog = false },
             onAddRegistered = { phoneNumber ->
+                userViewModel.getUserByPhone(context, phoneNumber)
                 groupViewModel.addRegisteredMember(context, groupId, registeredMembers, phoneNumber)
             },
             onAddExternal = { name ->
                 groupViewModel.addExternalMember(context, groupId, externalMembers, name)
-            }
+            },
+            userState = userState,
+            userViewModel = userViewModel
         )
     }
 
