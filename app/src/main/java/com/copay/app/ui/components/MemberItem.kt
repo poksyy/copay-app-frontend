@@ -17,7 +17,7 @@ import com.copay.app.ui.screen.group.detail.format
 import com.copay.app.ui.theme.CopayColors
 
 @Composable
-fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: Long?) {
+fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: Long?, onPayClick: (() -> Unit)? = null) {
     val memberName: String
     val memberPhoneNumber: String
 
@@ -82,13 +82,13 @@ fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: L
 
                 if (isCurrentUser && expense > 0) {
                     TextButton(
-                        onClick = { /* TODO */ },
+                        onClick = { onPayClick?.invoke() },
                         contentPadding = PaddingValues(0.dp),
                         modifier = Modifier.height(36.dp)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = "Pay your debts",
+                                text = "Pay your debt",
                                 color = CopayColors.success,
                                 fontSize = 12.sp
                             )
