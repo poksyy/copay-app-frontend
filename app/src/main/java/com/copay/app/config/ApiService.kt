@@ -207,7 +207,7 @@ interface ApiService {
     // Get all unconfirmed payment confirmations in a group
     @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/unconfirmed")
     suspend fun getUnconfirmedPaymentConfirmations(
-        @Path("groupId") groupId: Long
+        @Path("groupId") groupId: Long, @Header("Authorization") token: String
     ): Response<List<ListUnconfirmedPaymentConfirmationResponseDTO>>
 
     // Request a payment confirmation (from user side)
@@ -232,7 +232,6 @@ interface ApiService {
     @DELETE("${BASE_PATH}payment-confirmations/{paymentConfirmationId}")
     suspend fun deletePaymentConfirmation(
         @Path("paymentConfirmationId") paymentConfirmationId: Long,
-        @Body request: DeletePaymentConfirmationRequestDTO,
         @Header("Authorization") token: String
     ): Response<MessageResponseDTO>
 }

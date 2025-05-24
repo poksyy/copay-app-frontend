@@ -23,9 +23,9 @@ class PaymentConfirmationService(private val api: ApiService) {
 
     // Get all unconfirmed payment confirmations for a group
     suspend fun getUnconfirmedPaymentConfirmations(
-        groupId: Long
+        groupId: Long, token: String
     ): Response<List<ListUnconfirmedPaymentConfirmationResponseDTO>> {
-        return api.getUnconfirmedPaymentConfirmations(groupId)
+        return api.getUnconfirmedPaymentConfirmations(groupId, token)
     }
 
     // Request a payment confirmation via CreatePaymentConfirmationRequestDTO
@@ -51,8 +51,8 @@ class PaymentConfirmationService(private val api: ApiService) {
 
     // Delete a payment confirmation (passing the ID manually in the body map)
     suspend fun deletePaymentConfirmation(
-        paymentConfirmationId: Long, request: DeletePaymentConfirmationRequestDTO, token: String
+        paymentConfirmationId: Long, token: String
     ): Response<MessageResponseDTO> {
-        return api.deletePaymentConfirmation(paymentConfirmationId, request, token)
+        return api.deletePaymentConfirmation(paymentConfirmationId, token)
     }
 }
