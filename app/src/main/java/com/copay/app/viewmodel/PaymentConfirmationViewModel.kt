@@ -28,9 +28,9 @@ class PaymentConfirmationViewModel @Inject constructor(
 
             _paymentState.value = PaymentState.Loading
 
-            val response = repository.getUserExpenseIdsForGroup(context, groupId)
+            val backendResponse = repository.getUserExpenseIdsForGroup(context, groupId)
 
-            _paymentState.value = response
+            _paymentState.value = backendResponse
         }
     }
 
@@ -39,9 +39,9 @@ class PaymentConfirmationViewModel @Inject constructor(
 
             _paymentState.value = PaymentState.Loading
 
-            val response = repository.getUnconfirmedPaymentConfirmations(context, groupId)
+            val backendResponse = repository.getUnconfirmedPaymentConfirmations(context, groupId)
 
-            _paymentState.value = response
+            _paymentState.value = backendResponse
         }
     }
 
@@ -50,9 +50,9 @@ class PaymentConfirmationViewModel @Inject constructor(
 
             _paymentState.value = PaymentState.Loading
 
-            val response = repository.requestPaymentFromUser(context, request)
+            val backendResponse = repository.requestPaymentFromUser(context, request)
 
-            _paymentState.value = response
+            _paymentState.value = backendResponse
         }
     }
 
@@ -61,20 +61,24 @@ class PaymentConfirmationViewModel @Inject constructor(
 
             _paymentState.value = PaymentState.Loading
 
-            val response = repository.confirmPayment(context, request)
+            val backendResponse = repository.confirmPayment(context, request)
 
-            _paymentState.value = response
+            _paymentState.value = backendResponse
         }
     }
 
-    fun markAsConfirmed(context: Context, confirmationId: Long) {
+    fun markAsConfirmed(context: Context, confirmationId: Long, groupId: Long) {
         viewModelScope.launch {
 
             _paymentState.value = PaymentState.Loading
 
-            val response = repository.markPaymentAsConfirmed(context, confirmationId)
+            val backendResponse = repository.markPaymentAsConfirmed(context, confirmationId)
 
-            _paymentState.value = response
+            if (backendResponse is PaymentState.Success.SinglePayment) {
+                getUnconfirmedPaymentConfirmations(context, groupId)
+            } else {
+                _paymentState.value = backendResponse
+            }
         }
     }
 
@@ -83,9 +87,9 @@ class PaymentConfirmationViewModel @Inject constructor(
 
             _paymentState.value = PaymentState.Loading
 
-            val response = repository.deletePaymentConfirmation(context, confirmationId)
+            val backendResponse = repository.deletePaymentConfirmation(context, confirmationId)
 
-            _paymentState.value = response
+            _paymentState.value = backendResponse
         }
     }
 }
