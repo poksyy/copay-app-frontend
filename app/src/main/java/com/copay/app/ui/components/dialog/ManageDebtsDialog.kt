@@ -63,17 +63,17 @@ fun manageDebtsDialog(
     var payer by remember { mutableStateOf(groupMembers.firstOrNull()) }
     var receiver by remember { mutableStateOf(groupMembers.getOrNull(1)) }
 
-    // Get the debtorId from the selected receiver (either registered or external).
-    val debtorId = when (receiver) {
+    // Get the debtorId from the payer (either registered or external).
+    val debtorId = when (payer) {
         is GroupMember.RegisteredMember -> {
             group?.registeredMembers
-                ?.find { it.phoneNumber == (receiver as GroupMember.RegisteredMember).phoneNumber }
+                ?.find { it.phoneNumber == (payer as GroupMember.RegisteredMember).phoneNumber }
                 ?.registeredMemberId
         }
 
         is GroupMember.ExternalMember -> {
             group?.externalMembers
-                ?.find { it.name == (receiver as GroupMember.ExternalMember).name }
+                ?.find { it.name == (payer as GroupMember.ExternalMember).name }
                 ?.externalMembersId
         }
 
