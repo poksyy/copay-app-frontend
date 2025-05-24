@@ -23,15 +23,20 @@ import retrofit2.Response
 class PaymentConfirmationRepository(private val service: PaymentConfirmationService) {
 
     suspend fun getUserExpenseIdsForGroup(context: Context, groupId: Long): PaymentState {
+
         val token = DataStoreManager.getFormattedToken(context)
+
         return handleApiResponse(context) {
             service.getUserExpenseIds(groupId, token)
         }
     }
 
     suspend fun getUnconfirmedPaymentConfirmations(context: Context, groupId: Long): PaymentState {
+
+        val token = DataStoreManager.getFormattedToken(context)
+
         return handleApiResponse(context) {
-            service.getUnconfirmedPaymentConfirmations(groupId)
+            service.getUnconfirmedPaymentConfirmations(groupId, token)
         }
     }
 
@@ -39,7 +44,9 @@ class PaymentConfirmationRepository(private val service: PaymentConfirmationServ
         context: Context,
         request: ConfirmPaymentRequestDTO
     ): PaymentState {
+
         val token = DataStoreManager.getFormattedToken(context)
+
         return handleApiResponse(context) {
             service.requestPaymentConfirmation(request, token)
         }
@@ -49,7 +56,9 @@ class PaymentConfirmationRepository(private val service: PaymentConfirmationServ
         context: Context,
         request: ConfirmPaymentRequestDTO
     ): PaymentState {
+
         val token = DataStoreManager.getFormattedToken(context)
+
         return handleApiResponse(context) {
             service.confirmPayment(request, token)
         }
@@ -59,7 +68,9 @@ class PaymentConfirmationRepository(private val service: PaymentConfirmationServ
         context: Context,
         confirmationId: Long
     ): PaymentState {
+
         val token = DataStoreManager.getFormattedToken(context)
+
         return handleApiResponse(context) {
             service.markPaymentAsConfirmed(confirmationId, token)
         }
@@ -69,12 +80,11 @@ class PaymentConfirmationRepository(private val service: PaymentConfirmationServ
         context: Context,
         confirmationId: Long
     ): PaymentState {
+
         val token = DataStoreManager.getFormattedToken(context)
 
-        val request = DeletePaymentConfirmationRequestDTO(paymentConfirmationId = confirmationId)
-
         return handleApiResponse(context) {
-            service.deletePaymentConfirmation(confirmationId, request, token)
+            service.deletePaymentConfirmation(confirmationId, token)
         }
     }
 
@@ -102,7 +112,7 @@ class PaymentConfirmationRepository(private val service: PaymentConfirmationServ
                             }
                         }
 
-                        is PaymentResponseDTO -> PaymentState.Success.SingleResult(body)
+                        is PaymentResponseDTO -> PaymentState.Success.SinglePayment(body)
 
                         is MessageResponseDTO -> PaymentState.Success.Message(body.message)
 
