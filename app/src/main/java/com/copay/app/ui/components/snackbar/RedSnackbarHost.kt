@@ -40,8 +40,7 @@ fun redSnackbarHost(
                     )
                     Text(
                         text = snackbarData.visuals.message,
-                        style = CopayTypography.body,
-                        modifier = Modifier.weight(1f)
+                        style = CopayTypography.footer
                     )
                 }
             }
