@@ -19,58 +19,84 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.copay.app.R
-import com.copay.app.utils.ExpenseUtils
+import com.copay.app.dto.paymentconfirmation.request.ConfirmPaymentRequestDTO
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.backButtonTop
+import com.copay.app.ui.components.button.manageDebtsButton
+import com.copay.app.ui.components.dialog.requestPaymentDialog
 import com.copay.app.ui.components.memberItem
+import com.copay.app.ui.components.pillTabRow
+import com.copay.app.ui.components.snackbar.greenSnackbarHost
+import com.copay.app.ui.components.snackbar.redSnackbarHost
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import com.copay.app.ui.components.button.manageDebtsButton
-import com.copay.app.ui.components.pillTabRow
+import com.copay.app.utils.ExpenseUtils
+import com.copay.app.utils.state.PaymentState
 import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
+import com.copay.app.viewmodel.PaymentConfirmationViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun groupBalancesScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     groupViewModel: GroupViewModel = hiltViewModel(),
     expenseViewModel: ExpenseViewModel = hiltViewModel(),
+    paymentConfirmationViewModel: PaymentConfirmationViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
 
-    // Values from Group Session.
     val group by groupViewModel.group.collectAsState()
-
-    // Expense state,
-    val expensesState by expenseViewModel.expenseState.collectAsState()
     val expenses by expenseViewModel.expenses.collectAsState()
+    val userExpenses by expenseViewModel.userExpenses.collectAsState()
+    val paymentState by paymentConfirmationViewModel.paymentState.collectAsState()
 
-    // Get current user
     val currentUserId = groupViewModel.getCurrentUserId()
     val isCreditor = expenses.any { it.creditorUserId == currentUserId }
     val isCreator = group?.isOwner == true
 
-    // Load groups when entering the screen
     LaunchedEffect(Unit) {
         groupViewModel.getGroupsByUser(context)
-        group?.groupId?.let { expenseViewModel.getExpensesByGroup(context, it) }
+        group?.groupId?.let {
+            expenseViewModel.getExpensesByGroup(context, it)
+            expenseViewModel.getAllUserExpensesByGroup(context, it)
+        }
     }
 
-    // Detects if banner image color is dark or not
+    val successSnackbarHostState = remember { SnackbarHostState() }
+    val errorSnackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(paymentState) {
+        when (paymentState) {
+            is PaymentState.Success -> {
+                coroutineScope.launch {
+                    successSnackbarHostState.showSnackbar("Payment requested successfully")
+                }
+                paymentConfirmationViewModel.resetPaymentState()
+            }
+            is PaymentState.Error -> {
+                coroutineScope.launch {
+                    errorSnackbarHostState.showSnackbar((paymentState as PaymentState.Error).message)
+                }
+                paymentConfirmationViewModel.resetPaymentState()
+            }
+            else -> {}
+        }
+    }
+
     fun isBackgroundDark(imageUrl: String?): Boolean {
         return imageUrl == null || imageUrl.contains("dark", ignoreCase = true)
     }
 
-    val iconColor = if (isBackgroundDark(group?.imageUrl)) {
-        Color.White
-    } else {
-        Color.Black
-    }
+    var showRequestDialog by remember { mutableStateOf(false) }
+    var selectedMemberId by remember { mutableStateOf<Long?>(null) }
+
+    val iconColor = if (isBackgroundDark(group?.imageUrl)) Color.White else Color.Black
 
     // Show the screen content
     Box(modifier = Modifier.fillMaxSize()) {
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -205,7 +231,8 @@ fun groupBalancesScreen(
                             0 -> {
                                 val registered = group?.registeredMembers.orEmpty()
                                     .sortedByDescending { member ->
-                                        val isMemberCreditor = expenses.any { it.creditorUserId == member.registeredMemberId }
+                                        val isMemberCreditor =
+                                            expenses.any { it.creditorUserId == member.registeredMemberId }
                                         val isCurrentUser = member.registeredMemberId == currentUserId
                                         (if (isMemberCreditor) 2 else if (isCurrentUser) 1 else 0)
                                     }
@@ -219,7 +246,11 @@ fun groupBalancesScreen(
                                         member = member,
                                         expense = expense,
                                         currency = group?.currency,
-                                        currentUserId = currentUserId
+                                        currentUserId = currentUserId,
+                                        onPayClick = {
+                                            selectedMemberId = member.registeredMemberId
+                                            showRequestDialog = true
+                                        }
                                     )
                                 }
 
@@ -250,10 +281,56 @@ fun groupBalancesScreen(
                             }
                         }
                     }
+                    val memberId = selectedMemberId
+                    val groupId = group?.groupId
+
+                    var amount by remember { mutableStateOf("") }
+
+                    if (showRequestDialog && memberId != null && groupId != null) {
+                        val userExpenseId = userExpenses.find { it.debtorUserId == memberId }?.userExpenseId
+
+                        if (userExpenseId != null) {
+                            requestPaymentDialog(
+                                groupId = groupId,
+                                userId = memberId,
+                                amount = amount,
+                                onAmountChange = { amount = it },
+                                onDismiss = {
+                                    navigationViewModel.navigateTo(SpaScreens.BalancesGroup)
+                                    showRequestDialog = false
+                                    selectedMemberId = null
+                                    amount = ""
+                                },
+                                onRequestSent = {
+                                    val amountFloat = amount.toFloatOrNull() ?: 0f
+                                    val request = ConfirmPaymentRequestDTO(
+                                        userExpenseId = userExpenseId,
+                                        confirmationAmount = amountFloat
+                                    )
+                                    paymentConfirmationViewModel.requestPayment(context, request)
+                                    showRequestDialog = false
+                                    selectedMemberId = null
+                                    amount = ""
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
+
+        greenSnackbarHost(
+            hostState = successSnackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+
+        redSnackbarHost(
+            hostState = errorSnackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
+
+
 
 fun Double.format(digits: Int) = "%.${digits}f".format(this)

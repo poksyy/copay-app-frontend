@@ -29,13 +29,6 @@ class PaymentConfirmationRepository(private val service: PaymentConfirmationServ
         }
     }
 
-    suspend fun getAllUserExpensesByGroup(context: Context, groupId: Long): PaymentState {
-        val token = DataStoreManager.getFormattedToken(context)
-        return handleApiResponse(context) {
-            service.getAllUserExpensesByGroup(groupId, token)
-        }
-    }
-
     suspend fun getUnconfirmedPaymentConfirmations(context: Context, groupId: Long): PaymentState {
         return handleApiResponse(context) {
             service.getUnconfirmedPaymentConfirmations(groupId)
