@@ -6,6 +6,8 @@ package com.copay.app.dto.paymentconfirmation.response
 
 data class ListUnconfirmedPaymentConfirmationResponseDTO(
 
+    val paymentConfirmationId: Long,
     val userExpenseId: Long,
-    val confirmationAmount: Float
+    val confirmationAmount: Float,
+    val username: String
 )
