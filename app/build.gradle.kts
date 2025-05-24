@@ -65,7 +65,8 @@ dependencies {
 // Navigation and architecture dependencies
     implementation(libs.androidx.navigation.compose) // Navigation in Compose.
     implementation(libs.dagger.hilt) // Hilt for dependency injection.
-    implementation(libs.hilt.compose.navigation) // Hilt integration with Compose navigation.
+    implementation(libs.hilt.compose.navigation)
+    implementation(libs.androidx.media3.common.ktx) // Hilt integration with Compose navigation.
     kapt(libs.dagger.kapt) // Hilt annotations for dependency injection.
 
 

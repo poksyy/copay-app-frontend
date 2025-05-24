@@ -18,16 +18,16 @@ sealed class PaymentState {
     sealed class Success : PaymentState() {
 
         // When a single payment confirmation is returned.
-        data class SingleResult(val data: PaymentResponseDTO) : Success()
+        data class SinglePayment(val payment: PaymentResponseDTO) : Success()
 
         // When a generic message is returned (e.g., deletion confirmation).
         data class Message(val message: String) : Success()
 
         // List of confirmed or all payment confirmations.
-        data class ConfirmedPayments(val payments: List<PaymentResponseDTO>) : Success()
+        data class ConfirmedPayments(val confirmedPayments: List<PaymentResponseDTO>) : Success()
 
         // List of unconfirmed payment confirmations (pending).
-        data class UnconfirmedPayments(val unconfirmed: List<ListUnconfirmedPaymentConfirmationResponseDTO>) : Success()
+        data class UnconfirmedPayments(val unconfirmedPayments: List<ListUnconfirmedPaymentConfirmationResponseDTO>) : Success()
     }
 
     // An error occurred during payment operations.

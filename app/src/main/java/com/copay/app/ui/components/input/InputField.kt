@@ -41,7 +41,14 @@ fun inputField(
                 .fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             singleLine = isSingleLine,
-            colors = copayOutlinedTextFieldColors(isError),
+            isError = isError,
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = CopayColors.primary.copy(alpha = 0.3f),
+                focusedBorderColor = CopayColors.primary,
+                errorBorderColor = MaterialTheme.colorScheme.error,
+                focusedLabelColor = if (isError) MaterialTheme.colorScheme.error else CopayColors.primary,
+                cursorColor = if (isError) MaterialTheme.colorScheme.error else CopayColors.primary
+            ),
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
             trailingIcon = trailingIcon
