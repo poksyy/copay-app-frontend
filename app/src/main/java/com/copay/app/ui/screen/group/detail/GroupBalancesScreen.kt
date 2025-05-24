@@ -20,17 +20,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.copay.app.R
 import com.copay.app.dto.paymentconfirmation.request.ConfirmPaymentRequestDTO
+import com.copay.app.dto.paymentconfirmation.response.ListUnconfirmedPaymentConfirmationResponseDTO
+import com.copay.app.utils.ExpenseUtils
 import com.copay.app.navigation.SpaScreens
+import com.copay.app.ui.components.GroupMember
 import com.copay.app.ui.components.button.backButtonTop
 import com.copay.app.ui.components.button.manageDebtsButton
 import com.copay.app.ui.components.dialog.requestPaymentDialog
-import com.copay.app.ui.components.memberItem
 import com.copay.app.ui.components.pillTabRow
 import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.ui.components.snackbar.redSnackbarHost
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import com.copay.app.utils.ExpenseUtils
+import com.copay.app.ui.components.listitem.memberItem
+import com.copay.app.ui.components.dialog.manageDebtsDialog
+import com.copay.app.utils.state.ExpenseState
 import com.copay.app.utils.state.PaymentState
 import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.GroupViewModel
@@ -43,19 +47,41 @@ fun groupBalancesScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
     groupViewModel: GroupViewModel = hiltViewModel(),
     expenseViewModel: ExpenseViewModel = hiltViewModel(),
-    paymentConfirmationViewModel: PaymentConfirmationViewModel = hiltViewModel(),
+    paymentConfirmationViewModel: PaymentConfirmationViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 
     val group by groupViewModel.group.collectAsState()
-    val expenses by expenseViewModel.expenses.collectAsState()
-    val userExpenses by expenseViewModel.userExpenses.collectAsState()
+
+    // Expenses state.
+    val groupExpenseState by expenseViewModel.expenses.collectAsState()
+    val userExpensesState by expenseViewModel.userExpenses.collectAsState()
+
+    // Payment state.
     val paymentState by paymentConfirmationViewModel.paymentState.collectAsState()
 
+    // Get current user.
     val currentUserId = groupViewModel.getCurrentUserId()
-    val isCreditor = expenses.any { it.creditorUserId == currentUserId }
+    val isCreditor = groupExpenseState.any { it.creditorUserId == currentUserId }
     val isCreator = group?.isOwner == true
 
+    // Dialog to manage debts.
+    var showUnconfirmedDialog by remember { mutableStateOf(false) }
+    var unconfirmedPayments by remember { mutableStateOf<List<ListUnconfirmedPaymentConfirmationResponseDTO>>(emptyList()) }
+
+    // Member list of the group.
+    val membersList = remember(group) {
+        buildList {
+            group?.registeredMembers?.forEach {
+                add(GroupMember.RegisteredMember(it.username, it.phoneNumber))
+            }
+            group?.externalMembers?.forEach {
+                add(GroupMember.ExternalMember(it.name))
+            }
+        }
+    }
+
+    // Load groups when entering the screen
     LaunchedEffect(Unit) {
         groupViewModel.getGroupsByUser(context)
         group?.groupId?.let {
@@ -68,24 +94,33 @@ fun groupBalancesScreen(
     val errorSnackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    // Load the list of unconfirmed payments in the dialog.
     LaunchedEffect(paymentState) {
-        when (paymentState) {
-            is PaymentState.Success -> {
+        when (val state = paymentState) {
+            is PaymentState.Success.SinglePayment -> {
                 coroutineScope.launch {
-                    successSnackbarHostState.showSnackbar("Payment requested successfully")
+                    successSnackbarHostState.showSnackbar("✅ Payment requested successfully")
                 }
                 paymentConfirmationViewModel.resetPaymentState()
             }
+
+            is PaymentState.Success.UnconfirmedPayments -> {
+                unconfirmedPayments = state.unconfirmedPayments
+                showUnconfirmedDialog = true
+            }
+
             is PaymentState.Error -> {
                 coroutineScope.launch {
-                    errorSnackbarHostState.showSnackbar((paymentState as PaymentState.Error).message)
+                    errorSnackbarHostState.showSnackbar(state.message)
                 }
                 paymentConfirmationViewModel.resetPaymentState()
             }
+
             else -> {}
         }
     }
 
+    // Detects if banner image color is dark or not
     fun isBackgroundDark(imageUrl: String?): Boolean {
         return imageUrl == null || imageUrl.contains("dark", ignoreCase = true)
     }
@@ -187,7 +222,12 @@ fun groupBalancesScreen(
 
                         if (isCreditor) {
                             manageDebtsButton(
-                                onClick = { /* TODO */ },
+                                onClick = {
+                                    group?.groupId?.let {
+                                        showUnconfirmedDialog = true
+                                        paymentConfirmationViewModel.getUnconfirmedPaymentConfirmations(context, it)
+                                    }
+                                },
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -232,16 +272,16 @@ fun groupBalancesScreen(
                                 val registered = group?.registeredMembers.orEmpty()
                                     .sortedByDescending { member ->
                                         val isMemberCreditor =
-                                            expenses.any { it.creditorUserId == member.registeredMemberId }
+                                            groupExpenseState.any { it.creditorUserId == member.registeredMemberId }
                                         val isCurrentUser = member.registeredMemberId == currentUserId
                                         (if (isMemberCreditor) 2 else if (isCurrentUser) 1 else 0)
                                     }
 
                                 val external = group?.externalMembers.orEmpty()
-                                    .sortedByDescending { member -> expenses.any { it.creditorUserId == member.externalMembersId } }
+                                    .sortedByDescending { member -> groupExpenseState.any { it.creditorUserId == member.externalMembersId } }
 
                                 items(registered) { member ->
-                                    val expense = ExpenseUtils.calculateMemberExpense(member, expenses)
+                                    val expense = ExpenseUtils.calculateMemberExpense(member, groupExpenseState)
                                     memberItem(
                                         member = member,
                                         expense = expense,
@@ -255,7 +295,7 @@ fun groupBalancesScreen(
                                 }
 
                                 items(external) { member ->
-                                    val expense = ExpenseUtils.calculateMemberExpense(member, expenses)
+                                    val expense = ExpenseUtils.calculateMemberExpense(member, groupExpenseState)
                                     memberItem(
                                         member = member,
                                         expense = expense,
@@ -281,40 +321,6 @@ fun groupBalancesScreen(
                             }
                         }
                     }
-                    val memberId = selectedMemberId
-                    val groupId = group?.groupId
-
-                    var amount by remember { mutableStateOf("") }
-
-                    if (showRequestDialog && memberId != null && groupId != null) {
-                        val userExpenseId = userExpenses.find { it.debtorUserId == memberId }?.userExpenseId
-
-                        if (userExpenseId != null) {
-                            requestPaymentDialog(
-                                groupId = groupId,
-                                userId = memberId,
-                                amount = amount,
-                                onAmountChange = { amount = it },
-                                onDismiss = {
-                                    navigationViewModel.navigateTo(SpaScreens.BalancesGroup)
-                                    showRequestDialog = false
-                                    selectedMemberId = null
-                                    amount = ""
-                                },
-                                onRequestSent = {
-                                    val amountFloat = amount.toFloatOrNull() ?: 0f
-                                    val request = ConfirmPaymentRequestDTO(
-                                        userExpenseId = userExpenseId,
-                                        confirmationAmount = amountFloat
-                                    )
-                                    paymentConfirmationViewModel.requestPayment(context, request)
-                                    showRequestDialog = false
-                                    selectedMemberId = null
-                                    amount = ""
-                                }
-                            )
-                        }
-                    }
                 }
             }
         }
@@ -329,8 +335,56 @@ fun groupBalancesScreen(
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
+
+    // Dialog to show the list of unconfirmed payments.
+    if (showUnconfirmedDialog) {
+        manageDebtsDialog(
+            onDismiss = { showUnconfirmedDialog = false },
+            payments = unconfirmedPayments,
+            groupMembers = membersList,
+            paymentConfirmationViewModel = paymentConfirmationViewModel,
+            groupViewModel = groupViewModel,
+            paymentState = paymentState,
+            userExpenses = userExpensesState,
+            context = context
+        )
+    }
+
+    // Dialog to send a request to pay your debt.
+    val memberId = selectedMemberId
+    val groupId = group?.groupId
+
+    var amount by remember { mutableStateOf("") }
+
+    if (showRequestDialog && memberId != null && groupId != null) {
+        val userExpenseId = userExpensesState.find { it.debtorUserId == memberId }?.userExpenseId
+
+        if (userExpenseId != null) {
+            requestPaymentDialog(
+                groupId = groupId,
+                userId = memberId,
+                amount = amount,
+                onAmountChange = { amount = it },
+                onDismiss = {
+                    showRequestDialog = false
+                    selectedMemberId = null
+                    amount = ""
+                },
+                onRequestSent = {
+                    val amountFloat = amount.toFloatOrNull() ?: 0f
+                    val request = ConfirmPaymentRequestDTO(
+                        userExpenseId = userExpenseId,
+                        confirmationAmount = amountFloat
+                    )
+                    paymentConfirmationViewModel.requestPayment(context, request)
+                    showRequestDialog = false
+                    selectedMemberId = null
+                    amount = ""
+                }
+            )
+        }
+    }
 }
 
-
-
+// Function to format a Double to a fixed number of decimal places.
 fun Double.format(digits: Int) = "%.${digits}f".format(this)
