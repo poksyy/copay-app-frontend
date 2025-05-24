@@ -382,7 +382,9 @@ fun CreateGroupScreen(
                         updateInvitedMembers()
                     },
                     userState = userState,
-                    userViewModel = userViewModel
+                    userViewModel = userViewModel,
+                    shouldCloseOnAdd = false,
+                    existingRegisteredPhones = registeredMembers.filterNotNull()
                 )
             }
         }

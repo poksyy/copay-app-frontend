@@ -112,7 +112,8 @@ fun editGroupMembersScreen(
                 groupViewModel.addExternalMember(context, groupId, externalMembers, name)
             },
             userState = userState,
-            userViewModel = userViewModel
+            userViewModel = userViewModel,
+            shouldCloseOnAdd = true
         )
     }
 
