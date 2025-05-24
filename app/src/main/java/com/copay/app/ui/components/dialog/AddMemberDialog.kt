@@ -25,7 +25,9 @@ fun addMemberDialog(
     onAddRegistered: (String) -> Unit,
     onAddExternal: (String) -> Unit,
     userState: ProfileState,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    shouldCloseOnAdd: Boolean = true,
+    existingRegisteredPhones: List<String> = emptyList()
 ) {
     var phoneNumber by remember { mutableStateOf("") }
     var externalName by remember { mutableStateOf("") }
@@ -44,7 +46,7 @@ fun addMemberDialog(
                     localSuccessSnackbarHostState.showSnackbar("Member added")
                 }
                 userViewModel.userState.value = ProfileState.Idle
-                onDismiss()
+                if (shouldCloseOnAdd) onDismiss()
             }
             is ProfileState.Error -> {
                 coroutineScope.launch {
@@ -131,8 +133,14 @@ fun addMemberDialog(
                                         localErrorSnackbarHostState.showSnackbar("Invalid phone number")
                                     }
                                 } else {
-                                    onAddRegistered(phoneNumber)
-                                    phoneNumber = ""
+                                    if (existingRegisteredPhones.contains(phoneNumber)) {
+                                        coroutineScope.launch {
+                                            localErrorSnackbarHostState.showSnackbar("User already in group")
+                                        }
+                                    } else {
+                                        onAddRegistered(phoneNumber)
+                                        phoneNumber = ""
+                                    }
                                 }
                             }
 
