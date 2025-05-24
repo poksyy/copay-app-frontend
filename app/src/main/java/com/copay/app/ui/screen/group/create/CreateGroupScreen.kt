@@ -19,9 +19,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.dto.group.auxiliary.InvitedExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
 import com.copay.app.navigation.SpaScreens
+import com.copay.app.ui.components.GroupMember
 import com.copay.app.ui.components.button.primaryButton
 import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.dialog.addMemberDialog
+import com.copay.app.ui.components.input.dropdownField
 import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.components.input.priceInputField
 import com.copay.app.ui.components.snackbar.redSnackbarHost
@@ -321,22 +323,18 @@ fun CreateGroupScreen(
                         .menuAnchor()
                         .clickable { dropdownExpanded = !dropdownExpanded })
 
-                ExposedDropdownMenu(
-                    expanded = dropdownExpanded,
-                    onDismissRequest = { dropdownExpanded = false }
-                ) {
-                    membersList.value.forEach { member ->
-                        DropdownMenuItem(
-                            text = { Text(member.displayText()) },
-                            onClick = {
-                                selectedCreditor = member.displayText()
-                                selectedCreditorPhone = member.identifier
-                                dropdownExpanded = false
-                                isCreditor = true
-                            }
-                        )
-                    }
-                }
+                // Dropdown to select who paid for the expense.
+                dropdownField(
+                    label = "Who paid for this group?",
+                    items = membersList.value.map { it.displayText() },
+                    selectedItem = selectedCreditor ?: "Select creditor",
+                    onItemSelected = { selected ->
+                        selectedCreditor = selected
+                        selectedCreditorPhone = membersList.value.find { it.displayText() == selected }?.identifier
+                        isCreditor = true
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             // Create Group button at the bottom
@@ -413,25 +411,5 @@ fun CreateGroupScreen(
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
         )
-    }
-}
-
-sealed class GroupMember {
-    abstract fun displayText(): String
-    abstract val identifier: String
-
-    data class Me(val phoneNumber: String?) : GroupMember() {
-        override fun displayText(): String = "Me"
-        override val identifier: String = phoneNumber ?: "me"
-    }
-
-    data class RegisteredMember(val name: String, val phoneNumber: String) : GroupMember() {
-        override fun displayText(): String = phoneNumber
-        override val identifier: String = phoneNumber
-    }
-
-    data class ExternalMember(val name: String) : GroupMember() {
-        override fun displayText(): String = "$name (External)"
-        override val identifier: String = name
     }
 }
