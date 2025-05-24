@@ -49,7 +49,13 @@ fun priceInputField(
                         onValueChange(it)
                     }
                 },
-                colors = copayOutlinedTextFieldColors(isError),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = CopayColors.primary.copy(alpha = 0.3f),
+                    focusedBorderColor = CopayColors.primary,
+                    errorBorderColor = MaterialTheme.colorScheme.error,
+                    focusedLabelColor = if (isError) MaterialTheme.colorScheme.error else CopayColors.primary,
+                    cursorColor = if (isError) MaterialTheme.colorScheme.error else CopayColors.primary
+                ),
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),

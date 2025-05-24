@@ -12,7 +12,7 @@ val LightBackground = Color(0xFFFFFFFF)
 val LightBackgroundText = Color(0xFF000000)
 val LightSecondaryText = Color(0xFF444444)
 val LightBorders = Color(0xFFB0B0B0)
-val LightAccent = Color(0xFF888888)
+val LightAccent = Color(0xFFE9ECEF)
 
 // Dark mode
 val DarkBackground = Color(0xFF121212)

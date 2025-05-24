@@ -35,9 +35,10 @@ fun pillTabRow(
             Box(
                 modifier = Modifier
                     .weight(1f)
+                    .clip(RoundedCornerShape(50.dp))
                     .background(
                         if (selectedTabIndex == index)
-                            MaterialTheme.colorScheme.surfaceVariant
+                            CopayColors.onPrimary
                         else
                             CopayColors.surface,
                         RoundedCornerShape(50.dp)
@@ -48,7 +49,7 @@ fun pillTabRow(
             ) {
                 Text(
                     text = title,
-                    style = CopayTypography.body,
+                    style = CopayTypography.button,
                     textAlign = TextAlign.Center,
                     fontWeight = if (selectedTabIndex == index) FontWeight.Medium else FontWeight.Normal,
                     color = if (selectedTabIndex == index)

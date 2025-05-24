@@ -13,7 +13,7 @@ val AppTypography = Typography(
     displayMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Bold,
-        fontSize = 16.sp
+        fontSize = 14.sp
     ),
 
     // Standard body text.
@@ -27,7 +27,7 @@ val AppTypography = Typography(
     titleLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.W400,
-        fontSize = 36.sp
+        fontSize = 32.sp
     ),
 
     // Typography for subtitles.
