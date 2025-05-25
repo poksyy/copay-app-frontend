@@ -11,5 +11,7 @@ data class PaymentResponseDTO(
     val confirmationAmount: Float,
     val confirmationDate: String,
     val isConfirmed: Boolean,
-    val confirmedAt: String
+    val confirmedAt: String,
+    val debtorUsername: String,
+    val creditorUsername: String
 )
