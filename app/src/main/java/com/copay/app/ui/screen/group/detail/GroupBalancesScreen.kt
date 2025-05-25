@@ -21,6 +21,7 @@ import coil.compose.AsyncImage
 import com.copay.app.R
 import com.copay.app.dto.paymentconfirmation.request.ConfirmPaymentRequestDTO
 import com.copay.app.dto.paymentconfirmation.response.ListUnconfirmedPaymentConfirmationResponseDTO
+import com.copay.app.dto.paymentconfirmation.response.PaymentResponseDTO
 import com.copay.app.utils.ExpenseUtils
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.GroupMember
@@ -34,6 +35,8 @@ import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.ui.components.listitem.memberItem
 import com.copay.app.ui.components.dialog.manageDebtsDialog
+import com.copay.app.ui.components.listitem.paymentActivityItem
+import com.copay.app.utils.parseConfirmationDate
 import com.copay.app.utils.state.ExpenseState
 import com.copay.app.utils.state.PaymentState
 import com.copay.app.viewmodel.ExpenseViewModel
@@ -56,6 +59,11 @@ fun groupBalancesScreen(
     // Expenses state.
     val groupExpenseState by expenseViewModel.expenses.collectAsState()
     val userExpensesState by expenseViewModel.userExpenses.collectAsState()
+
+    // Save the list of payments done (Confirmed) and in pending.
+    val userExpenseIdsState = remember { mutableStateOf<List<PaymentResponseDTO>>(emptyList()) }
+    // List of payments are sorted by date (newest first).
+    val sortedPayments = userExpenseIdsState.value.sortedByDescending { parseConfirmationDate(it.confirmationDate) }
 
     // Payment state.
     val paymentState by paymentConfirmationViewModel.paymentState.collectAsState()
@@ -87,6 +95,7 @@ fun groupBalancesScreen(
         group?.groupId?.let {
             expenseViewModel.getExpensesByGroup(context, it)
             expenseViewModel.getAllUserExpensesByGroup(context, it)
+            paymentConfirmationViewModel.getUserExpenseIds(context, it)
         }
     }
 
@@ -107,6 +116,10 @@ fun groupBalancesScreen(
             is PaymentState.Success.UnconfirmedPayments -> {
                 unconfirmedPayments = state.unconfirmedPayments
                 showUnconfirmedDialog = true
+            }
+
+            is PaymentState.Success.ConfirmedPayments -> {
+                userExpenseIdsState.value = state.confirmedPayments
             }
 
             is PaymentState.Error -> {
@@ -252,7 +265,7 @@ fun groupBalancesScreen(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     // Tabs
                     var selectedTabIndex by remember { mutableStateOf(0) }
-                    val tabs = listOf("Members", "Balances")
+                    val tabs = listOf("Members", "Activity")
 
                     pillTabRow(
                         tabs = tabs,
@@ -305,18 +318,27 @@ fun groupBalancesScreen(
                                 }
                             }
 
-                            1 -> item {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 8.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "Balances content will be implemented later",
-                                        style = CopayTypography.body,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
+                            1 -> {
+                                val userExpenseIds = userExpenseIdsState.value
+                                if (userExpenseIds.isEmpty()) {
+                                    item {
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 8.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "No activity found.",
+                                                style = CopayTypography.body,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    items(sortedPayments) { paymentActivity ->
+                                        paymentActivityItem(payment = paymentActivity)
+                                    }
                                 }
                             }
                         }
