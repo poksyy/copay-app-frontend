@@ -24,6 +24,9 @@ import androidx.compose.ui.res.vectorResource
 import com.copay.app.R
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.logoutButton
+import com.copay.app.ui.components.dialog.logoutDialog
+import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.viewmodel.AuthViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -88,7 +91,7 @@ private fun ProfileContent(
                 painter = painterResource(id = R.drawable.profile_picture),
                 contentDescription = "Profile Picture",
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(80.dp)
                     .clip(CircleShape)
             )
 
@@ -106,28 +109,36 @@ private fun ProfileContent(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                OutlinedButton(
+                Button(
                     onClick = onEditProfileClick,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 12.dp)
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = CopayColors.onPrimary,
+                        contentColor = CopayColors.primary
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
                 ) {
                     Text(
                         text = "Edit Profile",
-                        color = MaterialTheme.colorScheme.onBackground
+                        style = CopayTypography.button
                     )
                 }
-                OutlinedButton(
+                Button(
                     onClick = { /* TODO: Add share profile action to add as a friend (url) */ },
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 12.dp)
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = CopayColors.onPrimary,
+                        contentColor = CopayColors.primary
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
                 ) {
                     Text(
                         text = "Share Profile",
-                        color = MaterialTheme.colorScheme.onBackground
+                        style = CopayTypography.button
                     )
                 }
             }
@@ -162,7 +173,7 @@ private fun ProfileContent(
 fun profileOptionItem(
     option: String,
     enabled: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ){
     val optionIcons = mapOf(
         "Help & Support" to ImageVector.vectorResource(R.drawable.ic_help),
@@ -181,6 +192,9 @@ fun profileOptionItem(
             .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier)
             .alpha(if (enabled) 1f else 0.4f),
         shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = CopayColors.onPrimary
+        )
     ) {
         Row(
             modifier = Modifier
@@ -205,26 +219,4 @@ fun profileOptionItem(
             )
         }
     }
-}
-
-@Composable
-private fun logoutDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Confirm Logout") },
-        text = { Text("Are you sure you want to log out?") },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("Yes")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("No")
-            }
-        }
-    )
 }

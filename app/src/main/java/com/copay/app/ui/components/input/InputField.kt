@@ -47,7 +47,13 @@ fun inputField(
                 focusedBorderColor = CopayColors.primary,
                 errorBorderColor = MaterialTheme.colorScheme.error,
                 focusedLabelColor = if (isError) MaterialTheme.colorScheme.error else CopayColors.primary,
-                cursorColor = if (isError) MaterialTheme.colorScheme.error else CopayColors.primary
+                cursorColor = if (isError) MaterialTheme.colorScheme.error else CopayColors.primary,
+
+                // TODO Check input should have a background.
+//                focusedContainerColor = CopayColors.background,
+//                unfocusedContainerColor = CopayColors.background,
+//                disabledContainerColor = CopayColors.background.copy(alpha = 0.3f),
+//                errorContainerColor = CopayColors.background,
             ),
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,

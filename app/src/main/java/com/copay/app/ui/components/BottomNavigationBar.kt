@@ -9,10 +9,12 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.copay.app.ui.theme.CopayColors
 
 @Composable
 fun bottomNavigationBar(
@@ -21,7 +23,9 @@ fun bottomNavigationBar(
     // Callback to handle route selection.
     onRouteSelected: (String) -> Unit
 ) {
-    NavigationBar {
+    NavigationBar (
+        containerColor = CopayColors.onPrimary
+    ) {
         // List of navigation items with their routes and icons.
         val items = listOf(
             NavigationItem("home", Icons.Filled.Home),
@@ -44,6 +48,11 @@ fun bottomNavigationBar(
                 selected = currentRoute == item.route,
                 // Trigger route change on item click.
                 onClick = { onRouteSelected(item.route) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = CopayColors.primary,
+                    unselectedIconColor = CopayColors.outline,
+                    indicatorColor = CopayColors.surface
+                )
             )
         }
     }
