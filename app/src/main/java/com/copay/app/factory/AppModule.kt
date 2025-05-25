@@ -79,6 +79,13 @@ object AppModule {
         // Instantiates and returns PaymentConfirmationService using RetrofitInstance.
         return PaymentConfirmationService(RetrofitInstance.api)
     }
+
+    @Provides
+    @Singleton
+    fun provideNotificationService(): NotificationService {
+        // Instantiates and returns NotificationService using RetrofitInstance.
+        return NotificationService(RetrofitInstance.api)
+    }
     /*    ========================================================================
           =========================== REPOSITORIES =============================
           ========================================================================
@@ -132,5 +139,12 @@ object AppModule {
     fun providePaymentConfirmationRepository(paymentConfirmationService: PaymentConfirmationService): PaymentConfirmationRepository {
         // Instantiates and returns PaymentConfirmationRepository with injected ProfileService.
         return PaymentConfirmationRepository(paymentConfirmationService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationRepository(notificationService: NotificationService): NotificationRepository {
+        // Instantiates and returns NotificationRepository with injected NotificationService.
+        return NotificationRepository(notificationService)
     }
 }
