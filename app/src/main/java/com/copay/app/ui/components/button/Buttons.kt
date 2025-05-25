@@ -24,6 +24,7 @@ import com.copay.app.R
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun primaryButton(
@@ -119,17 +120,16 @@ fun logoutButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = CopayColors.secondary,
+            containerColor = MaterialTheme.colorScheme.error,
             contentColor = Color.Red
         ),
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
-        border = BorderStroke(2.dp, Color.Red)
+            .height(56.dp)
     ) {
         Text(
             text = text,
-            color = Color.Red,
+            color = CopayColors.onPrimary,
             style = CopayTypography.button
         )
     }

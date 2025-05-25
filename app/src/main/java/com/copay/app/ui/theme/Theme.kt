@@ -7,6 +7,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
 val SuccessGreen = Green
+val WarningYellow = Yellow
 
 // Light mode theme.
 val LightColorScheme = lightColorScheme(

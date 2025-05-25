@@ -37,6 +37,10 @@ object CopayColors {
     // Success/Green color
     val success: Color
         @Composable get() = SuccessGreen
+
+    // Warning/Yellow color
+    val warning: Color
+        @Composable get() = WarningYellow
 }
 
 object CopayTypography {
@@ -44,7 +48,7 @@ object CopayTypography {
         @Composable get() = MaterialTheme.typography.titleLarge
 
     val navTitle: TextStyle
-        @Composable get() = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+        @Composable get() = MaterialTheme.typography.titleSmall
 
     val subtitle: TextStyle
         @Composable get() = MaterialTheme.typography.titleMedium
@@ -53,7 +57,7 @@ object CopayTypography {
         @Composable get() = MaterialTheme.typography.bodyMedium
 
     val button: TextStyle
-        @Composable get() = MaterialTheme.typography.displayMedium
+        @Composable get() = MaterialTheme.typography.labelLarge
 
     val footer: TextStyle
         @Composable get() = MaterialTheme.typography.labelSmall

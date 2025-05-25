@@ -1,13 +1,18 @@
 package com.copay.app.ui.screen
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
+import com.copay.app.ui.components.GradientBackground
 import com.copay.app.ui.components.bottomNavigationBar
 import com.copay.app.ui.screen.group.create.CreateGroupScreen
 import com.copay.app.ui.screen.group.edit.editGroupScreen
@@ -66,44 +71,45 @@ fun hubScreen(
             )
         }
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
 
-            // Render current screen based on navigation state.
-            when (currentScreen) {
+        GradientBackground {
+            Column(modifier = Modifier.padding(paddingValues))  {
 
-                // Main pages.
-                SpaScreens.Home -> homeScreen()
-                SpaScreens.Plannings -> {} // TODO
-                SpaScreens.Friends -> {} // TODO
-                SpaScreens.Profile -> profileScreen()
+                when (currentScreen) {
+                    // Main pages.
+                    SpaScreens.Home -> homeScreen()
+                    SpaScreens.Plannings -> {} // TODO
+                    SpaScreens.Friends -> {} // TODO
+                    SpaScreens.Profile -> profileScreen()
 
-                // Home subpages.
-                SpaScreens.CreateGroup -> CreateGroupScreen()
-                SpaScreens.BalancesGroup -> groupBalancesScreen()
+                    // Home subpages.
+                    SpaScreens.CreateGroup -> CreateGroupScreen()
+                    SpaScreens.BalancesGroup -> groupBalancesScreen()
 
-                // Group editing subpages.
-                is SpaScreens.GroupSubscreen -> when (currentScreen) {
-                    SpaScreens.GroupSubscreen.EditGroup -> editGroupScreen()
-                    SpaScreens.GroupSubscreen.EditName -> editGroupNameScreen()
-                    SpaScreens.GroupSubscreen.EditDescription -> editGroupDescriptionScreen()
-                    SpaScreens.GroupSubscreen.EditPrice -> editGroupPriceScreen()
-                    SpaScreens.GroupSubscreen.EditMembers -> editGroupMembersScreen()
-                    else -> {}
-                }
+                    // Group editing subpages.
+                    is SpaScreens.GroupSubscreen -> when (currentScreen) {
+                        SpaScreens.GroupSubscreen.EditGroup -> editGroupScreen()
+                        SpaScreens.GroupSubscreen.EditName -> editGroupNameScreen()
+                        SpaScreens.GroupSubscreen.EditDescription -> editGroupDescriptionScreen()
+                        SpaScreens.GroupSubscreen.EditPrice -> editGroupPriceScreen()
+                        SpaScreens.GroupSubscreen.EditMembers -> editGroupMembersScreen()
+                        else -> {}
+                    }
 
-                // Profile subpages.
-                is SpaScreens.ProfileSubscreen -> when (currentScreen) {
+                    // Profile subpages.
+                    is SpaScreens.ProfileSubscreen -> when (currentScreen) {
 
-                    // Profile Editing.
-                    SpaScreens.ProfileSubscreen.EditProfile -> editProfileScreen()
-                    SpaScreens.ProfileSubscreen.EditUsername -> editUsernameScreen()
-                    SpaScreens.ProfileSubscreen.EditEmail -> editEmailScreen()
-                    SpaScreens.ProfileSubscreen.EditPhoneNumber -> editPhoneNumberScreen()
+                        // Profile Editing.
+                        SpaScreens.ProfileSubscreen.EditProfile -> editProfileScreen()
+                        SpaScreens.ProfileSubscreen.EditUsername -> editUsernameScreen()
+                        SpaScreens.ProfileSubscreen.EditEmail -> editEmailScreen()
+                        SpaScreens.ProfileSubscreen.EditPhoneNumber -> editPhoneNumberScreen()
 
-                    // Profile Security.
-                    SpaScreens.ProfileSubscreen.ChangePassword -> changePasswordScreen()
+                        // Profile Security.
+                        SpaScreens.ProfileSubscreen.ChangePassword -> changePasswordScreen()
 
-                    else -> {}
+                        else -> {}
+                    }
                 }
             }
         }

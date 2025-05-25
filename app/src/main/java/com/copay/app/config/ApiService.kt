@@ -192,7 +192,7 @@ interface ApiService {
 
     /** API Calls to Payment Confirmations **/
     // Get userExpenseIds for current user in a specific group
-    @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/user-expenses/ids")
+    @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/user-expenses")
     suspend fun getUserExpenseIds(
         @Path("groupId") groupId: Long, @Header("Authorization") token: String
     ): Response<List<PaymentResponseDTO>>

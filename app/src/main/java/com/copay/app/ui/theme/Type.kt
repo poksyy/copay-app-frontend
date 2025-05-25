@@ -9,8 +9,29 @@ import androidx.compose.material3.Typography
 // Define typography styles.
 val AppTypography = Typography(
 
+    // Typography for titles.
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.W400,
+        fontSize = 24.sp
+    ),
+
+    // Typography for subtitles.
+    titleMedium = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp
+    ),
+
+    // Typography for nav titles.
+    titleSmall = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp
+    ),
+
     // Typography for buttons and interactive elements.
-    displayMedium = TextStyle(
+    labelLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp
@@ -20,27 +41,14 @@ val AppTypography = Typography(
     bodyMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Medium,
-        fontSize = 16.sp
+        fontSize = 14.sp
     ),
 
-    // Typography for titles.
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.W400,
-        fontSize = 32.sp
-    ),
-
-    // Typography for subtitles.
-    titleMedium = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.W200,
-        fontSize = 24.sp
-    ),
 
     // Typography for footer text.
     labelSmall = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Normal,
-        fontSize = 13.sp
+        fontSize = 12.sp
     )
 )

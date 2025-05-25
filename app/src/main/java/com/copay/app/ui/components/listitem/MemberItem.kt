@@ -1,5 +1,6 @@
 package com.copay.app.ui.components.listitem
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -15,6 +16,7 @@ import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.ui.screen.group.detail.format
 import com.copay.app.ui.theme.CopayColors
+import com.copay.app.ui.theme.CopayTypography
 
 @Composable
 fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: Long?, onPayClick: (() -> Unit)? = null) {
@@ -43,8 +45,14 @@ fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: L
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(8.dp)
+            .padding(vertical = 6.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = CopayColors.onPrimary
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 2.dp
+        )
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
 
@@ -55,14 +63,16 @@ fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: L
             ) {
                 Text(
                     text = memberName,
-                    fontWeight = FontWeight.Medium,
+                    style = CopayTypography.body,
                 )
                 Text(
-                    text = "${expense.format(2)} $currency",
-                    fontWeight = FontWeight.Bold,
+                    text = "${expense.format(2)}€",
+                    style = CopayTypography.body,
                     color = if (isCreditor) MaterialTheme.colorScheme.error else CopayColors.primary
                 )
             }
+
+            Spacer(modifier = Modifier.height(6.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -71,8 +81,8 @@ fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: L
             ) {
                 Text(
                     text = memberPhoneNumber,
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = CopayTypography.footer,
+                    color = CopayColors.onSecondary
                 )
 
                 val isCurrentUser = when (member) {
@@ -80,23 +90,28 @@ fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: L
                     else -> false
                 }
 
-                if (isCurrentUser && expense > 0) {
-                    TextButton(
-                        onClick = { onPayClick?.invoke() },
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.height(36.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "Pay your debt",
-                                color = CopayColors.success,
-                                fontSize = 12.sp
-                            )
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_forward),
-                                contentDescription = "Forward arrow",
-                                tint = CopayColors.success
-                            )
+                Box(
+                    modifier = Modifier
+                        .height(24.dp),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    if (isCurrentUser && expense > 0) {
+                        TextButton(
+                            onClick = { onPayClick?.invoke() },
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "Pay your debt",
+                                    color = CopayColors.success,
+                                    style = CopayTypography.footer
+                                )
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_forward),
+                                    contentDescription = "Forward arrow",
+                                    tint = CopayColors.success
+                                )
+                            }
                         }
                     }
                 }

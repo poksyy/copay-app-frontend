@@ -1,27 +1,24 @@
 package com.copay.app.ui.screen
 
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.R
 import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
+import com.copay.app.ui.components.DashboardPager
+import com.copay.app.ui.components.GradientBackground
 import com.copay.app.ui.components.dialog.deleteGroupDialog
 import com.copay.app.ui.components.dialog.leaveGroupDialog
 import com.copay.app.ui.theme.CopayColors
@@ -82,98 +79,112 @@ fun homeScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        when (groupState) {
-            is GroupState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-
-            is GroupState.Error -> {
-                Text(
-                    text = (groupState as GroupState.Error).message,
-                    modifier = Modifier.align(Alignment.Center),
-                    color = Color.Red
-                )
-            }
-
-            is GroupState.Success.GroupsFetched -> {
-
-                val groups = (groupState as GroupState.Success.GroupsFetched).groups
-                    .sortedByDescending { it.createdAt }
-
-                homeContent(
-                    onRefreshClick = { groupViewModel.getGroupsByUser(context, forceRefresh = true) },
-                    onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
-                    onDetailClick = { group ->
-                        groupViewModel.selectGroup(group)
-                        navigationViewModel.navigateTo(SpaScreens.BalancesGroup)
-                    },
-                    onEditClick = { group ->
-                        groupViewModel.selectGroup(group)
-                        navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
-                    },
-                    onDeleteClick = { group ->
-                        groupSelected = group
-                        showDeleteDialog = true
-                    },
-                    onLeaveClick = { group ->
-                        groupSelected = group
-                        showLeaveDialog = true
-                    },
-                    username = username,
-                    groups = groups
-                )
-            }
-
-            else -> {
-                homeContent(
-                    onRefreshClick = { groupViewModel.getGroupsByUser(context, forceRefresh = true) },
-                    onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
-                    onDetailClick = { navigationViewModel.navigateTo(SpaScreens.BalancesGroup) },
-                    onEditClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
-                    onDeleteClick = { group ->
-                        groupSelected = group
-                        showDeleteDialog = true
-                    },
-                    onLeaveClick = { group ->
-                        groupSelected = group
-                        showLeaveDialog = true
-                    },
-                    username = username,
-                    groups = emptyList()
-                )
-            }
-        }
-
-        greenSnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 16.dp)
-        )
-
-        if (showDeleteDialog) {
-            deleteGroupDialog(
-                onDismiss = { showDeleteDialog = false },
-                onConfirm = {
-                    groupSelected?.groupId?.let { groupId ->
-                        groupViewModel.deleteGroup(context, groupId)
-                    }
-                    showDeleteDialog = false
+    GradientBackground {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            when (groupState) {
+                is GroupState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-            )
-        }
 
-        if (showLeaveDialog) {
-            leaveGroupDialog(
-                onDismiss = { showLeaveDialog = false },
-                onConfirm = {
-                    groupSelected?.groupId?.let { groupId ->
-                        groupViewModel.leaveGroup(context, groupId)
-                    }
-                    showLeaveDialog = false
+                is GroupState.Error -> {
+                    Text(
+                        text = (groupState as GroupState.Error).message,
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color.Red
+                    )
                 }
+
+                is GroupState.Success.GroupsFetched -> {
+
+                    val groups = (groupState as GroupState.Success.GroupsFetched).groups
+                        .sortedByDescending { it.createdAt }
+
+                    homeContent(
+                        onRefreshClick = {
+                            groupViewModel.getGroupsByUser(
+                                context,
+                                forceRefresh = true
+                            )
+                        },
+                        onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
+                        onDetailClick = { group ->
+                            groupViewModel.selectGroup(group)
+                            navigationViewModel.navigateTo(SpaScreens.BalancesGroup)
+                        },
+                        onEditClick = { group ->
+                            groupViewModel.selectGroup(group)
+                            navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
+                        },
+                        onDeleteClick = { group ->
+                            groupSelected = group
+                            showDeleteDialog = true
+                        },
+                        onLeaveClick = { group ->
+                            groupSelected = group
+                            showLeaveDialog = true
+                        },
+                        username = username,
+                        groups = groups
+                    )
+                }
+
+                else -> {
+                    homeContent(
+                        onRefreshClick = {
+                            groupViewModel.getGroupsByUser(
+                                context,
+                                forceRefresh = true
+                            )
+                        },
+                        onCreateClick = { navigationViewModel.navigateTo(SpaScreens.CreateGroup) },
+                        onDetailClick = { navigationViewModel.navigateTo(SpaScreens.BalancesGroup) },
+                        onEditClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) },
+                        onDeleteClick = { group ->
+                            groupSelected = group
+                            showDeleteDialog = true
+                        },
+                        onLeaveClick = { group ->
+                            groupSelected = group
+                            showLeaveDialog = true
+                        },
+                        username = username,
+                        groups = emptyList()
+                    )
+                }
+            }
+
+            greenSnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 16.dp)
             )
+
+            if (showDeleteDialog) {
+                deleteGroupDialog(
+                    onDismiss = { showDeleteDialog = false },
+                    onConfirm = {
+                        groupSelected?.groupId?.let { groupId ->
+                            groupViewModel.deleteGroup(context, groupId)
+                        }
+                        showDeleteDialog = false
+                    }
+                )
+            }
+
+            if (showLeaveDialog) {
+                leaveGroupDialog(
+                    onDismiss = { showLeaveDialog = false },
+                    onConfirm = {
+                        groupSelected?.groupId?.let { groupId ->
+                            groupViewModel.leaveGroup(context, groupId)
+                        }
+                        showLeaveDialog = false
+                    }
+                )
+            }
         }
     }
 }
@@ -201,63 +212,22 @@ private fun homeContent(
             text = "Welcome $username!",
             color = CopayColors.primary,
             style = CopayTypography.title,
-            modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(
-                    text = "Dashboard",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+        Spacer(modifier = Modifier.height(24.dp))
 
-                Text(
-                    text = "--- €",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+        // Dashboard with 3 sliders.
+        DashboardPager(
+            totalSpent = "125.50 €",
+            pendingPayments = 3,
+            groupsJoined = 6
+        )
 
-                Text(
-                    text = "Total spent this month",
-                    color = Color.Gray, fontSize = 14.sp,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    repeat(3) { index ->
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(if (index == 0) Color.Black else Color.Gray)
-                        )
-                        if (index < 2) Spacer(modifier = Modifier.width(8.dp))
-                    }
-                }
-            }
-        }
+        Spacer(modifier = Modifier.height(6.dp))
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -278,9 +248,15 @@ private fun homeContent(
             }
 
             TextButton(onClick = onCreateClick) {
-                Text("Create")
+                Text(
+                    text = "Create",
+                    style = CopayTypography.button,
+                    color = CopayColors.primary
+                )
             }
         }
+
+        Spacer(modifier = Modifier.height(6.dp))
 
         // Display user's groups dynamically
         if (groups.isEmpty()) {
@@ -292,7 +268,6 @@ private fun homeContent(
                     onEditClick = { onEditClick(group) },
                     onDeleteClick = { onDeleteClick(group) },
                     onLeaveClick = { onLeaveClick(group) })
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
