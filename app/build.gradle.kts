@@ -39,6 +39,10 @@ android {
     buildFeatures {
         compose = true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10"
+    }
 }
 
 dependencies {
@@ -56,6 +60,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended) // Extended Material Design icons.
     implementation(libs.androidx.foundation) // Basic Compose components like Layouts and Modifiers.
     implementation(libs.coil.compose) // Library for loading images in Compose.
+    implementation(libs.dautovicharis.charts) // Library to make charts.
 
 // ViewModel, LiveData, and Coroutines dependencies
     implementation(libs.kotlinx.coroutines.android) // Allows working with coroutines in Android.
