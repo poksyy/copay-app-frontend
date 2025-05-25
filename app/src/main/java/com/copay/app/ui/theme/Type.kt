@@ -44,7 +44,6 @@ val AppTypography = Typography(
         fontSize = 14.sp
     ),
 
-
     // Typography for footer text.
     labelSmall = TextStyle(
         fontFamily = FontFamily.SansSerif,

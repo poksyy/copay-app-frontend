@@ -47,17 +47,17 @@ object CopayTypography {
     val title: TextStyle
         @Composable get() = MaterialTheme.typography.titleLarge
 
-    val navTitle: TextStyle
-        @Composable get() = MaterialTheme.typography.titleSmall
-
     val subtitle: TextStyle
         @Composable get() = MaterialTheme.typography.titleMedium
 
-    val body: TextStyle
-        @Composable get() = MaterialTheme.typography.bodyMedium
+    val navTitle: TextStyle
+        @Composable get() = MaterialTheme.typography.titleSmall
 
     val button: TextStyle
         @Composable get() = MaterialTheme.typography.labelLarge
+
+    val body: TextStyle
+        @Composable get() = MaterialTheme.typography.bodyMedium
 
     val footer: TextStyle
         @Composable get() = MaterialTheme.typography.labelSmall

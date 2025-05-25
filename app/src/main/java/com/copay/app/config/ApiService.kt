@@ -20,6 +20,7 @@ import com.copay.app.dto.auth.response.RegisterStepTwoResponseDTO
 import com.copay.app.dto.expense.response.UserExpenseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.dto.group.response.GroupMessageResponseDTO
+import com.copay.app.dto.notification.response.NotificationListResponseDTO
 import com.copay.app.dto.paymentconfirmation.request.ConfirmPaymentRequestDTO
 import com.copay.app.dto.paymentconfirmation.request.DeletePaymentConfirmationRequestDTO
 import com.copay.app.dto.paymentconfirmation.response.ListUnconfirmedPaymentConfirmationResponseDTO
@@ -232,6 +233,39 @@ interface ApiService {
     @DELETE("${BASE_PATH}payment-confirmations/{paymentConfirmationId}")
     suspend fun deletePaymentConfirmation(
         @Path("paymentConfirmationId") paymentConfirmationId: Long,
+        @Header("Authorization") token: String
+    ): Response<MessageResponseDTO>
+
+    /** API Calls for notifications **/
+    // Get all notifications for the authenticated user
+    @GET("${BASE_PATH}notifications")
+    suspend fun getAllNotifications(
+        @Header("Authorization") token: String
+    ): Response<NotificationListResponseDTO>
+
+    // Get only unread notifications for the authenticated user
+    @GET("${BASE_PATH}notifications/unread")
+    suspend fun getUnreadNotifications(
+        @Header("Authorization") token: String
+    ): Response<NotificationListResponseDTO>
+
+    // Mark a single notification as read
+    @PATCH("${BASE_PATH}notifications/{notificationId}/read")
+    suspend fun markNotificationAsRead(
+        @Path("notificationId") notificationId: Long,
+        @Header("Authorization") token: String
+    ): Response<MessageResponseDTO>
+
+    // Mark all notifications as read
+    @PATCH("${BASE_PATH}notifications/read-all")
+    suspend fun markAllNotificationsAsRead(
+        @Header("Authorization") token: String
+    ): Response<MessageResponseDTO>
+
+    // Delete a notification
+    @DELETE("${BASE_PATH}notifications/{notificationId}")
+    suspend fun deleteNotification(
+        @Path("notificationId") notificationId: Long,
         @Header("Authorization") token: String
     ): Response<MessageResponseDTO>
 }

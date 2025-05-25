@@ -343,7 +343,7 @@ class GroupViewModel @Inject constructor(
     }
 
     // Method to auto-refresh continuously every 5 seconds.
-    fun autoRefresh(context: Context) {
+    fun autoRefreshGroups(context: Context) {
         viewModelScope.launch {
             val userId = getCurrentUserId() ?: return@launch
 
