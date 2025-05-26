@@ -40,7 +40,6 @@ class AuthViewModel @Inject constructor(
     private val _isLoginResult = MutableStateFlow<Boolean?>(null)
     val isLoginResult: StateFlow<Boolean?> = _isLoginResult
 
-
     fun login(context: Context, phoneNumber: String, password: String) {
         viewModelScope.launch {
 
@@ -56,21 +55,35 @@ class AuthViewModel @Inject constructor(
                 val extractedUser = userService.extractUser(backendResponse)
                 extractedUser?.let {
                     // Set the user information trough userSession.
-                    userSession.setUser(it.phonePrefix, it.phoneNumber, it.userId, it.username, it.email)
+                    userSession.setUser(
+                        it.phonePrefix,
+                        it.phoneNumber,
+                        it.userId,
+                        it.username,
+                        it.email
+                    )
                 }
             }
         }
     }
 
     // Handles the first step of user registration.
-    fun registerStepOne(context: Context, username: String, email: String, password: String, confirmPassword: String) {
+    fun registerStepOne(
+        context: Context,
+        username: String,
+        email: String,
+        password: String,
+        confirmPassword: String
+    ) {
         viewModelScope.launch {
 
             _authState.value = AuthState.Loading
             // Updates the UI trough authState.
-            _authState.value = userRepository.registerStepOne(context, username, email, password, confirmPassword)
+            _authState.value =
+                userRepository.registerStepOne(context, username, email, password, confirmPassword)
         }
     }
+
     // Handles the second step of user registration (phone number verification).
     fun registerStepTwo(context: Context, phonePrefix: String, phoneNumber: String) {
         viewModelScope.launch {
@@ -85,7 +98,13 @@ class AuthViewModel @Inject constructor(
                 val extractedUser = userService.extractUser(backendResponse)
                 extractedUser?.let {
                     // Set the user information through userSession.
-                    userSession.setUser(it.phonePrefix, it.phoneNumber, it.userId, it.username, it.email)
+                    userSession.setUser(
+                        it.phonePrefix,
+                        it.phoneNumber,
+                        it.userId,
+                        it.username,
+                        it.email
+                    )
                 }
             }
         }
@@ -93,23 +112,37 @@ class AuthViewModel @Inject constructor(
 
     // Login with google.
     private fun loginWithGoogle(context: Context, idToken: String) {
+        Log.d("GoogleSignIn", "Starting loginWithGoogle with token: ${idToken.take(20)}...") // Evita imprimir el token completo
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             val backendResponse = userRepository.loginWithGoogle(context, idToken)
+            Log.d("GoogleSignIn", "Backend response: ${backendResponse::class.simpleName}")
+
             _authState.value = backendResponse
 
             if (backendResponse is AuthState.Success) {
+
+                Log.d("GoogleSignIn", "Login success from backend.")
                 val extractedUser = userService.extractUser(backendResponse)
-                extractedUser?.let {
-                    userSession.setUser(it.phonePrefix, it.phoneNumber, it.userId, it.username, it.email)
+
+                if (extractedUser != null) {
+
+                    Log.d("GoogleSignIn", "Extracted user: ${extractedUser.email}, isLogin=${extractedUser.isLogin}")
+                    userSession.setUser(extractedUser.phonePrefix, extractedUser.phoneNumber, extractedUser.userId, extractedUser.username, extractedUser.email)
 
                     // Converts the "true" or "false" from string to boolean.
-                    val isLoginBoolean = it.isLogin?.toBooleanStrictOrNull()
+                    val isLoginBoolean = extractedUser.isLogin?.toBooleanStrictOrNull()
                     _isLoginResult.value = isLoginBoolean
+
+                } else {
+                    Log.e("GoogleSignIn", "User extraction failed.")
                 }
+            } else {
+                Log.e("GoogleSignIn", "Login failed from backend.")
             }
         }
     }
+
 
     // Logs out the user by clearing the stored authentication token.
     fun logout(context: Context) {
@@ -124,16 +157,18 @@ class AuthViewModel @Inject constructor(
     }
 
     fun handleSignInResult(task: Task<GoogleSignInAccount>, context: Context) {
+        Log.d("GoogleSignIn", "Handling sign-in result...")
         try {
             val account = task.getResult(ApiException::class.java)
-            Log.d("GoogleSignIn", "Account email: ${account.email}")
+            Log.d("GoogleSignIn", "Account retrieved: email=${account.email}, id=${account.id}")
+
             val idToken = account.idToken
             if (idToken != null) {
-                Log.d("GoogleSignIn", "ID Token: $idToken")
+                Log.d("GoogleSignIn", "Valid ID Token received. Sending to backend...")
                 loginWithGoogle(context, idToken)
                 _signInResult.value = Result.success(idToken)
             } else {
-                Log.e("GoogleSignIn", "ID token is null")
+                Log.e("GoogleSignIn", "ID Token is null. Cannot proceed.")
                 _signInResult.value = Result.failure(Exception("ID token is null"))
             }
         } catch (e: ApiException) {

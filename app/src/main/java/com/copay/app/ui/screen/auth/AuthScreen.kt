@@ -75,22 +75,24 @@ fun authScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        Log.d("GoogleSignIn", "Launcher callback triggered.")
         Log.d("GoogleSignIn", "Result code: ${result.resultCode}")
+
         val data = result.data
         if (result.resultCode == Activity.RESULT_OK && data != null) {
-            Log.d("GoogleSignIn", "Intent data received.")
+            Log.d("GoogleSignIn", "Received RESULT_OK and non-null data.")
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)
+                Log.d("GoogleSignIn", "Google account retrieved.")
                 Log.d("GoogleSignIn", "ID Token: ${account.idToken}")
-                // ...
+                Log.d("GoogleSignIn", "Email: ${account.email}")
             } catch (e: ApiException) {
-                Log.e("GoogleSignIn", "signInResult: failed code=" + e.statusCode)
-                e.printStackTrace()
+                Log.e("GoogleSignIn", "signInResult: failed code=${e.statusCode} message=${e.message}", e)
             }
             authViewModel.handleSignInResult(task, context)
         } else {
-            Log.e("GoogleSignIn", "Google Sign-In canceled or failed.")
+            Log.e("GoogleSignIn", "Google Sign-In canceled or failed. Data is null: ${data == null}")
         }
     }
 
@@ -161,12 +163,15 @@ fun authScreen(
         signInWithGoogleButton(
             text = "Sign in with Google",
             onClick = {
+                Log.d("GoogleSignIn", "Sign in button clicked. Signing out first...")
                 googleSignInClient.signOut().addOnCompleteListener {
+                    Log.d("GoogleSignIn", "Signed out. Launching sign-in intent.")
                     val signInIntent = googleSignInClient.signInIntent
                     launcher.launch(signInIntent)
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+
+        modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.weight(1f))
 
