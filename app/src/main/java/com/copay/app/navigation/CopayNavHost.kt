@@ -49,9 +49,11 @@ fun copayNavHost(
 
         // AuthScreen.
         composable(NavRoutes.AuthScreen.route) {
-            authScreen(onSignUpClick = {
-                navController.navigate(NavRoutes.RegisterStepOneScreen.route) },
+            authScreen(
+                onSignUpClick = { navController.navigate(NavRoutes.RegisterStepOneScreen.route) },
                 onLogInClick = { navController.navigate(NavRoutes.LoginScreen.route) },
+                onGoogleRegister = { navController.navigate(NavRoutes.RegisterStepTwoScreen.route)},
+                onGoogleLogin = { navController.navigate(NavRoutes.HubScreen.route)},
                 onToggleTheme = {
                     isDarkTheme = !isDarkTheme
                     toggleTheme()
