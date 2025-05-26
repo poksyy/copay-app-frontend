@@ -173,6 +173,12 @@ class GroupRepository(private val groupService: GroupService) {
         return try {
             val response = apiCall()
 
+            if (response.code() == 204) {
+                return GroupState.Success.GroupUpdated(
+                    GroupMessageResponseDTO("You do not have any groups.")
+                )
+            }
+
             if (response.isSuccessful) {
                 response.body()?.let { body ->
                     when (body) {
