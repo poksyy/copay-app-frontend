@@ -2,6 +2,8 @@ package com.copay.app.ui.screen.profile.security
 
 import android.util.Log
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -77,13 +79,19 @@ fun changePasswordScreen(
                 .align(Alignment.TopCenter)
         )
 
+        val scrollState = rememberScrollState()
+
         // Screen content
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 12.dp)
-                .padding(top = 90.dp),
+                .padding(top = 90.dp)
+                .imePadding(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
         ) {
             // Current password field
             inputField(

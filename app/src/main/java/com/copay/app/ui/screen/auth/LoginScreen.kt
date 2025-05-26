@@ -3,7 +3,9 @@ package com.copay.app.ui.screen.auth
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,13 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.copay.app.ui.components.button.backButtonTop
-import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.components.button.primaryButton
+import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.AuthState
 import com.copay.app.validation.UserValidation
 import com.copay.app.viewmodel.AuthViewModel
+
 
 @Composable
 fun loginScreen(
@@ -49,10 +52,16 @@ fun loginScreen(
         }
     }
 
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(CopayColors.background)
+            .verticalScroll(scrollState)
+            .imePadding(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start
     ) {
         // Back button in the top-left corner
         Box(modifier = Modifier.padding(top = 16.dp)) {
