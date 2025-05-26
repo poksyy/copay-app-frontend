@@ -2,6 +2,8 @@ package com.copay.app.viewmodel
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.copay.app.repository.UserRepository
@@ -9,6 +11,9 @@ import com.copay.app.service.UserService
 import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.AuthState
 import com.copay.app.utils.session.UserSession
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +34,12 @@ class AuthViewModel @Inject constructor(
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> get() = _authState
+
+    private val _signInResult = MutableLiveData<Result<String>>()
+
+    private val _isLoginResult = MutableStateFlow<Boolean?>(null)
+    val isLoginResult: StateFlow<Boolean?> = _isLoginResult
+
 
     fun login(context: Context, phoneNumber: String, password: String) {
         viewModelScope.launch {
@@ -80,6 +91,26 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    // Login with google.
+    private fun loginWithGoogle(context: Context, idToken: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            val backendResponse = userRepository.loginWithGoogle(context, idToken)
+            _authState.value = backendResponse
+
+            if (backendResponse is AuthState.Success) {
+                val extractedUser = userService.extractUser(backendResponse)
+                extractedUser?.let {
+                    userSession.setUser(it.phonePrefix, it.phoneNumber, it.userId, it.username, it.email)
+
+                    // Converts the "true" or "false" from string to boolean.
+                    val isLoginBoolean = it.isLogin?.toBooleanStrictOrNull()
+                    _isLoginResult.value = isLoginBoolean
+                }
+            }
+        }
+    }
+
     // Logs out the user by clearing the stored authentication token.
     fun logout(context: Context) {
         viewModelScope.launch {
@@ -89,6 +120,25 @@ class AuthViewModel @Inject constructor(
             }
             DataStoreManager.clearToken(context)
             _authState.value = AuthState.Success(null)
+        }
+    }
+
+    fun handleSignInResult(task: Task<GoogleSignInAccount>, context: Context) {
+        try {
+            val account = task.getResult(ApiException::class.java)
+            Log.d("GoogleSignIn", "Account email: ${account.email}")
+            val idToken = account.idToken
+            if (idToken != null) {
+                Log.d("GoogleSignIn", "ID Token: $idToken")
+                loginWithGoogle(context, idToken)
+                _signInResult.value = Result.success(idToken)
+            } else {
+                Log.e("GoogleSignIn", "ID token is null")
+                _signInResult.value = Result.failure(Exception("ID token is null"))
+            }
+        } catch (e: ApiException) {
+            Log.e("GoogleSignIn", "ApiException: ${e.statusCode} - ${e.message}", e)
+            _signInResult.value = Result.failure(e)
         }
     }
 }
