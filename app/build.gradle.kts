@@ -46,12 +46,13 @@ android {
 }
 
 dependencies {
-// Basic Android dependencies
+
+    // Basic Android dependencies
     implementation(libs.androidx.core.ktx) // Useful extensions for Android APIs.
     implementation(libs.androidx.activity.compose) // Activity integration with Compose.
     implementation(libs.androidx.lifecycle.runtime.ktx) // Extensions to work with the Android lifecycle.
 
-// Jetpack Compose dependencies
+    // Jetpack Compose dependencies
     implementation(platform(libs.androidx.compose.bom)) // Composable BOM for Compose.
     implementation(libs.androidx.ui) // Main Jetpack Compose library.
     implementation(libs.androidx.ui.graphics) // Graphics functionalities for Compose.
@@ -62,12 +63,12 @@ dependencies {
     implementation(libs.coil.compose) // Library for loading images in Compose.
     implementation(libs.dautovicharis.charts) // Library to make charts.
 
-// ViewModel, LiveData, and Coroutines dependencies
+    // ViewModel, LiveData, and Coroutines dependencies
     implementation(libs.kotlinx.coroutines.android) // Allows working with coroutines in Android.
     implementation(libs.androidx.lifecycle.livedata.ktx) // Extensions for LiveData in Compose.
     implementation(libs.androidx.lifecycle.viewmodel.compose) // Integration of ViewModel with Compose.
 
-// Navigation and architecture dependencies
+    // Navigation and architecture dependencies
     implementation(libs.androidx.navigation.compose) // Navigation in Compose.
     implementation(libs.dagger.hilt) // Hilt for dependency injection.
     implementation(libs.hilt.compose.navigation)
@@ -75,23 +76,30 @@ dependencies {
     kapt(libs.dagger.kapt) // Hilt annotations for dependency injection.
 
 
-// Retrofit and API communication dependencies
+    // Retrofit and API communication dependencies
     implementation(libs.retrofit) // Retrofit for making HTTP requests.
     implementation(libs.converter.gson) // Gson converter for Retrofit.
     implementation(libs.logging.interceptor) // OkHttp interceptor for logging HTTP requests.
 
+    // Google login dependencies
+    implementation(libs.googleid)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation (libs.play.services.auth.v2050)
 
-// Data storage and preferences dependencies
+
+
+    // Data storage and preferences dependencies
     implementation(libs.androidx.datastore.preferences) // DataStore for storing preferences.
 
-// Unit testing and Android testing dependencies
+    // Unit testing and Android testing dependencies
     testImplementation(libs.junit) // JUnit for unit testing.
     androidTestImplementation(libs.androidx.junit) // JUnit for Android testing.
     androidTestImplementation(libs.androidx.espresso.core) // Espresso for UI testing on Android.
     androidTestImplementation(platform(libs.androidx.compose.bom)) // Composable BOM for testing with Compose.
     androidTestImplementation(libs.androidx.ui.test.junit4) // Tools for UI testing with Compose.
 
-// Debugging and development tools dependencies
+    // Debugging and development tools dependencies
     debugImplementation(libs.androidx.ui.tooling) // Development tools for working with Compose.
     debugImplementation(libs.androidx.ui.test.manifest) // Testing tools for handling manifests in Compose.
 
