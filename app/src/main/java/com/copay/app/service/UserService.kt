@@ -29,13 +29,16 @@ class UserService @Inject constructor() {
             is LoginResponseDTO -> {
                 Log.d("UserService", "LoginResponseDTO received: " +
                         "phoneNumber=${data.phoneNumber}, userId=${data.userId}, " +
-                        "username=${data.username}, email=${data.email}")
+                        "username=${data.username}, email=${data.email}, " +
+                        "isLogin=${data.isLogin}"
+                )
                 User(
                     userId = data.userId,
                     username = data.username,
                     email = data.email,
                     phoneNumber = data.phoneNumber,
-                    phonePrefix = data.phonePrefix
+                    phonePrefix = data.phonePrefix,
+                    isLogin = data.isLogin
                 )
             }
             // Backend response when an user registers.
