@@ -270,7 +270,7 @@ private fun homeContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Welcome $username!",
+                text = "Hi, $username!",
                 color = CopayColors.primary,
                 style = CopayTypography.title,
             )
