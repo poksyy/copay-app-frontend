@@ -2,6 +2,7 @@ package com.copay.app.repository
 
 import android.content.Context
 import android.util.Log
+import com.copay.app.dto.auth.request.UserGoogleLoginRequestDTO
 import com.copay.app.dto.auth.request.UserLoginRequestDTO
 import com.copay.app.dto.auth.request.UserRegisterStepOneDTO
 import com.copay.app.dto.auth.request.UserRegisterStepTwoDTO
@@ -29,6 +30,13 @@ class UserRepository(private val authService: AuthService) {
         return handleApiResponse(context) { authService.login(request) }
     }
 
+    suspend fun loginWithGoogle(
+        context: Context, idToken: String): AuthState {
+
+        val request = UserGoogleLoginRequestDTO(idToken)
+        return handleApiResponse(context) { authService.loginGoogle(request) }
+    }
+
     // Registration step one method
     suspend fun registerStepOne(
         context: Context, username: String, email: String, password: String, confirmPassword: String
@@ -52,7 +60,6 @@ class UserRepository(private val authService: AuthService) {
             authService.registerStepTwo(request, token)
         }
     }
-
 
     // Logout method.
     suspend fun logout(
