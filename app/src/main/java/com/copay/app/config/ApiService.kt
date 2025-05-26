@@ -1,6 +1,7 @@
 package com.copay.app.config
 
 import com.copay.app.dto.MessageResponseDTO
+import com.copay.app.dto.auth.request.UserGoogleLoginRequestDTO
 import com.copay.app.dto.expense.response.GetExpenseResponseDTO
 import com.copay.app.dto.group.request.CreateGroupRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
@@ -54,6 +55,10 @@ interface ApiService {
     // Login API Call.
     @POST("${BASE_PATH}auth/login")
     suspend fun loginUser(@Body request: UserLoginRequestDTO): Response<LoginResponseDTO>
+
+    // Google login API Call.
+    @POST("${BASE_PATH}auth/google/login")
+    suspend fun loginUserWithGoogle(@Body request: UserGoogleLoginRequestDTO): Response<LoginResponseDTO>
 
     // Register Step One API Call.
     @POST("${BASE_PATH}auth/register/step-one")
