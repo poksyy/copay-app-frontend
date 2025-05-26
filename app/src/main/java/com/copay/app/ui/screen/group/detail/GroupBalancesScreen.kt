@@ -108,7 +108,7 @@ fun groupBalancesScreen(
         when (val state = paymentState) {
             is PaymentState.Success.SinglePayment -> {
                 coroutineScope.launch {
-                    successSnackbarHostState.showSnackbar("✅ Payment requested successfully")
+                    successSnackbarHostState.showSnackbar("Payment requested successfully")
                 }
                 paymentConfirmationViewModel.resetPaymentState()
             }
