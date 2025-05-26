@@ -2,6 +2,7 @@ package com.copay.app.service
 
 import android.util.Log
 import com.copay.app.config.ApiService
+import com.copay.app.dto.auth.request.UserGoogleLoginRequestDTO
 import com.copay.app.dto.auth.request.UserLoginRequestDTO
 import com.copay.app.dto.auth.request.UserRegisterStepOneDTO
 import com.copay.app.dto.auth.request.UserRegisterStepTwoDTO
@@ -21,6 +22,13 @@ class AuthService(private val api: ApiService) {
     // Sends a login request with user credentials and returns a token if successful.
     suspend fun login(request: UserLoginRequestDTO): Response<LoginResponseDTO> {
         return api.loginUser(request)
+    }
+
+    // Sends a google login request with user credentials and returns a token if successful.
+    suspend fun loginGoogle(
+        request: UserGoogleLoginRequestDTO
+    ): Response<LoginResponseDTO> {
+        return api.loginUserWithGoogle(request)
     }
 
     // Sends the first step of registration (e.g., email and username validation).
