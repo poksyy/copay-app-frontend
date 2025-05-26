@@ -45,6 +45,7 @@ fun DashboardPager(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(160.dp)
                     .padding(horizontal = 4.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
