@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">copay-app-frontend</string>
+    <string name="default_web_client_id">19405515616-6bp1se6p86o40c19c41kcg9qljrbbp0t.apps.googleusercontent.com</string>
 </resources>
