@@ -362,7 +362,6 @@ fun groupBalancesScreen(
     if (showUnconfirmedDialog) {
         manageDebtsDialog(
             onDismiss = { showUnconfirmedDialog = false },
-            payments = unconfirmedPayments,
             groupMembers = membersList,
             paymentConfirmationViewModel = paymentConfirmationViewModel,
             groupViewModel = groupViewModel,
