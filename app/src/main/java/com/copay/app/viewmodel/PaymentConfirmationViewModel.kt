@@ -4,10 +4,12 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.copay.app.dto.paymentconfirmation.request.ConfirmPaymentRequestDTO
+import com.copay.app.dto.paymentconfirmation.response.ListUnconfirmedPaymentConfirmationResponseDTO
 import com.copay.app.repository.PaymentConfirmationRepository
 import com.copay.app.utils.state.PaymentState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +20,10 @@ class PaymentConfirmationViewModel @Inject constructor(
 
     private val _paymentState = MutableStateFlow<PaymentState>(PaymentState.Idle)
     val paymentState: MutableStateFlow<PaymentState> get() = _paymentState
+
+    // List of unconfirmedPayments.
+    private val _unconfirmedPayments = MutableStateFlow<List<ListUnconfirmedPaymentConfirmationResponseDTO>>(emptyList())
+    val unconfirmedPayments: StateFlow<List<ListUnconfirmedPaymentConfirmationResponseDTO>> = _unconfirmedPayments
 
     fun resetPaymentState() {
         _paymentState.value = PaymentState.Idle
@@ -41,7 +47,10 @@ class PaymentConfirmationViewModel @Inject constructor(
 
             val backendResponse = repository.getUnconfirmedPaymentConfirmations(context, groupId)
 
-            _paymentState.value = backendResponse
+            if (backendResponse is PaymentState.Success.UnconfirmedPayments) {
+                _paymentState.value = backendResponse
+                _unconfirmedPayments.value = backendResponse.unconfirmedPayments
+            }
         }
     }
 
@@ -74,15 +83,13 @@ class PaymentConfirmationViewModel @Inject constructor(
 
             val backendResponse = repository.markPaymentAsConfirmed(context, confirmationId)
 
-            if (backendResponse is PaymentState.Success.SinglePayment) {
-                getUnconfirmedPaymentConfirmations(context, groupId)
-            } else {
-                _paymentState.value = backendResponse
-            }
+            _paymentState.value = backendResponse
+
+            getUnconfirmedPaymentConfirmations(context, groupId)
         }
     }
 
-    fun deletePaymentConfirmation(context: Context, confirmationId: Long) {
+    fun deletePaymentConfirmation(context: Context, confirmationId: Long, groupId: Long) {
         viewModelScope.launch {
 
             _paymentState.value = PaymentState.Loading
@@ -90,6 +97,8 @@ class PaymentConfirmationViewModel @Inject constructor(
             val backendResponse = repository.deletePaymentConfirmation(context, confirmationId)
 
             _paymentState.value = backendResponse
+
+            getUnconfirmedPaymentConfirmations(context, groupId)
         }
     }
 }
