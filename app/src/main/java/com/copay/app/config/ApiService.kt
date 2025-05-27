@@ -18,6 +18,8 @@ import com.copay.app.dto.profile.request.UpdateUsernameDTO
 import com.copay.app.dto.auth.response.RegisterStepOneResponseDTO
 import com.copay.app.dto.auth.response.LoginResponseDTO
 import com.copay.app.dto.auth.response.RegisterStepTwoResponseDTO
+import com.copay.app.dto.expense.response.TotalDebtResponseDTO
+import com.copay.app.dto.expense.response.TotalSpentResponseDTO
 import com.copay.app.dto.expense.response.UserExpenseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.dto.group.response.GroupMessageResponseDTO
@@ -189,6 +191,7 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<GroupMessageResponseDTO>
 
+    /** API Call to Expenses**/
     // Get expenses by group id.
     @GET("${BASE_PATH}expenses/{groupId}")
     suspend fun getExpenses(
@@ -196,19 +199,33 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<List<GetExpenseResponseDTO>>
 
-    /** API Calls to Payment Confirmations **/
-    // Get userExpenseIds for current user in a specific group
-    @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/user-expenses")
-    suspend fun getUserExpenseIds(
-        @Path("groupId") groupId: Long, @Header("Authorization") token: String
-    ): Response<List<PaymentResponseDTO>>
-
     // Get all user expenses for a specific group
     @GET("${BASE_PATH}expenses/{groupId}/user-expenses")
     suspend fun getUserExpensesByGroupId(
         @Path("groupId") groupId: Long,
         @Header("Authorization") token: String
     ): Response<List<UserExpenseDTO>>
+
+    // Get total debt of a user across all groups
+    @GET("${BASE_PATH}expenses/user/{userId}/total-debt")
+    suspend fun getTotalUserDebt(
+        @Path("userId") userId: Long,
+        @Header("Authorization") token: String
+    ): Response<TotalDebtResponseDTO>
+
+    // Get total amount spent by a user across all groups
+    @GET("${BASE_PATH}expenses/user/{userId}/total-spent")
+    suspend fun getTotalUserSpent(
+        @Path("userId") userId: Long,
+        @Header("Authorization") token: String
+    ): Response<TotalSpentResponseDTO>
+
+    /** API Calls to Payment Confirmations **/
+    // Get userExpenseIds for current user in a specific group
+    @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/user-expenses")
+    suspend fun getUserExpenseIds(
+        @Path("groupId") groupId: Long, @Header("Authorization") token: String
+    ): Response<List<PaymentResponseDTO>>
 
     // Get all unconfirmed payment confirmations in a group
     @GET("${BASE_PATH}payment-confirmations/groups/{groupId}/unconfirmed")
