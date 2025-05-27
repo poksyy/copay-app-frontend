@@ -14,11 +14,11 @@ import io.github.dautovicharis.charts.style.PieChartDefaults
 // TODO: Charts still in progress
 @Composable
 fun pendingPaymentsPieChart(
-    pending: Int,
-    total: Int = 10
+    pending: Float,
+    total: Float = 10f
 ) {
-    val slice1 = pending.toFloat()
-    val slice2 = (total - pending).coerceAtLeast(0).toFloat()
+    val slice1 = pending
+    val slice2 = (total - pending)
 
     val colors = listOf(CopayColors.primary, CopayColors.surface)
 

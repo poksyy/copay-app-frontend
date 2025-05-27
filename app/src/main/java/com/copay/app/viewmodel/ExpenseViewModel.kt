@@ -1,12 +1,15 @@
 package com.copay.app.viewmodel
 
+import android.util.Log
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.copay.app.dto.expense.response.GetExpenseResponseDTO
+import com.copay.app.dto.expense.response.TotalDebtResponseDTO
 import com.copay.app.dto.expense.response.UserExpenseDTO
 import com.copay.app.repository.ExpenseRepository
 import com.copay.app.utils.state.ExpenseState
+import com.copay.app.utils.state.GroupState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,11 +54,29 @@ class ExpenseViewModel @Inject constructor(
 
             val backendResponse = expenseRepository.getAllUserExpensesByGroup(context, groupId)
 
-            if (backendResponse.isSuccessful) {
-                val userExpenses = backendResponse.body() ?: emptyList()
-                _userExpenses.value = userExpenses
-                _expenseState.value = ExpenseState.Success.ExpenseMembersIds(userExpenses)
+            if (backendResponse is ExpenseState.Success.ExpenseMembersIds) {
+                _userExpenses.value = backendResponse.expense
             }
+        }
+    }
+
+    fun getTotalUserDebt(context: Context, userId: Long) {
+        viewModelScope.launch {
+            _expenseState.value = ExpenseState.Loading
+
+            val backendResponse = expenseRepository.getTotalUserDebt(context, userId)
+
+            _expenseState.value = backendResponse
+        }
+    }
+
+    fun getTotalUserSpent(context: Context, userId: Long) {
+        viewModelScope.launch {
+            _expenseState.value = ExpenseState.Loading
+
+            val backendResponse = expenseRepository.getTotalUserSpent(context, userId)
+
+            _expenseState.value = backendResponse
         }
     }
 

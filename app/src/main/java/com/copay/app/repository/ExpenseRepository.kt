@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.copay.app.dto.expense.request.GetExpenseRequestDTO
 import com.copay.app.dto.expense.response.GetExpenseResponseDTO
+import com.copay.app.dto.expense.response.TotalDebtResponseDTO
+import com.copay.app.dto.expense.response.TotalSpentResponseDTO
 import com.copay.app.dto.expense.response.UserExpenseDTO
 import com.copay.app.dto.paymentconfirmation.response.ListUnconfirmedPaymentConfirmationResponseDTO
 import com.copay.app.dto.paymentconfirmation.response.PaymentResponseDTO
@@ -33,12 +35,45 @@ class ExpenseRepository(private val expenseService: ExpenseService) {
 
         val token = DataStoreManager.getFormattedToken(context)
 
-        return handleApiResponse(context) { expenseService.getExpenses(request, token) }
+        return handleApiResponse(context) {
+            expenseService.getExpenses(request, token)
+        }
     }
 
-    suspend fun getAllUserExpensesByGroup(context: Context, groupId: Long): Response<List<UserExpenseDTO>> {
+    suspend fun getAllUserExpensesByGroup(
+        context: Context,
+        groupId: Long
+    ): ExpenseState {
+
         val token = DataStoreManager.getFormattedToken(context)
-        return expenseService.getAllUserExpensesByGroup(groupId, token)
+
+        return handleApiResponse(context) {
+            expenseService.getAllUserExpensesByGroup(groupId, token)
+        }
+    }
+
+    suspend fun getTotalUserDebt(
+        context: Context,
+        userId: Long
+    ): ExpenseState {
+
+        val token = DataStoreManager.getFormattedToken(context)
+
+        return handleApiResponse(context) {
+            expenseService.getTotalUserDebt(userId, token)
+        }
+    }
+
+    suspend fun getTotalUserSpent(
+        context: Context,
+        userId: Long
+    ): ExpenseState {
+
+        val token = DataStoreManager.getFormattedToken(context)
+
+        return handleApiResponse(context) {
+            expenseService.getTotalUserSpent(userId, token)
+        }
     }
 
     // Handles the API response for expense operations.
@@ -67,6 +102,14 @@ class ExpenseRepository(private val expenseService: ExpenseService) {
                         }
 
                         else -> ExpenseState.Error("Unsupported list response type")
+                    }
+
+                    is TotalDebtResponseDTO -> {
+                        ExpenseState.Success.TotalDebt(body)
+                    }
+
+                    is TotalSpentResponseDTO -> {
+                        ExpenseState.Success.TotalSpent(body)
                     }
 
                     else -> ExpenseState.Error("Unexpected response type")
