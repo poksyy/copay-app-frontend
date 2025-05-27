@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.copay.app.ui.components.chart.paidToFriendsBarChart
 import com.copay.app.ui.components.chart.pendingPaymentsPieChart
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
@@ -28,8 +29,8 @@ fun DashboardPager(
     val pagerState = rememberPagerState(pageCount = { 3 })
 
     val items = listOf(
-        Triple("How much money did you pay to your friends?", "${totalSpent}€", "This month"),
-        Triple("How much money does your friends owes you?", "${totalDebt}€", "Awaiting confirmation"),
+        Triple("Paid to Friends", "${totalSpent}€", "This month"),
+        Triple("Owed by Friends", "${totalDebt}€", "Awaiting confirmation"),
         Triple("Groups Joined", groupsJoined.toString(), "All time")
     )
 
@@ -80,6 +81,38 @@ fun DashboardPager(
                         pendingPaymentsPieChart(
                             pending = totalDebt
                         )
+                    }
+                } else if (title == "Paid to Friends") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp)
+                        ) {
+                            Text(text = title, style = CopayTypography.subtitle)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(text = value, style = CopayTypography.title)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(text = subtitle, style = CopayTypography.footer, color = CopayColors.onSecondary)
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            // TODO The endpoints should return a list of total spent per month
+                            paidToFriendsBarChart(
+                                payments = listOf(5f, 43f, 4f, 6f, totalSpent, 15f, 22f, 14f, 36f, 23f, 35f, 14f)
+                            )
+                        }
                     }
                 } else {
                     Column(
