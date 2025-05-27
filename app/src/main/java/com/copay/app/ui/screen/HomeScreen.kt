@@ -34,15 +34,18 @@ import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
 import com.copay.app.ui.components.listitem.groupItem
 import com.copay.app.ui.components.snackbar.greenSnackbarHost
+import com.copay.app.utils.state.ExpenseState
+import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.NotificationViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun homeScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
-    userViewModel: UserViewModel = hiltViewModel(),
+    expenseViewModel: ExpenseViewModel = hiltViewModel(),
     groupViewModel: GroupViewModel = hiltViewModel(),
-    notificationViewModel: NotificationViewModel = hiltViewModel()
+    notificationViewModel: NotificationViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel()
 ) {
     // Get the username value through the userViewModel.
     val user by userViewModel.user.collectAsState()
@@ -57,9 +60,9 @@ fun homeScreen(
     // Snackbar.
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Group state.
+    // States.
     val groupState by groupViewModel.groupState.collectAsState()
-    Log.d("HomeScreen", "$groupState")
+    val expenseState by expenseViewModel.expenseState.collectAsState()
 
     // State variables to control the visibility of the dialogs.
     var showNotificationDialog by remember { mutableStateOf(false) }
@@ -75,20 +78,40 @@ fun homeScreen(
     // List of unread notifications.
     val unreadNotifications by notificationViewModel.unreadNotifications.collectAsState()
 
+    // Dashboard variables.
+    var totalSpent by remember { mutableFloatStateOf(0.0f) }
+    var totalDebt by remember { mutableFloatStateOf(0.0f) }
+
     // Trigger group loading when the screen is first composed
     LaunchedEffect(Unit) {
         // Fetch all the groups that the user is part of.
         groupViewModel.getGroupsByUser(context)
 
-        // Start background auto-refresh groups.
+        // Start background auto-refresh groups & notifications.
         groupViewModel.autoRefreshGroups(context)
+        notificationViewModel.autoRefreshNotifications(context)
 
         // Fetch notifications.
         notificationViewModel.getAllNotifications(context)
         notificationViewModel.getUnreadNotifications(context)
 
-        // Start background auto-refresh for notifications.
-        notificationViewModel.autoRefreshNotifications(context)
+        // Fetch the total debt & total spent of a user across al groups.
+        expenseViewModel.getTotalUserDebt(context, user?.userId!!)
+        expenseViewModel.getTotalUserSpent(context, user?.userId!!)
+    }
+
+    LaunchedEffect(expenseState) {
+        when (val state = expenseState) {
+            is ExpenseState.Success.TotalSpent -> {
+                totalSpent = (expenseState as ExpenseState.Success.TotalSpent).data.totalSpent
+            }
+
+            is ExpenseState.Success.TotalDebt -> {
+                totalDebt = (expenseState as ExpenseState.Success.TotalDebt).data.totalDebt
+            }
+
+            else -> {}
+        }
     }
 
     // Trigger when
@@ -152,7 +175,9 @@ fun homeScreen(
                             showLeaveDialog = true
                         },
                         username = username,
-                        groups = groups
+                        groups = groups,
+                        totalSpent = totalSpent,
+                        totalDebt = totalDebt
                     )
                 }
 
@@ -177,7 +202,9 @@ fun homeScreen(
                             showLeaveDialog = true
                         },
                         username = username,
-                        groups = emptyList()
+                        groups = emptyList(),
+                        totalSpent = totalSpent,
+                        totalDebt = totalDebt
                     )
                 }
             }
@@ -254,7 +281,9 @@ private fun homeContent(
     onDeleteClick: (Group) -> Unit,
     onLeaveClick: (Group) -> Unit,
     username: String,
-    groups: List<Group> = emptyList()
+    groups: List<Group> = emptyList(),
+    totalSpent: Float,
+    totalDebt: Float
 ) {
     Column(
         modifier = Modifier
@@ -290,8 +319,8 @@ private fun homeContent(
 
         // Dashboard with 3 sliders.
         DashboardPager(
-            totalSpent = "125.50 €",
-            pendingPayments = 3,
+            totalSpent = totalSpent,
+            totalDebt = totalDebt,
             groupsJoined = 6
         )
 

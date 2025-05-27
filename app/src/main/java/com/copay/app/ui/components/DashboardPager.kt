@@ -21,15 +21,15 @@ import com.copay.app.ui.theme.CopayTypography
 
 @Composable
 fun DashboardPager(
-    totalSpent: String,
-    pendingPayments: Int,
+    totalSpent: Float,
+    totalDebt: Float,
     groupsJoined: Int
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
 
     val items = listOf(
-        Triple("Total Spent", totalSpent, "This month"),
-        Triple("Pending Payments", pendingPayments.toString(), "Awaiting confirmation"),
+        Triple("How much money did you pay to your friends?", "${totalSpent}€", "This month"),
+        Triple("How much money does your friends owes you?", "${totalDebt}€", "Awaiting confirmation"),
         Triple("Groups Joined", groupsJoined.toString(), "All time")
     )
 
@@ -78,7 +78,7 @@ fun DashboardPager(
                         }
 
                         pendingPaymentsPieChart(
-                            pending = pendingPayments
+                            pending = totalDebt
                         )
                     }
                 } else {
