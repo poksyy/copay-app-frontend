@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun manageDebtsDialog(
     onDismiss: () -> Unit,
-    payments: List<ListUnconfirmedPaymentConfirmationResponseDTO>,
     groupMembers: List<GroupMember>,
     paymentConfirmationViewModel: PaymentConfirmationViewModel,
     groupViewModel: GroupViewModel,
@@ -51,6 +50,9 @@ fun manageDebtsDialog(
         }
     }
 
+    // List of unconfirmedPayments
+    val unconfirmedPayments by paymentConfirmationViewModel.unconfirmedPayments.collectAsState()
+
     // Values from Group Session.
     val group by groupViewModel.group.collectAsState()
 
@@ -61,27 +63,26 @@ fun manageDebtsDialog(
 
     // Values for the dropdowns when owner does a payment manually.
     var payer by remember { mutableStateOf(groupMembers.firstOrNull()) }
-    var receiver by remember { mutableStateOf(groupMembers.getOrNull(1)) }
+//    var receiver by remember { mutableStateOf(groupMembers.getOrNull(1)) }
 
-    // Get the debtorId from the payer (either registered or external).
-    val debtorId = when (payer) {
+    // Find the userExpenseId using the debtorId (used to confirm the payment).
+    val userExpenseId = when (payer) {
         is GroupMember.RegisteredMember -> {
-            group?.registeredMembers
+            val id = group?.registeredMembers
                 ?.find { it.phoneNumber == (payer as GroupMember.RegisteredMember).phoneNumber }
                 ?.registeredMemberId
+            userExpenses.find { it.debtorUserId == id }?.userExpenseId
         }
 
         is GroupMember.ExternalMember -> {
-            group?.externalMembers
+            val id = group?.externalMembers
                 ?.find { it.name == (payer as GroupMember.ExternalMember).name }
                 ?.externalMembersId
+            userExpenses.find { it.debtorExternalId == id }?.userExpenseId
         }
 
         else -> null
     }
-
-    // Find the userExpenseId using the debtorId (used to confirm the payment).
-    val userExpenseId = userExpenses.find { it.debtorUserId == debtorId }!!.userExpenseId
 
     // Handle the payment state when it changes. (e.g. After approving a payment request)
     LaunchedEffect(paymentState) {
@@ -142,7 +143,7 @@ fun manageDebtsDialog(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        if (payments.isEmpty()) {
+                        if (unconfirmedPayments.isEmpty()) {
                             Text(
                                 "No pending payment confirmations.",
                                 style = CopayTypography.footer,
@@ -154,7 +155,7 @@ fun manageDebtsDialog(
                                     .heightIn(max = 200.dp)
                                     .fillMaxWidth()
                             ) {
-                                items(payments) { payment ->
+                                items(unconfirmedPayments) { payment ->
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -187,13 +188,10 @@ fun manageDebtsDialog(
                                             }
                                             IconButton(
                                                 onClick = {
-                                                    paymentConfirmationViewModel.deletePaymentConfirmation(
-                                                        context,
-                                                        payment.paymentConfirmationId
-                                                    )
                                                     group?.groupId?.let {
-                                                        paymentConfirmationViewModel.getUnconfirmedPaymentConfirmations(
+                                                        paymentConfirmationViewModel.deletePaymentConfirmation(
                                                             context,
+                                                            payment.paymentConfirmationId,
                                                             it
                                                         )
                                                     }
@@ -239,17 +237,45 @@ fun manageDebtsDialog(
                             modifier = Modifier.fillMaxWidth()
                         )
 
-                        dropdownField(
-                            label = "Who received?",
-                            items = groupMembers.map { it.displayText() },
-                            selectedItem = receiver?.displayText() ?: "",
-                            onItemSelected = { selected ->
-                                receiver = groupMembers.find { it.displayText() == selected }
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        // TODO: Replace with dropdownField in future if we allow choosing other receivers
+
+//                        dropdownField(
+//                            label = "Who received?",
+//                            items = groupMembers.map { it.displayText() },
+//                            selectedItem = receiver?.displayText() ?: "",
+//                            onItemSelected = { selected ->
+//                                receiver = groupMembers.find { it.displayText() == selected }
+//                            },
+//                            modifier = Modifier.fillMaxWidth()
+//                        )
+
+                        val owner = group?.registeredMembers?.find { it.registeredMemberId == group!!.ownerId }?.let { registered ->
+                            GroupMember.RegisteredMember(name = registered.username, phoneNumber = registered.phoneNumber)
+                        }
+
+                        var receiver by remember { mutableStateOf(owner) }
 
                         Spacer(modifier = Modifier.height(12.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Receiver: ",
+                                style = CopayTypography.footer
+                            )
+                            Text(
+                                text = receiver?.displayText() ?: "Unknown",
+                                style = CopayTypography.body,
+                                color = CopayColors.onSecondary
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         priceInputField(
                             value = manualAmount,
@@ -274,13 +300,16 @@ fun manageDebtsDialog(
 
                             Button(
                                 onClick = {
-                                    paymentConfirmationViewModel.confirmPayment(
-                                        context,
-                                        ConfirmPaymentRequestDTO(
-                                            userExpenseId = userExpenseId,
-                                            confirmationAmount = amountAsFloat
+                                    userExpenseId.let {
+                                        paymentConfirmationViewModel.confirmPayment(
+                                            context,
+                                            ConfirmPaymentRequestDTO(
+                                                userExpenseId = userExpenseId!!,
+                                                confirmationAmount = amountAsFloat
+                                            )
                                         )
-                                    )
+                                        onDismiss()
+                                    }
                                 },
                             ) {
                                 Text("Add Payment")
