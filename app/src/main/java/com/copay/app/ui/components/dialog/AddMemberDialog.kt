@@ -120,7 +120,7 @@ fun addMemberDialog(
                     modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text("Close")
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
