@@ -1,6 +1,5 @@
 package com.copay.app.config
 
-import com.copay.app.service.AuthService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -9,11 +8,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
-    // Base URL for API calls.
-    private const val BASE_URL = "http://10.0.2.2:8080"
-    // Noemi's phone
-    //private const val BASE_URL = "http://10.118.3.34:8080"
-
+    // Local server IP address (varies depending on your local network).
+    // This IP allows the Android emulator to connect to the backend.
+    // IMPORTANT: Update this IP manually based on your environment.
+    private const val BASE_URL = "http://10.0.2.2:8080" // Default for emulator accessing host
 
     // Create an OkHttpClient with logging interceptor for debugging.
     private val client by lazy {
