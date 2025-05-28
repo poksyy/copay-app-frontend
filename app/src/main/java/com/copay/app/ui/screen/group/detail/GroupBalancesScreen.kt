@@ -233,7 +233,7 @@ fun groupBalancesScreen(
                     ) {
                         val buttonModifier = Modifier.weight(1f)
 
-                        if (isCreditor) {
+                        if (isCreator) {
                             manageDebtsButton(
                                 onClick = {
                                     group?.groupId?.let {
@@ -243,9 +243,7 @@ fun groupBalancesScreen(
                                 },
                                 modifier = Modifier.weight(1f)
                             )
-                        }
 
-                        if (isCreator) {
                             Button(
                                 onClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditMembers) },
                                 shape = RoundedCornerShape(8.dp),
