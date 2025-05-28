@@ -1,7 +1,6 @@
 package com.copay.app.viewmodel
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
@@ -28,10 +27,6 @@ class GroupViewModel @Inject constructor(
     private val userSession: UserSession,
     private val groupSession: GroupSession
 ) : ViewModel() {
-
-    init {
-        Log.d("GroupViewModel", "GroupViewModel created")
-    }
 
     private val _groupState = MutableStateFlow<GroupState>(GroupState.Idle)
     val groupState: MutableStateFlow<GroupState> get() = _groupState
@@ -187,11 +182,17 @@ class GroupViewModel @Inject constructor(
 
             val backendResponse = groupRepository.updateGroup(context, groupId, fieldChanges)
 
+            // Set the state to the backend response first
             _groupState.value = backendResponse
 
-            // If the update was successful, update the group session.
+            // If the update was successful, schedule a background refresh
             if (backendResponse is GroupState.Success.GroupUpdated) {
-                getGroupByGroupId(context, groupId)
+                // Schedule a background refresh of the group data without affecting the UI state
+                viewModelScope.launch {
+                    // Small delay to ensure the UI has time to process the success state
+                    kotlinx.coroutines.delay(500)
+                    getGroupByGroupId(context, groupId)
+                }
             }
         }
     }
@@ -202,10 +203,18 @@ class GroupViewModel @Inject constructor(
 
             val request = mapOf("estimatedPrice" to estimatedPrice)
             val result = groupRepository.updateGroupEstimatedPrice(context, groupId, request)
+
+            // Set the state to the result first
             _groupState.value = result
 
+            // If the update was successful, schedule a background refresh
             if (result is GroupState.Success.GroupUpdated) {
-                getGroupByGroupId(context, groupId)
+                // Schedule a background refresh of the group data without affecting the UI state
+                viewModelScope.launch {
+                    // Small delay to ensure the UI has time to process the success state
+                    kotlinx.coroutines.delay(500)
+                    getGroupByGroupId(context, groupId)
+                }
             }
         }
     }
@@ -220,38 +229,22 @@ class GroupViewModel @Inject constructor(
         viewModelScope.launch {
             _groupState.value = GroupState.Loading
 
-            // Filter members that contains a phone number.
-            val existingRegisteredMembers = currentRegisteredMembers.filter { member ->
-                newRegisteredMembers.contains(member.phoneNumber)
-            }
-
-            val newPhoneNumbers = newRegisteredMembers.filter { phoneNumber ->
-                currentRegisteredMembers.none { it.phoneNumber == phoneNumber }
-            }
-
-            val newMembers = newPhoneNumbers.mapNotNull { phoneNumber ->
-                val user = profileRepository.getUserByPhoneDirect(context, phoneNumber)
-                user?.let {
-                    RegisteredMemberDTO(
-                        registeredMemberId = it.userId ?: -1,
-                        username = it.username ?: "Unknown",
-                        phoneNumber = it.phoneNumber ?: phoneNumber
-                    )
-                }
-            }
-
-            val invitedRegisteredMembers = existingRegisteredMembers + newMembers
-
             val backendResponse = groupRepository.updateGroupRegisteredMembers(
                 context, groupId, newRegisteredMembers
             )
 
-            // The list is updated if the operation is successful.
-            if (backendResponse is GroupState.Success.GroupUpdated) {
-                getGroupByGroupId(context, groupId)
-            }
-
+            // Set the state to the backend response first
             _groupState.value = backendResponse
+
+            // If the update was successful, schedule a background refresh
+            if (backendResponse is GroupState.Success.GroupUpdated) {
+                // Schedule a background refresh of the group data without affecting the UI state
+                viewModelScope.launch {
+                    // Small delay to ensure the UI has time to process the success state
+                    kotlinx.coroutines.delay(500)
+                    getGroupByGroupId(context, groupId)
+                }
+            }
         }
     }
 
@@ -291,12 +284,18 @@ class GroupViewModel @Inject constructor(
                 context, groupId, invitedExternalMembers
             )
 
-            // The list is updated if the operation is successful.
-            if (backendResponse is GroupState.Success.GroupUpdated) {
-                getGroupByGroupId(context, groupId)
-            }
-
+            // Set the state to the backend response first
             _groupState.value = backendResponse
+
+            // If the update was successful, schedule a background refresh
+            if (backendResponse is GroupState.Success.GroupUpdated) {
+                // Schedule a background refresh of the group data without affecting the UI state
+                viewModelScope.launch {
+                    // Small delay to ensure the UI has time to process the success state
+                    kotlinx.coroutines.delay(500)
+                    getGroupByGroupId(context, groupId)
+                }
+            }
         }
     }
 
@@ -331,8 +330,8 @@ class GroupViewModel @Inject constructor(
                 val newGroups = backendResponse.groupsData
 
                 // Compares group IDs to detect if there are new groups.
-                val newGroupIds = newGroups.groups.mapNotNull { it.groupId }.toSet()
-                val cachedIds = cachedGroupsDTO?.groups?.mapNotNull { it.groupId }?.toSet() ?: emptySet()
+                val newGroupIds = newGroups.groups.map { it.groupId }.toSet()
+                val cachedIds = cachedGroupsDTO?.groups?.map { it.groupId }?.toSet() ?: emptySet()
 
                 if (newGroupIds != cachedIds) {
                     hasNewGroups.value = true
