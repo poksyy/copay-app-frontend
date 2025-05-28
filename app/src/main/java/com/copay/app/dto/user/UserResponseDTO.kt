@@ -1,5 +1,8 @@
 package com.copay.app.dto.user
 
+/**
+ * Data class representing user information in a response.
+ */
 data class UserResponseDTO(
     val id: Long,
     val username: String,

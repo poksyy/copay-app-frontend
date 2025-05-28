@@ -4,6 +4,9 @@ import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.GroupOwnerDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 
+/**
+ * Data class representing detailed information about a group.
+ */
 data class GroupResponseDTO(
     val groupId: Long,
     val name: String,

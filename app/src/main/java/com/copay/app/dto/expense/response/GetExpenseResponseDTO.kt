@@ -1,5 +1,8 @@
 package com.copay.app.dto.expense.response
 
+/**
+ * Data class representing the response received from getting expenses by group ID.
+ */
 data class GetExpenseResponseDTO(
     val id: Long,
     val totalAmount: Double,
