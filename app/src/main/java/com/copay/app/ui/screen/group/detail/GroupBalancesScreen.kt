@@ -37,7 +37,6 @@ import com.copay.app.ui.components.listitem.memberItem
 import com.copay.app.ui.components.dialog.manageDebtsDialog
 import com.copay.app.ui.components.listitem.paymentActivityItem
 import com.copay.app.utils.parseConfirmationDate
-import com.copay.app.utils.state.ExpenseState
 import com.copay.app.utils.state.PaymentState
 import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.GroupViewModel
@@ -233,7 +232,7 @@ fun groupBalancesScreen(
                     ) {
                         val buttonModifier = Modifier.weight(1f)
 
-                        if (isCreditor) {
+                        if (isCreator) {
                             manageDebtsButton(
                                 onClick = {
                                     group?.groupId?.let {
@@ -243,9 +242,7 @@ fun groupBalancesScreen(
                                 },
                                 modifier = Modifier.weight(1f)
                             )
-                        }
 
-                        if (isCreator) {
                             Button(
                                 onClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditMembers) },
                                 shape = RoundedCornerShape(8.dp),
@@ -367,7 +364,8 @@ fun groupBalancesScreen(
             groupViewModel = groupViewModel,
             paymentState = paymentState,
             userExpenses = userExpensesState,
-            context = context
+            context = context,
+            groupExpenses = groupExpenseState
         )
     }
 

@@ -13,9 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.copay.app.dto.expense.response.GetExpenseResponseDTO
 import com.copay.app.dto.expense.response.UserExpenseDTO
 import com.copay.app.dto.paymentconfirmation.request.ConfirmPaymentRequestDTO
-import com.copay.app.dto.paymentconfirmation.response.ListUnconfirmedPaymentConfirmationResponseDTO
 import com.copay.app.ui.components.GroupMember
 import com.copay.app.ui.components.input.dropdownField
 import com.copay.app.ui.components.input.priceInputField
@@ -24,7 +24,6 @@ import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.ui.components.snackbar.redSnackbarHost
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import com.copay.app.utils.state.ExpenseState
 import com.copay.app.utils.state.PaymentState
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.PaymentConfirmationViewModel
@@ -38,12 +37,13 @@ fun manageDebtsDialog(
     groupViewModel: GroupViewModel,
     paymentState: PaymentState,
     userExpenses: List<UserExpenseDTO>,
-    context: Context
+    context: Context,
+    groupExpenses: List<GetExpenseResponseDTO> = emptyList()
 ) {
     var activeTab by remember { mutableStateOf(0) }
     var manualAmount by remember { mutableStateOf("") }
 
-    // Convert manualAmount to float. (PrinceInputField does not accept float as value. Only String)
+    // Convert manualAmount to float
     val amountAsFloat by remember {
         derivedStateOf {
             manualAmount.toFloatOrNull() ?: 0f
@@ -53,19 +53,68 @@ fun manageDebtsDialog(
     // List of unconfirmedPayments
     val unconfirmedPayments by paymentConfirmationViewModel.unconfirmedPayments.collectAsState()
 
-    // Values from Group Session.
+    // Values from Group Session
     val group by groupViewModel.group.collectAsState()
 
-    // Handle snackbar to show the message.
+    // Handle snackbar to show the message
     val successSnackbarHostState = remember { SnackbarHostState() }
     val errorSnackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    // Values for the dropdowns when owner does a payment manually.
-    var payer by remember { mutableStateOf(groupMembers.firstOrNull()) }
-//    var receiver by remember { mutableStateOf(groupMembers.getOrNull(1)) }
+    // Identify the creditor based on expenses - should be the person who is owed money
+    val creditor = remember(groupExpenses, group) {
 
-    // Find the userExpenseId using the debtorId (used to confirm the payment).
+        // Extract the first expense from the list
+        val expense = groupExpenses.firstOrNull()
+
+        // Extract creditor IDs from the expense
+        val creditorUserId: Long? = expense?.creditorUserId
+        val creditorExternalMemberId: Long? = expense?.creditorExternalMemberId
+
+        // Search for the creditor in registered members if creditorUserId is not null
+        val registeredCreditor = if (creditorUserId != null) {
+            group?.registeredMembers?.find {
+                it.registeredMemberId == creditorUserId
+            }?.let { registered ->
+                GroupMember.RegisteredMember(
+                    name = registered.username,
+                    phoneNumber = registered.phoneNumber
+                )
+            }
+        } else null
+
+        // If not found in registered, search in external members using creditorExternalMemberId
+        val externalCreditor = if (registeredCreditor == null && creditorExternalMemberId != null) {
+            group?.externalMembers?.find {
+                it.externalMembersId == creditorExternalMemberId
+            }?.let { external ->
+                GroupMember.ExternalMember(name = external.name)
+            }
+        } else null
+
+        registeredCreditor ?: externalCreditor
+    }
+
+    // Filter members excluding the creditor
+    val filteredMembers = remember(groupMembers, creditor) {
+        groupMembers.filter { member ->
+            when {
+                creditor == null -> true
+                creditor is GroupMember.RegisteredMember && member is GroupMember.RegisteredMember -> {
+                    member.phoneNumber != creditor.phoneNumber
+                }
+                creditor is GroupMember.ExternalMember && member is GroupMember.ExternalMember -> {
+                    member.name != creditor.name
+                }
+                else -> member::class != creditor::class
+            }
+        }
+    }
+
+    // Values for the dropdowns when owner does a payment manually
+    var payer by remember { mutableStateOf(filteredMembers.firstOrNull()) }
+
+    // Find the userExpenseId using the debtorId (used to confirm the payment)
     val userExpenseId = when (payer) {
         is GroupMember.RegisteredMember -> {
             val id = group?.registeredMembers
@@ -84,7 +133,7 @@ fun manageDebtsDialog(
         else -> null
     }
 
-    // Handle the payment state when it changes. (e.g. After approving a payment request)
+    // Handle the payment state when it changes
     LaunchedEffect(paymentState) {
         when (paymentState) {
             is PaymentState.Success.SinglePayment -> {
@@ -135,6 +184,7 @@ fun manageDebtsDialog(
 
                 when (activeTab) {
                     0 -> {
+                        // Tab "Requests"
                         Text(
                             text = "Confirm or reject payment requests made by members.",
                             style = CopayTypography.footer,
@@ -219,6 +269,7 @@ fun manageDebtsDialog(
                     }
 
                     1 -> {
+                        // Manual tab content
                         Text(
                             text = "Manually record a payment for a member.",
                             style = CopayTypography.footer,
@@ -229,31 +280,13 @@ fun manageDebtsDialog(
 
                         dropdownField(
                             label = "Who paid?",
-                            items = groupMembers.map { it.displayText() },
+                            items = filteredMembers.map { it.displayText() },
                             selectedItem = payer?.displayText() ?: "",
                             onItemSelected = { selected ->
-                                payer = groupMembers.find { it.displayText() == selected }
+                                payer = filteredMembers.find { it.displayText() == selected }
                             },
                             modifier = Modifier.fillMaxWidth()
                         )
-
-                        // TODO: Replace with dropdownField in future if we allow choosing other receivers
-
-//                        dropdownField(
-//                            label = "Who received?",
-//                            items = groupMembers.map { it.displayText() },
-//                            selectedItem = receiver?.displayText() ?: "",
-//                            onItemSelected = { selected ->
-//                                receiver = groupMembers.find { it.displayText() == selected }
-//                            },
-//                            modifier = Modifier.fillMaxWidth()
-//                        )
-
-                        val owner = group?.registeredMembers?.find { it.registeredMemberId == group!!.ownerId }?.let { registered ->
-                            GroupMember.RegisteredMember(name = registered.username, phoneNumber = registered.phoneNumber)
-                        }
-
-                        var receiver by remember { mutableStateOf(owner) }
 
                         Spacer(modifier = Modifier.height(12.dp))
 
@@ -269,7 +302,7 @@ fun manageDebtsDialog(
                                 style = CopayTypography.footer
                             )
                             Text(
-                                text = receiver?.displayText() ?: "Unknown",
+                                text = creditor?.displayText() ?: "Unknown",
                                 style = CopayTypography.body,
                                 color = CopayColors.onSecondary
                             )
@@ -300,27 +333,27 @@ fun manageDebtsDialog(
 
                             Button(
                                 onClick = {
-                                    userExpenseId.let {
+                                    userExpenseId?.let {
                                         paymentConfirmationViewModel.confirmPayment(
                                             context,
                                             ConfirmPaymentRequestDTO(
-                                                userExpenseId = userExpenseId!!,
+                                                userExpenseId = it,
                                                 confirmationAmount = amountAsFloat
                                             )
                                         )
                                         onDismiss()
                                     }
-                                },
+                                }
                             ) {
                                 Text("Add Payment")
                             }
                         }
-
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Snackbars
                 redSnackbarHost(
                     hostState = errorSnackbarHostState,
                     modifier = Modifier.align(Alignment.End)
