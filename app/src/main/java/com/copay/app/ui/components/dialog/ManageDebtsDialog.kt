@@ -61,41 +61,38 @@ fun manageDebtsDialog(
     val errorSnackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    // Identify the creditor based on expenses
+    // Identify the creditor based on expenses - should be the person who is owed money
     val creditor = remember(groupExpenses, group) {
-        // Find the creditor ID from expenses
-        val creditorUserId = groupExpenses.firstOrNull()?.creditorUserId
 
-        // Search for the creditor in registered members
-        val registeredCreditor = group?.registeredMembers?.find {
-            it.registeredMemberId == creditorUserId
-        }?.let { registered ->
-            GroupMember.RegisteredMember(
-                name = registered.username,
-                phoneNumber = registered.phoneNumber
-            )
-        }
+        // Extract the first expense from the list
+        val expense = groupExpenses.firstOrNull()
 
-        // If not found in registered, search in external members
-        val externalCreditor = if (registeredCreditor == null) {
+        // Extract creditor IDs from the expense
+        val creditorUserId: Long? = expense?.creditorUserId
+        val creditorExternalMemberId: Long? = expense?.creditorExternalMemberId
+
+        // Search for the creditor in registered members if creditorUserId is not null
+        val registeredCreditor = if (creditorUserId != null) {
+            group?.registeredMembers?.find {
+                it.registeredMemberId == creditorUserId
+            }?.let { registered ->
+                GroupMember.RegisteredMember(
+                    name = registered.username,
+                    phoneNumber = registered.phoneNumber
+                )
+            }
+        } else null
+
+        // If not found in registered, search in external members using creditorExternalMemberId
+        val externalCreditor = if (registeredCreditor == null && creditorExternalMemberId != null) {
             group?.externalMembers?.find {
-                it.externalMembersId == creditorUserId
+                it.externalMembersId == creditorExternalMemberId
             }?.let { external ->
                 GroupMember.ExternalMember(name = external.name)
             }
         } else null
 
-        // Return the found creditor or use the owner as fallback
-        registeredCreditor ?: externalCreditor ?: run {
-            group?.registeredMembers?.find {
-                it.registeredMemberId == group!!.ownerId
-            }?.let { owner ->
-                GroupMember.RegisteredMember(
-                    name = owner.username,
-                    phoneNumber = owner.phoneNumber
-                )
-            }
-        }
+        registeredCreditor ?: externalCreditor
     }
 
     // Filter members excluding the creditor
