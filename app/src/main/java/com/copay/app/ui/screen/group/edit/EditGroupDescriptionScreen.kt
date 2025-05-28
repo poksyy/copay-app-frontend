@@ -93,7 +93,7 @@ fun editGroupDescriptionScreen(
                         "understand what the group is about. You can mention activities, " +
                         "rules, or any important information.",
                 style = CopayTypography.footer,
-                color = CopayColors.surface,
+                color = CopayColors.onSecondary,
                 modifier = Modifier.padding(top = 8.dp)
             )
 

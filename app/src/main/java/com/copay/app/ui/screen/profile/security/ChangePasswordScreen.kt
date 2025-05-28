@@ -140,17 +140,17 @@ fun changePasswordScreen(
                 Text(
                     "• Must be at least 8 characters long",
                     style = CopayTypography.footer,
-                    color = CopayColors.surface
+                    color = CopayColors.onSecondary,
                 )
                 Text(
                     "• Must contain at least one uppercase letter",
                     style = CopayTypography.footer,
-                    color = CopayColors.surface
+                    color = CopayColors.onSecondary,
                 )
                 Text(
                     "• Must contain at least one number",
                     style = CopayTypography.footer,
-                    color = CopayColors.surface
+                    color = CopayColors.onSecondary,
                 )
             }
 

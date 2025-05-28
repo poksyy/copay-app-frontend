@@ -55,14 +55,6 @@ fun forgotPasswordScreen(navController: NavController) {
                 style = CopayTypography.title
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                "Enter email to receive a password reset link.",
-                color = CopayColors.primary,
-                style = CopayTypography.subtitle
-            )
-
             Spacer(modifier = Modifier.height(24.dp))
 
             inputField(
@@ -74,6 +66,14 @@ fun forgotPasswordScreen(navController: NavController) {
                 label = "Email Address",
                 isError = emailError != null,
                 errorMessage = emailError
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                "Enter email to receive a password reset link.",
+                color = CopayColors.primary,
+                style = CopayTypography.body
             )
 
             Spacer(modifier = Modifier.height(24.dp))

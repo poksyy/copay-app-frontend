@@ -98,7 +98,7 @@ fun editUsernameScreen(
                         "Make sure it reflects your identity or something you'll be " +
                         "comfortable with others seeing.",
                 style = CopayTypography.footer,
-                color = CopayColors.surface,
+                color = CopayColors.onSecondary,
                 modifier = Modifier.padding(top = 8.dp)
             )
 

@@ -111,7 +111,7 @@ fun editPhoneNumberScreen(
             Text(
                 text = "Your phone number is used for account verification, recovery, and notifications. Make sure it's a valid and active number that you can be reached at.",
                 style = CopayTypography.footer,
-                color = CopayColors.surface,
+                color = CopayColors.onSecondary,
                 modifier = Modifier.padding(top = 8.dp)
             )
 

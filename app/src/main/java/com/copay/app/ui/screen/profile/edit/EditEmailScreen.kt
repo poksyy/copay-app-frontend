@@ -102,7 +102,7 @@ fun editEmailScreen(
             Text(
                 text = "Your email is used to send notifications, updates, and important information related to your account. It should be a valid and accessible email address that you check regularly.",
                 style = CopayTypography.footer,
-                color = CopayColors.surface,
+                color = CopayColors.onSecondary,
                 modifier = Modifier.padding(top = 8.dp)
             )
 

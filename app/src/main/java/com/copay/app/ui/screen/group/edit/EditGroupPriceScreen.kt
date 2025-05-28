@@ -91,7 +91,7 @@ fun editGroupPriceScreen(
             Text(
                 text = "Set an estimated price for the group's initial expense. The price must be a positive number and cannot be negative.",
                 style = CopayTypography.footer,
-                color = CopayColors.surface,
+                color = CopayColors.onSecondary,
                 modifier = Modifier.padding(top = 8.dp)
             )
 
