@@ -77,6 +77,91 @@ fun secondaryButton(
 }
 
 @Composable
+fun confirmButtonLarge(
+    text: String = "Confirm",
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = CopayColors.success,
+            contentColor = CopayColors.secondary
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(28.dp)
+    ) {
+        Text(text = text, style = CopayTypography.button)
+    }
+}
+
+@Composable
+fun cancelButtonLarge(
+    text: String = "Cancel",
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = CopayColors.secondary
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(28.dp)
+    ) {
+        Text(text = text, style = CopayTypography.button)
+    }
+}
+
+@Composable
+fun confirmButtonSmall(
+    text: String = "Confirm",
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = CopayColors.success,
+            contentColor = CopayColors.secondary
+        )
+,
+        modifier = modifier
+            .width(114.dp)
+            .height(32.dp),
+        shape = RoundedCornerShape(14.dp)
+    ) {
+        Text(text = text, style = CopayTypography.button)
+    }
+}
+
+@Composable
+fun cancelButtonSmall(
+    text: String = "Cancel",
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = CopayColors.secondary
+        ),
+        modifier = modifier
+            .width(114.dp)
+            .height(32.dp),
+        shape = RoundedCornerShape(16.dp),
+    ) {
+        Text(text = text, style = CopayTypography.button)
+    }
+}
+
+@Composable
 fun signInWithGoogleButton(
     text: String,
     onClick: () -> Unit,
