@@ -1,6 +1,7 @@
 package com.copay.app.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
@@ -9,9 +10,9 @@ import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
 import com.copay.app.dto.group.auxiliary.RegisteredMemberDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.mappers.toGroup
-import com.copay.app.repository.ProfileRepository
 import com.copay.app.model.Group
 import com.copay.app.repository.GroupRepository
+import com.copay.app.repository.PhotoRepository
 import com.copay.app.utils.session.GroupSession
 import com.copay.app.utils.session.UserSession
 import com.copay.app.utils.state.GroupState
@@ -22,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GroupViewModel @Inject constructor(
-    private val profileRepository: ProfileRepository,
+    private val photoRepository: PhotoRepository,
     private val groupRepository: GroupRepository,
     private val userSession: UserSession,
     private val groupSession: GroupSession
@@ -47,7 +48,7 @@ class GroupViewModel @Inject constructor(
     // Updates the UI state with a success message
     fun updateGroupStateWithMessage(message: String) {
         _groupState.value = GroupState.Success.GroupUpdated(
-            com.copay.app.dto.group.response.GroupMessageResponseDTO(message)
+            com.copay.app.dto.MessageResponseDTO(message)
         )
     }
 
@@ -209,6 +210,55 @@ class GroupViewModel @Inject constructor(
 
             val request = mapOf("estimatedPrice" to estimatedPrice)
             val result = groupRepository.updateGroupEstimatedPrice(context, groupId, request)
+
+            // Set the state to the result first
+            _groupState.value = result
+
+            // If the update was successful, schedule a background refresh
+            if (result is GroupState.Success.GroupUpdated) {
+                // Schedule a background refresh of the group data without affecting the UI state
+                viewModelScope.launch {
+                    // Small delay to ensure the UI has time to process the success state
+                    kotlinx.coroutines.delay(500)
+                    getGroupByGroupId(context, groupId)
+                }
+            }
+        }
+    }
+
+    fun searchGroupImages(context: Context, page: Int = 1, perPage: Int = 20) {
+        _groupState.value = GroupState.Loading
+        viewModelScope.launch {
+            _groupState.value = photoRepository.searchGroupImages(context, page, perPage)
+        }
+    }
+
+    fun setGroupPhoto(context: Context, groupId: Long, photoUrl: String, provider: String = "Unsplash") {
+        viewModelScope.launch {
+            _groupState.value = GroupState.Loading
+
+            val result = photoRepository.setGroupPhoto(context, groupId, photoUrl, provider)
+
+            _groupState.value = result
+
+            // If the update was successful, schedule a background refresh
+            if (result is GroupState.Success.GroupUpdated) {
+                // Schedule a background refresh of the group data without affecting the UI state
+                viewModelScope.launch {
+                    // Small delay to ensure the UI has time to process the success state
+                    kotlinx.coroutines.delay(500)
+                    getGroupByGroupId(context, groupId)
+                }
+            }
+        }
+    }
+
+
+    fun removeGroupPhoto(context: Context, groupId: Long) {
+        viewModelScope.launch {
+            _groupState.value = GroupState.Loading
+
+            val result = photoRepository.removeGroupPhoto(context, groupId)
 
             // Set the state to the result first
             _groupState.value = result

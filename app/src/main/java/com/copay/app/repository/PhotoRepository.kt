@@ -6,7 +6,7 @@ import com.copay.app.dto.MessageResponseDTO
 import com.copay.app.dto.unsplash.request.PhotoRequestDTO
 import com.copay.app.service.PhotoService
 import com.copay.app.utils.DataStoreManager
-import com.copay.app.utils.state.PhotoState
+import com.copay.app.utils.state.GroupState
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import retrofit2.Response
@@ -18,16 +18,12 @@ class PhotoRepository(private val service: PhotoService) {
         query: String,
         page: Int = 1,
         perPage: Int = 20
-    ): PhotoState {
+    ): GroupState {
         return try {
-            val response = service.searchImage(
-                query = query,
-                page = page,
-                perPage = perPage
-            )
-            PhotoState.Success.PhotoList(response)
+            val response = service.searchImage(query, page, perPage)
+            GroupState.Success.PhotoList(response)
         } catch (e: Exception) {
-            PhotoState.Error(e.message ?: "Error searching photos")
+            GroupState.Error(e.message ?: "Error searching photos")
         }
     }
 
@@ -35,15 +31,12 @@ class PhotoRepository(private val service: PhotoService) {
         context: Context,
         page: Int = 1,
         perPage: Int = 20
-    ): PhotoState {
+    ): GroupState {
         return try {
-            val response = service.searchGroupImages(
-                page = page,
-                perPage = perPage
-            )
-            PhotoState.Success.PhotoList(response)
+            val response = service.searchGroupImages(page = page, perPage = perPage)
+            GroupState.Success.PhotoList(response)
         } catch (e: Exception) {
-            PhotoState.Error(e.message ?: "Error searching group images")
+            GroupState.Error(e.message ?: "Error searching group images")
         }
     }
 
@@ -52,7 +45,7 @@ class PhotoRepository(private val service: PhotoService) {
         groupId: Long,
         photoUrl: String,
         provider: String = "Unsplash"
-    ): PhotoState {
+    ): GroupState {
         val token = DataStoreManager.getFormattedToken(context)
         val photoRequestDTO = PhotoRequestDTO(imageUrl = photoUrl, imageProvider = provider)
 
@@ -64,7 +57,7 @@ class PhotoRepository(private val service: PhotoService) {
     suspend fun removeGroupPhoto(
         context: Context,
         groupId: Long
-    ): PhotoState {
+    ): GroupState {
         val token = DataStoreManager.getFormattedToken(context)
 
         return handleApiResponse {
@@ -74,31 +67,28 @@ class PhotoRepository(private val service: PhotoService) {
 
     private suspend fun <T> handleApiResponse(
         apiCall: suspend () -> Response<T>
-    ): PhotoState {
+    ): GroupState {
         return try {
             val response = apiCall()
             if (response.isSuccessful) {
                 response.body()?.let { body ->
-                    when (body) {
-                        is MessageResponseDTO -> {
-                            if (response.raw().request.method == "DELETE") {
-                                PhotoState.Success.PhotoRemoved(body.message)
-                            } else {
-                                PhotoState.Success.PhotoSet(body.message)
-                            }
-                        }
-                        else -> PhotoState.Error("Unexpected response type")
+                    Log.d("PhotoRepository", "Body class: ${body.javaClass}, content: $body")
+                    if (body is MessageResponseDTO) {
+                        GroupState.Success.GroupUpdated(body)
+                    } else {
+                        Log.e("PhotoRepository", "Unexpected response type: ${body.javaClass}")
+                        GroupState.Error("Unexpected response type")
                     }
-                } ?: PhotoState.Error("Empty response body")
+                } ?: GroupState.Error("Empty response body")
             } else {
                 val errorBody = response.errorBody()?.string()
                 Log.e("PhotoRepository", "Error Body: $errorBody")
                 val message = extractErrorMessage(errorBody)
-                PhotoState.Error(message ?: "Unknown error")
+                GroupState.Error(message ?: "Unknown error")
             }
         } catch (e: Exception) {
             Log.e("PhotoRepository", "Connection error: ${e.message}")
-            PhotoState.Error("Connection error: ${e.message}")
+            GroupState.Error("Connection error: ${e.message}")
         }
     }
 

@@ -25,21 +25,19 @@ import com.copay.app.ui.components.snackbar.redSnackbarHost
 import com.copay.app.ui.components.topNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import com.copay.app.utils.state.PhotoState
+import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
-import com.copay.app.viewmodel.PhotoViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun searchPhotoScreen(
     navigationViewModel: NavigationViewModel = viewModel(),
-    photoViewModel: PhotoViewModel = hiltViewModel(),
     groupViewModel: GroupViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val photoState by photoViewModel.photoState.collectAsState()
+    val groupState by groupViewModel.groupState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedPhoto by remember { mutableStateOf<UnsplashPhoto?>(null) }
     var showConfirmDialog by remember { mutableStateOf(false) }
@@ -49,25 +47,17 @@ fun searchPhotoScreen(
 
     val successSnackbarHostState = remember { SnackbarHostState() }
     val errorSnackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         // Load default group images when screen opens
-        photoViewModel.searchGroupImages(context)
+        groupViewModel.searchGroupImages(context)
     }
 
     // Handle only error states
-    LaunchedEffect(photoState) {
-        when (photoState) {
-            is PhotoState.Error -> {
-                coroutineScope.launch {
-                    errorSnackbarHostState.showSnackbar(
-                        (photoState as PhotoState.Error).message
-                    )
-                }
-                photoViewModel.resetPhotoState()
-            }
-            else -> {}
+    // Handle group state changes
+    LaunchedEffect(groupState) {
+        if (groupState is GroupState.Success.GroupUpdated || groupState is GroupState.Error) {
+            navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
         }
     }
 
@@ -122,18 +112,12 @@ fun searchPhotoScreen(
                         Button(
                             onClick = {
                                 selectedPhoto?.let {
-                                    photoViewModel.setGroupPhoto(
+                                    groupViewModel.setGroupPhoto(
                                         context,
                                         groupId,
                                         it.urls.regular,
                                         "Unsplash"
                                     )
-                                    groupViewModel.updateGroupStateWithMessage("Group photo updated successfully")
-                                    coroutineScope.launch {
-                                        groupViewModel.getGroupByGroupId(context, groupId)
-                                        kotlinx.coroutines.delay(500)
-                                        navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
-                                    }
                                 }
                                 showConfirmDialog = false
                             }
@@ -163,7 +147,7 @@ fun searchPhotoScreen(
                     .padding(16.dp),
                 trailingIcon = {
                     Button(
-                        onClick = { photoViewModel.searchPhotos(context, searchQuery) },
+                        onClick = { groupViewModel.searchGroupImages(context) },
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
                         Text("Search")
@@ -174,14 +158,9 @@ fun searchPhotoScreen(
             // Remove photo button
             if (selectedGroup?.imageUrl != null) {
                 Button(
-                    onClick = { 
-                        photoViewModel.removeGroupPhoto(context, groupId)
-                        // Update GroupViewModel state with success message
+                    onClick = {
+                        groupViewModel.removeGroupPhoto(context, groupId)
                         groupViewModel.updateGroupStateWithMessage("Group photo removed successfully")
-                        // Refresh the group data
-                        groupViewModel.getGroupByGroupId(context, groupId)
-                        // Navigate directly to EditGroup screen
-                        navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -194,14 +173,14 @@ fun searchPhotoScreen(
                 }
             }
 
-            when (photoState) {
-                is PhotoState.Loading -> {
+            when (groupState) {
+                is GroupState.Loading -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
                 }
-                is PhotoState.Success.PhotoList -> {
-                    val photos = (photoState as PhotoState.Success.PhotoList).data.results
+                is GroupState.Success.PhotoList -> {
+                    val photos = (groupState as GroupState.Success.PhotoList).data.results
                     if (photos.isEmpty()) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Text(
@@ -228,10 +207,10 @@ fun searchPhotoScreen(
                         }
                     }
                 }
-                is PhotoState.Error -> {
+                is GroupState.Error -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Text(
-                            (photoState as PhotoState.Error).message,
+                            (groupState as GroupState.Error).message,
                             modifier = Modifier.align(Alignment.Center),
                             style = CopayTypography.body,
                             textAlign = TextAlign.Center,
