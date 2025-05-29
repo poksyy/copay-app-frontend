@@ -77,6 +77,39 @@ fun secondaryButton(
 }
 
 @Composable
+fun createButton(
+    onCreateClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    Button(
+        onClick = onCreateClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = CopayColors.primary,
+            contentColor = CopayColors.onPrimary
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(28.dp),
+        enabled = enabled
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_add),
+            contentDescription = "Add",
+            tint = CopayColors.onPrimary,
+            modifier = Modifier.size(18.dp)
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = "Create",
+            style = CopayTypography.button,
+            color = CopayColors.onPrimary
+        )
+    }
+}
+
+@Composable
 fun confirmButtonLarge(
     text: String = "Confirm",
     onClick: () -> Unit,
