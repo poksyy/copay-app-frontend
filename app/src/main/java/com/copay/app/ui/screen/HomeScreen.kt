@@ -348,18 +348,24 @@ private fun homeContent(
                 }
             }
 
-            TextButton(onClick = onCreateClick) {
+            Button(
+                onClick = onCreateClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CopayColors.primary,
+                    contentColor = CopayColors.onPrimary
+                )
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_add),
                     contentDescription = "Add",
-                    tint = CopayColors.primary,
+                    tint = CopayColors.onPrimary,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "Create",
                     style = CopayTypography.button,
-                    color = CopayColors.primary
+                    color = CopayColors.onPrimary
                 )
             }
         }
