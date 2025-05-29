@@ -150,7 +150,7 @@ fun groupBalancesScreen(
                 .height(150.dp)
         ) {
             AsyncImage(
-                model = group?.imageUrl ?: R.drawable.chinese_buffet,
+                model = group?.imageUrl ?: R.drawable.group_default_image,
                 contentDescription = "Group background",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()

@@ -1,8 +1,9 @@
 package com.copay.app.utils.state
 
+import com.copay.app.dto.MessageResponseDTO
 import com.copay.app.dto.group.response.GroupResponseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
-import com.copay.app.dto.group.response.GroupMessageResponseDTO
+import com.copay.app.dto.unsplash.response.UnsplashResponse
 import com.copay.app.mappers.toGroup
 import com.copay.app.model.Group
 
@@ -26,7 +27,8 @@ sealed class GroupState {
                 get() = groupsData.groups.map { it.toGroup() }
         }
         data class GroupResponse(val groupData: GroupResponseDTO) : Success()
-        data class GroupUpdated(val updateData: GroupMessageResponseDTO) : Success()
+        data class GroupUpdated(val updateData: MessageResponseDTO) : Success()
+        data class PhotoList(val data: UnsplashResponse) : Success()
     }
 
     // An error occurred during group operations.

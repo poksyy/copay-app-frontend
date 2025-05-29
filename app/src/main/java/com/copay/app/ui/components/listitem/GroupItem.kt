@@ -62,7 +62,7 @@ fun groupItem(
         ) {
             // Group image
             AsyncImage(
-                model = group.imageUrl ?: R.drawable.chinese_buffet,
+                model = group.imageUrl ?: R.drawable.group_default_image,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

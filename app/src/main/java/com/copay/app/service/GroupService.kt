@@ -1,13 +1,13 @@
 package com.copay.app.service
 
 import com.copay.app.config.ApiService
+import com.copay.app.dto.MessageResponseDTO
 import com.copay.app.dto.group.request.CreateGroupRequestDTO
 import com.copay.app.dto.group.request.GetGroupRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupRegisteredMembersRequestDTO
 import com.copay.app.dto.group.response.GroupResponseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
-import com.copay.app.dto.group.response.GroupMessageResponseDTO
 import retrofit2.Response
 
 /**
@@ -34,19 +34,19 @@ class GroupService(private val api: ApiService) {
     }
 
     // Deletes a group by its ID using the user's authentication token.
-    suspend fun deleteGroup(groupId: Long, token: String): Response<GroupMessageResponseDTO> {
+    suspend fun deleteGroup(groupId: Long, token: String): Response<MessageResponseDTO> {
         return api.deleteGroup(groupId, token)
     }
 
     // Removes the authenticated user from the specified group.
-    suspend fun leaveGroup(groupId: Long, token: String): Response<GroupMessageResponseDTO> {
+    suspend fun leaveGroup(groupId: Long, token: String): Response<MessageResponseDTO> {
         return api.leaveGroup(groupId, token)
     }
 
     // Updates group details using a map of field changes.
     suspend fun updateGroup(
         groupId: Long, fieldChanges: Map<String, Any>, token: String
-    ): Response<GroupMessageResponseDTO> {
+    ): Response<MessageResponseDTO> {
         return api.updateGroup(groupId, fieldChanges, token)
     }
 
@@ -55,21 +55,21 @@ class GroupService(private val api: ApiService) {
         groupId: Long,
         request: Map<String, Float>,
         token: String
-    ): Response<GroupMessageResponseDTO> {
+    ): Response<MessageResponseDTO> {
         return api.updateGroupEstimatedPrice(groupId, request, token)
     }
 
     // Updates the list of registered members in a group.
     suspend fun updateGroupRegisteredMembers(
         groupId: Long, request: UpdateGroupRegisteredMembersRequestDTO, token: String
-    ): Response<GroupMessageResponseDTO> {
+    ): Response<MessageResponseDTO> {
         return api.updateGroupRegisteredMembers(groupId, request, token)
     }
 
     // Updates the list of external members in a group.
     suspend fun updateGroupExternalMembers(
         groupId: Long, request: UpdateGroupExternalMembersRequestDTO, token: String
-    ): Response<GroupMessageResponseDTO> {
+    ): Response<MessageResponseDTO> {
         return api.updateGroupExternalMembers(groupId, request, token)
     }
 }
