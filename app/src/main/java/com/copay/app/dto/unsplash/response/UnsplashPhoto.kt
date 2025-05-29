@@ -1,4 +1,4 @@
-package com.copay.app.dto.unsplash
+package com.copay.app.dto.unsplash.response
 
 data class UnsplashResponse(
     val total: Int,
