@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,13 +26,8 @@ import com.copay.app.R
 import com.copay.app.model.Group
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.res.painterResource
 import com.copay.app.ui.theme.adaptiveGray
 
@@ -50,10 +44,8 @@ fun groupItem(
             .fillMaxWidth()
             .padding(vertical = 6.dp),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = CopayColors.onPrimary
-        )
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = CardDefaults.cardColors(containerColor = CopayColors.onPrimary)
     ) {
         Row(
             modifier = Modifier
@@ -62,7 +54,7 @@ fun groupItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Group image
+            // Display group image (fallback to default if null)
             AsyncImage(
                 model = group.imageUrl ?: R.drawable.group_default_image,
                 contentDescription = null,
@@ -74,9 +66,10 @@ fun groupItem(
 
             Spacer(modifier = Modifier.width(16.dp))
 
+            // Group details: name, member count, price
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = group.name ?: "",
+                    text = group.name.orEmpty(),
                     style = CopayTypography.body.copy(fontWeight = FontWeight.SemiBold),
                     color = CopayColors.primary
                 )
@@ -94,35 +87,55 @@ fun groupItem(
                 )
             }
 
-            // Action buttons
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (group.isOwner == true) {
-                    IconButton(onClick = { onEditClick(group) }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_edit),
-                            contentDescription = "Edit",
-                            tint = adaptiveGray()
-                        )
-                    }
-                    IconButton(onClick = { onDeleteClick(group) }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_trash),
-                            contentDescription = "Delete",
-                            tint = adaptiveGray()
-                        )
-                    }
-                } else {
-                    IconButton(onClick = { onLeaveClick(group) }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_leave),
-                            contentDescription = "Leave",
-                            tint = adaptiveGray()
-                        )
-                    }
-                }
+            // Action buttons (Edit/Delete if owner, Leave if not)
+            ActionButtons(
+                isOwner = group.isOwner == true,
+                onEdit = { onEditClick(group) },
+                onDelete = { onDeleteClick(group) },
+                onLeave = { onLeaveClick(group) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionButtons(
+    isOwner: Boolean,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onLeave: () -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (isOwner) {
+            // Show edit and delete icons for owners
+            IconButton(onClick = onEdit) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_edit),
+                    contentDescription = "Edit",
+                    tint = adaptiveGray(),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            IconButton(onClick = onDelete) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_trash),
+                    contentDescription = "Delete",
+                    tint = adaptiveGray(),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        } else {
+            // Show leave icon for non-owners
+            IconButton(onClick = onLeave) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_leave),
+                    contentDescription = "Leave",
+                    tint = adaptiveGray(),
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }
