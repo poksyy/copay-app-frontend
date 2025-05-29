@@ -34,6 +34,8 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.res.painterResource
+import com.copay.app.ui.theme.adaptiveGray
 
 @Composable
 fun groupItem(
@@ -94,30 +96,30 @@ fun groupItem(
 
             // Action buttons
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (group.isOwner == true) {
                     IconButton(onClick = { onEditClick(group) }) {
                         Icon(
-                            imageVector = Icons.Default.Edit,
+                            painter = painterResource(id = R.drawable.ic_edit),
                             contentDescription = "Edit",
-                            tint = CopayColors.outline
+                            tint = adaptiveGray()
                         )
                     }
                     IconButton(onClick = { onDeleteClick(group) }) {
                         Icon(
-                            imageVector = Icons.Default.Delete,
+                            painter = painterResource(id = R.drawable.ic_trash),
                             contentDescription = "Delete",
-                            tint = MaterialTheme.colorScheme.error
+                            tint = adaptiveGray()
                         )
                     }
                 } else {
                     IconButton(onClick = { onLeaveClick(group) }) {
                         Icon(
-                            imageVector = Icons.Default.ExitToApp,
-                            contentDescription = "Leave group",
-                            tint = CopayColors.outline
+                            painter = painterResource(id = R.drawable.ic_leave),
+                            contentDescription = "Leave",
+                            tint = adaptiveGray()
                         )
                     }
                 }
