@@ -226,14 +226,14 @@ class GroupViewModel @Inject constructor(
         }
     }
 
-    fun searchPhotos(context: Context, query: String, page: Int = 1, perPage: Int = 20) {
+    fun searchPhotos(context: Context, query: String, page: Int = 1, perPage: Int = 21) {
         _groupState.value = GroupState.Loading
         viewModelScope.launch {
             _groupState.value = photoRepository.searchPhotos(context, query, page, perPage)
         }
     }
 
-    fun searchGroupImages(context: Context, page: Int = 1, perPage: Int = 20) {
+    fun searchGroupImages(context: Context, page: Int = 1, perPage: Int = 21) {
         _groupState.value = GroupState.Loading
         viewModelScope.launch {
             _groupState.value = photoRepository.searchGroupImages(context, page, perPage)

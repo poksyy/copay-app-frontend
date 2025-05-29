@@ -165,7 +165,7 @@ interface ApiService {
     suspend fun searchPhotos(
         @Query("query") query: String,
         @Query("page") page: Int = 1,
-        @Query("perPage") perPage: Int = 20
+        @Query("perPage") perPage: Int = 21
     ): UnsplashResponse
 
     // Update photo group.
