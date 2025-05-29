@@ -1,4 +1,5 @@
 ![Copay banner](https://i.ibb.co/tPXXpW3L/COPAY-BANNER.png)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/poksyy/copay-app-frontend)
 
 # CoPay Frontend
 
