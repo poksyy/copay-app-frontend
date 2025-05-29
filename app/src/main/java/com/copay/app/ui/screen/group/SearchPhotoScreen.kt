@@ -6,29 +6,33 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.copay.app.R
 import com.copay.app.dto.unsplash.response.UnsplashPhoto
 import com.copay.app.navigation.SpaScreens
+import com.copay.app.ui.components.button.cancelButtonSmall
+import com.copay.app.ui.components.button.confirmButtonSmall
 import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.ui.components.snackbar.redSnackbarHost
 import com.copay.app.ui.components.topNavBar
-import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -100,16 +104,12 @@ fun searchPhotoScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Button(
+                        cancelButtonSmall(
                             onClick = { showConfirmDialog = false },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = CopayColors.secondary
-                            )
-                        ) {
-                            Text("Cancel")
-                        }
+                            text = "Cancel"
+                        )
 
-                        Button(
+                        confirmButtonSmall(
                             onClick = {
                                 selectedPhoto?.let {
                                     groupViewModel.setGroupPhoto(
@@ -120,10 +120,9 @@ fun searchPhotoScreen(
                                     )
                                 }
                                 showConfirmDialog = false
-                            }
-                        ) {
-                            Text("Confirm")
-                        }
+                            },
+                            text = "Confirm"
+                        )
                     }
                 }
             }
@@ -145,13 +144,15 @@ fun searchPhotoScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
+                shape = RoundedCornerShape(14.dp),
                 trailingIcon = {
-                    Button(
-                        onClick = { groupViewModel.searchGroupImages(context) },
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        Text("Search")
-                    }
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = "Search Icon",
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .clickable { groupViewModel.searchGroupImages(context) }
+                    )
                 }
             )
 
