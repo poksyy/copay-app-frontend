@@ -2,6 +2,7 @@ package com.copay.app.repository
 
 import android.content.Context
 import android.util.Log
+import com.copay.app.dto.MessageResponseDTO
 import com.copay.app.dto.group.auxiliary.ExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.InvitedExternalMemberDTO
 import com.copay.app.dto.group.auxiliary.InvitedRegisteredMemberDTO
@@ -11,7 +12,6 @@ import com.copay.app.dto.group.request.UpdateGroupExternalMembersRequestDTO
 import com.copay.app.dto.group.request.UpdateGroupRegisteredMembersRequestDTO
 import com.copay.app.dto.group.response.GroupResponseDTO
 import com.copay.app.dto.group.response.GetGroupResponseDTO
-import com.copay.app.dto.group.response.GroupMessageResponseDTO
 import com.copay.app.service.GroupService
 import com.copay.app.utils.DataStoreManager
 import com.copay.app.utils.state.GroupState
@@ -182,7 +182,7 @@ class GroupRepository(private val groupService: GroupService) {
                     when (body) {
                         is GetGroupResponseDTO -> GroupState.Success.GroupsFetched(body)
                         is GroupResponseDTO -> GroupState.Success.GroupResponse(body)
-                        is GroupMessageResponseDTO -> GroupState.Success.GroupUpdated(body)
+                        is MessageResponseDTO -> GroupState.Success.GroupUpdated(body)
                         else -> GroupState.Error("Unexpected response type")
                     }
                 } ?: GroupState.Error("Empty response body")
