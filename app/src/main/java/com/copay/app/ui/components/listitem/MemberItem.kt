@@ -1,5 +1,6 @@
 package com.copay.app.ui.components.listitem
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -58,10 +59,31 @@ fun memberItem(member: Any, expense: Double, currency: String?, currentUserId: L
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = memberName,
-                    style = CopayTypography.body,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = memberName,
+                        style = CopayTypography.body,
+                    )
+                    if (isCreditor) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "Creditor",
+                                color = MaterialTheme.colorScheme.error,
+                                style = CopayTypography.footer
+                            )
+                        }
+                    }
+                }
                 Text(
                     text = "${expense.format(2)}€",
                     style = CopayTypography.body,
