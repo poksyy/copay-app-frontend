@@ -7,9 +7,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -91,14 +93,15 @@ fun editProfileScreen(
                             painter = painterResource(id = R.drawable.profile_picture),
                             contentDescription = "Profile Picture",
                             modifier = Modifier
-                                .size(130.dp)
-                                .clip(CircleShape)
                                 .padding(top = 24.dp)
+                                .size(130.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             "Edit photo",
-                            color = CopayColors.primary,
+                            color = Color(0xFF0095F6),
                             style = CopayTypography.body
                         )
                         Spacer(modifier = Modifier.height(16.dp))
