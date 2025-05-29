@@ -42,7 +42,13 @@ class GroupViewModel @Inject constructor(
     // Resets the UI state to idle.
     fun resetGroupState() {
         _groupState.value = GroupState.Idle
+    }
 
+    // Updates the UI state with a success message
+    fun updateGroupStateWithMessage(message: String) {
+        _groupState.value = GroupState.Success.GroupUpdated(
+            com.copay.app.dto.group.response.GroupMessageResponseDTO(message)
+        )
     }
 
     fun resetGroupSession() {

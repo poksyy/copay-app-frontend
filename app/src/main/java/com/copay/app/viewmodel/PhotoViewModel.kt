@@ -33,6 +33,20 @@ class PhotoViewModel @Inject constructor(
         }
     }
 
+    fun setGroupPhoto(context: Context, groupId: Long, photoUrl: String, provider: String = "Unsplash") {
+        _photoState.value = PhotoState.Loading
+        viewModelScope.launch {
+            _photoState.value = photoRepository.setGroupPhoto(context, groupId, photoUrl, provider)
+        }
+    }
+
+    fun removeGroupPhoto(context: Context, groupId: Long) {
+        _photoState.value = PhotoState.Loading
+        viewModelScope.launch {
+            _photoState.value = photoRepository.removeGroupPhoto(context, groupId)
+        }
+    }
+
     fun resetPhotoState() {
         _photoState.value = PhotoState.Idle
     }
