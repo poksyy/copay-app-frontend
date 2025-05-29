@@ -32,17 +32,11 @@ import com.copay.app.dto.profile.response.EmailResponseDTO
 import com.copay.app.dto.profile.response.PasswordResponseDTO
 import com.copay.app.dto.profile.response.PhoneNumberResponseDTO
 import com.copay.app.dto.profile.response.UsernameResponseDTO
+import com.copay.app.dto.unsplash.UnsplashResponse
 import com.copay.app.dto.user.UserResponseDTO
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.PATCH
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ApiService {
 
@@ -290,4 +284,12 @@ interface ApiService {
         @Path("notificationId") notificationId: Long,
         @Header("Authorization") token: String
     ): Response<MessageResponseDTO>
+
+    // Unsplash search photo
+    @GET("api/photos/search")
+    suspend fun searchPhotos(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+        @Query("perPage") perPage: Int = 20
+    ): UnsplashResponse
 }
