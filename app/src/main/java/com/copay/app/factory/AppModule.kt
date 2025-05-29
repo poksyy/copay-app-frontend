@@ -86,6 +86,14 @@ object AppModule {
         // Instantiates and returns NotificationService using RetrofitInstance.
         return NotificationService(RetrofitInstance.api)
     }
+
+    @Provides
+    @Singleton
+    fun providePhotoService(): PhotoService {
+        // Instantiates and returns PhotoService using RetrofitInstance.
+        return PhotoService(RetrofitInstance.api)
+    }
+
     /*    ========================================================================
           =========================== REPOSITORIES =============================
           ========================================================================
@@ -146,5 +154,12 @@ object AppModule {
     fun provideNotificationRepository(notificationService: NotificationService): NotificationRepository {
         // Instantiates and returns NotificationRepository with injected NotificationService.
         return NotificationRepository(notificationService)
+    }
+
+    @Provides
+    @Singleton
+    fun providePhotoRepository(photoService: PhotoService): PhotoRepository {
+        // Instantiates and returns PhotoRepository with injected PhotoService.
+        return PhotoRepository(photoService)
     }
 }

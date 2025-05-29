@@ -21,6 +21,7 @@ import com.copay.app.ui.screen.group.edit.editGroupDescriptionScreen
 import com.copay.app.ui.screen.group.edit.editGroupMembersScreen
 import com.copay.app.ui.screen.group.edit.editGroupNameScreen
 import com.copay.app.ui.screen.group.edit.editGroupPriceScreen
+import com.copay.app.ui.screen.group.edit.searchPhotoScreen
 import com.copay.app.ui.screen.profile.edit.editProfileScreen
 import com.copay.app.ui.screen.profile.profileScreen
 import com.copay.app.ui.screen.profile.edit.editEmailScreen
@@ -93,6 +94,7 @@ fun hubScreen(
                         SpaScreens.GroupSubscreen.EditDescription -> editGroupDescriptionScreen()
                         SpaScreens.GroupSubscreen.EditPrice -> editGroupPriceScreen()
                         SpaScreens.GroupSubscreen.EditMembers -> editGroupMembersScreen()
+                        SpaScreens.GroupSubscreen.SearchPhoto -> searchPhotoScreen()
                         else -> {}
                     }
 
