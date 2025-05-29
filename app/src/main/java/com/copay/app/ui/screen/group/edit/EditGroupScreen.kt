@@ -98,7 +98,10 @@ fun editGroupScreen(
                         Text(
                             "Edit photo",
                             color = CopayColors.primary,
-                            style = CopayTypography.body
+                            style = CopayTypography.body,
+                            modifier = Modifier.clickable {
+                                navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.SearchPhoto)
+                            }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                     }
