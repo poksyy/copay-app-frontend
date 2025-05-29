@@ -12,6 +12,8 @@ fun GroupResponseDTO.toGroup(): Group {
         name = this.name,
         description = this.description,
         estimatedPrice = this.estimatedPrice,
+        imageUrl = this.imageUrl,
+        imageProvider = this.imageProvider,
         currency = this.currency,
         createdAt = this.createdAt,
         isOwner = this.userIsOwner,
@@ -20,7 +22,5 @@ fun GroupResponseDTO.toGroup(): Group {
         registeredMembers = this.registeredMembers,
         externalMembers = this.externalMembers,
         expenses = emptyList(),
-        imageUrl = null,
-        imageProvider = null
     )
 }
