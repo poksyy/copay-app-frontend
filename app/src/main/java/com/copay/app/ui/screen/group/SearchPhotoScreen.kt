@@ -1,6 +1,7 @@
 package com.copay.app.ui.screen.group
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -18,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -51,6 +53,8 @@ fun searchPhotoScreen(
 
     val successSnackbarHostState = remember { SnackbarHostState() }
     val errorSnackbarHostState = remember { SnackbarHostState() }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
         // Load default group images when screen opens
@@ -151,7 +155,10 @@ fun searchPhotoScreen(
                         contentDescription = "Search Icon",
                         modifier = Modifier
                             .padding(end = 8.dp)
-                            .clickable { groupViewModel.searchGroupImages(context) }
+                            .clickable {
+                                groupViewModel.searchPhotos(context, searchQuery)
+                                keyboardController?.hide()
+                            }
                     )
                 }
             )

@@ -13,6 +13,20 @@ import retrofit2.Response
 
 class PhotoRepository(private val service: PhotoService) {
 
+    suspend fun searchPhotos(
+        context: Context,
+        query: String,
+        page: Int = 1,
+        perPage: Int = 20
+    ): GroupState {
+        return try {
+            val response = service.searchImage(query, page, perPage)
+            GroupState.Success.PhotoList(response)
+        } catch (e: Exception) {
+            GroupState.Error(e.message ?: "Error searching photos")
+        }
+    }
+
     suspend fun searchGroupImages(
         context: Context,
         page: Int = 1,
