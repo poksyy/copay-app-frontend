@@ -13,8 +13,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -147,7 +149,7 @@ fun groupBalancesScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp)
+                .height(180.dp)
         ) {
             AsyncImage(
                 model = group?.imageUrl ?: R.drawable.group_default_image,
@@ -173,7 +175,8 @@ fun groupBalancesScreen(
             Text(
                 text = group?.name ?: "Group",
                 color = Color.White,
-                style = CopayTypography.title,
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(start = 16.dp, bottom = 16.dp)
@@ -197,9 +200,34 @@ fun groupBalancesScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
-                    .padding(top = 170.dp)
+                    .padding(top = 180.dp)
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    group?.ownerName?.let {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_user),
+                                contentDescription = "User icon",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .padding(end = 4.dp)
+                            )
+                            Text(
+                                text = "Created by: $it",
+                                style = CopayTypography.body,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     Text(
                         text = group?.description ?: "Description",
                         style = CopayTypography.body,
