@@ -1,5 +1,7 @@
 package com.copay.app.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 // General
@@ -28,3 +30,8 @@ val LogoutButtonBackground = Color(0xFFFF0000) // Red button
 
 // Link and Interactive Colors
 val LinkColor = Color(0xFF007BFF) // Blue for links
+
+@Composable
+fun adaptiveGray(): Color {
+    return if (isSystemInDarkTheme()) Color(0xFFB0B0B0) else Color(0xFF606060)
+}
