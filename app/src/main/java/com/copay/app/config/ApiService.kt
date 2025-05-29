@@ -25,14 +25,14 @@ import com.copay.app.dto.group.response.GetGroupResponseDTO
 import com.copay.app.dto.group.response.GroupMessageResponseDTO
 import com.copay.app.dto.notification.response.NotificationListResponseDTO
 import com.copay.app.dto.paymentconfirmation.request.ConfirmPaymentRequestDTO
-import com.copay.app.dto.paymentconfirmation.request.DeletePaymentConfirmationRequestDTO
 import com.copay.app.dto.paymentconfirmation.response.ListUnconfirmedPaymentConfirmationResponseDTO
 import com.copay.app.dto.paymentconfirmation.response.PaymentResponseDTO
 import com.copay.app.dto.profile.response.EmailResponseDTO
 import com.copay.app.dto.profile.response.PasswordResponseDTO
 import com.copay.app.dto.profile.response.PhoneNumberResponseDTO
 import com.copay.app.dto.profile.response.UsernameResponseDTO
-import com.copay.app.dto.unsplash.UnsplashResponse
+import com.copay.app.dto.unsplash.request.PhotoRequestDTO
+import com.copay.app.dto.unsplash.response.UnsplashResponse
 import com.copay.app.dto.user.UserResponseDTO
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -161,6 +161,29 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<GroupMessageResponseDTO>
 
+    // Unsplash search photo
+    @GET("api/photos/search")
+    suspend fun searchPhotos(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+        @Query("perPage") perPage: Int = 20
+    ): UnsplashResponse
+
+    // Update photo group.
+    @POST("api/photos/group/{groupId}")
+    suspend fun setGroupPhoto(
+        @Path("groupId") groupId: Long,
+        @Body photoRequestDTO: PhotoRequestDTO,
+        @Header("Authorization") token: String
+    ): Response<MessageResponseDTO>
+
+    // Delete photo group.
+    @DELETE("api/photos/group/{groupId}")
+    suspend fun removeGroupPhoto(
+        @Path("groupId") groupId: Long,
+        @Header("Authorization") token: String
+    ): Response<MessageResponseDTO>
+
     // Update estimated price group.
     @PATCH("${BASE_PATH}groups/{groupId}/estimatedprice")
     suspend fun updateGroupEstimatedPrice(
@@ -285,11 +308,4 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<MessageResponseDTO>
 
-    // Unsplash search photo
-    @GET("api/photos/search")
-    suspend fun searchPhotos(
-        @Query("query") query: String,
-        @Query("page") page: Int = 1,
-        @Query("perPage") perPage: Int = 20
-    ): UnsplashResponse
 }
