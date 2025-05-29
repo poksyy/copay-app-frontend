@@ -78,7 +78,7 @@ fun editGroupScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 32.dp),
+                contentPadding = PaddingValues(top = 48.dp, bottom = 32.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
@@ -87,7 +87,7 @@ fun editGroupScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         AsyncImage(
-                            model = R.drawable.chinese_buffet,
+                            model = selectedGroup?.imageUrl ?: R.drawable.group_default_image,
                             contentDescription = null,
                             modifier = Modifier
                                 .size(100.dp)
