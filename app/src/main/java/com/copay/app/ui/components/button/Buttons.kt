@@ -89,8 +89,8 @@ fun createButton(
             contentColor = CopayColors.onPrimary
         ),
         modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp),
+            .height(35.dp)
+            .width(110.dp),
         shape = RoundedCornerShape(28.dp),
         enabled = enabled
     ) {
@@ -98,13 +98,13 @@ fun createButton(
             painter = painterResource(id = R.drawable.ic_add),
             contentDescription = "Add",
             tint = CopayColors.onPrimary,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(14.dp)
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = "Create",
-            style = CopayTypography.button,
-            color = CopayColors.onPrimary
+            style = CopayTypography.body,
+            color = CopayColors.onPrimary,
         )
     }
 }
