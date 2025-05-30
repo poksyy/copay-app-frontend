@@ -13,16 +13,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.R
-import com.copay.app.dto.notification.response.NotificationResponseDTO
 import com.copay.app.model.Group
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.DashboardPager
 import com.copay.app.ui.components.GradientBackground
+import com.copay.app.ui.components.button.createButton
 import com.copay.app.ui.components.dialog.deleteGroupDialog
 import com.copay.app.ui.components.dialog.leaveGroupDialog
 import com.copay.app.ui.components.dialog.notificationDialog
@@ -37,7 +39,6 @@ import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.utils.state.ExpenseState
 import com.copay.app.viewmodel.ExpenseViewModel
 import com.copay.app.viewmodel.NotificationViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun homeScreen(
@@ -288,20 +289,21 @@ private fun homeContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(start = 24.dp, top = 24.dp, end = 24.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
+                .padding(vertical = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Hi, $username!",
+                text = "👋 Hi, $username!",
                 color = CopayColors.primary,
-                style = CopayTypography.title,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
             )
 
             IconButton(
@@ -324,7 +326,7 @@ private fun homeContent(
             groupsJoined = 6
         )
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Row(
             modifier = Modifier
@@ -347,27 +349,9 @@ private fun homeContent(
                     )
                 }
             }
-
-            Button(
-                onClick = onCreateClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CopayColors.primary,
-                    contentColor = CopayColors.onPrimary
-                )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "Add",
-                    tint = CopayColors.onPrimary,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = "Create",
-                    style = CopayTypography.button,
-                    color = CopayColors.onPrimary
-                )
-            }
+            createButton(
+                onCreateClick = onCreateClick
+            )
         }
 
         Spacer(modifier = Modifier.height(6.dp))
@@ -377,7 +361,8 @@ private fun homeContent(
             Text("You do not have any groups.", modifier = Modifier.padding(vertical = 16.dp))
         } else {
             groups.forEach { group ->
-                groupItem(group = group,
+                groupItem(
+                    group = group,
                     onItemClick = { onDetailClick(group) },
                     onEditClick = { onEditClick(group) },
                     onDeleteClick = { onDeleteClick(group) },
