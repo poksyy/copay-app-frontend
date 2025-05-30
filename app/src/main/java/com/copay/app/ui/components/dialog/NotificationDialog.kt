@@ -5,6 +5,8 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -32,9 +34,6 @@ fun notificationDialog(
 
     // Tab to manage read and unread messages.
     var activeTab by remember { mutableStateOf(0) }
-
-    println("hola")
-    println(allNotifications)
 
     // List of notifications that are only on read.
     val historyNotifications = allNotifications.filter { it.read }
@@ -126,25 +125,30 @@ fun notificationDialog(
                             style = CopayTypography.body
                         )
                     } else {
-                        list.forEach { notif ->
-                            notificationItem(
-                                notification = notif,
-                                isHistory = activeTab == 1,
-                                onMarkAsRead = {
-                                    notificationViewModel.markNotificationAsRead(
-                                        context,
-                                        notif.notificationId
-                                    )
-                                }.takeIf { !notif.read },
-                                onDelete = {
-                                    notificationViewModel.deleteNotification(
-                                        context,
-                                        notif.notificationId
-                                    )
-                                }
-                            )
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp)
+                        ) {
+                            items(list) { notif ->
+                                notificationItem(
+                                    notification = notif,
+                                    isHistory = activeTab == 1,
+                                    onMarkAsRead = {
+                                        notificationViewModel.markNotificationAsRead(
+                                            context,
+                                            notif.notificationId
+                                        )
+                                    }.takeIf { !notif.read },
+                                    onDelete = {
+                                        notificationViewModel.deleteNotification(
+                                            context,
+                                            notif.notificationId
+                                        )
+                                    }
+                                )
+                            }
                         }
-
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
