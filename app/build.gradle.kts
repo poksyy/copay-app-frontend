@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose) // Integration of ViewModel with Compose.
 
     // Navigation and architecture dependencies
+    implementation (libs.androidx.core.splashscreen) // Splash screen dependency.
     implementation(libs.androidx.navigation.compose) // Navigation in Compose.
     implementation(libs.dagger.hilt) // Hilt for dependency injection.
     implementation(libs.hilt.compose.navigation)
@@ -86,8 +87,6 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation (libs.play.services.auth.v2050)
-
-
 
     // Data storage and preferences dependencies
     implementation(libs.androidx.datastore.preferences) // DataStore for storing preferences.
