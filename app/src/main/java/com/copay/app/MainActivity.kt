@@ -15,13 +15,14 @@ import com.copay.app.utils.ConnectionManager
 import com.copay.app.utils.DataStoreManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        installSplashScreen()
         setContent {
             // State to handle theme.
             var isDarkTheme by remember { mutableStateOf(false) }
