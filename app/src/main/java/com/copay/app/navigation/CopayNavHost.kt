@@ -13,7 +13,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.copay.app.ui.screen.hubScreen
-import com.copay.app.ui.screen.splashScreen
 import com.copay.app.ui.screen.auth.*
 import com.copay.app.viewmodel.SplashViewModel
 import com.copay.app.ui.screen.auth.registerStepOneScreen
@@ -24,29 +23,16 @@ fun copayNavHost(
     navController: NavHostController,
     toggleTheme: () -> Unit,
     modifier: Modifier = Modifier,
-    startDestination: String = NavRoutes.SplashScreen.route
+    startDestination: String = NavRoutes.AuthScreen.route
 ) {
     var isDarkTheme by remember { mutableStateOf(false) }
     val splashViewModel: SplashViewModel = hiltViewModel()
     val isDataLoaded = splashViewModel.isDataLoaded.collectAsState()
 
-    LaunchedEffect(isDataLoaded.value) {
-        if (isDataLoaded.value) {
-            navController.navigate(NavRoutes.AuthScreen.route) {
-                popUpTo(NavRoutes.SplashScreen.route) { inclusive = true }
-            }
-        }
-    }
-
     // Set up the navigation graph.
     NavHost(
         navController = navController, startDestination = startDestination, modifier = modifier
     ) {
-        // SplashScreen.
-        composable(NavRoutes.SplashScreen.route) {
-            splashScreen(automaticRedirection = { navController.navigate(NavRoutes.AuthScreen.route) })
-        }
-
         // AuthScreen.
         composable(NavRoutes.AuthScreen.route) {
             authScreen(
