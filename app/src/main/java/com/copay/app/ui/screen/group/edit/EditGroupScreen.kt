@@ -20,7 +20,7 @@ import com.copay.app.R
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.ui.components.snackbar.redSnackbarHost
-import com.copay.app.ui.components.topNavBar
+import com.copay.app.ui.components.TopNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -66,10 +66,9 @@ fun editGroupScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            topNavBar(
+            TopNavBar(
                 title = "Edit Group",
                 onBackClick = { navigationViewModel.navigateTo(SpaScreens.Home) },
-                modifier = Modifier.fillMaxWidth()
             )
 
             LazyColumn(

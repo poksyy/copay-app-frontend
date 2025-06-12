@@ -1,10 +1,11 @@
 package com.copay.app.ui.screen.profile.edit
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
@@ -15,7 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
 import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.input.inputField
-import com.copay.app.ui.components.topNavBar
+import com.copay.app.ui.components.TopNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.ProfileState
@@ -56,19 +57,19 @@ fun editUsernameScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        topNavBar(
+        TopNavBar(
             title = "Edit username",
             onBackClick = { navigationViewModel.navigateTo(SpaScreens.ProfileSubscreen.EditProfile) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter)
         )
 
+        // Screen content.
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
                 .padding(top = 90.dp)
+                .verticalScroll(rememberScrollState())
+                .imePadding()
         ) {
             inputField(
                 value = username,

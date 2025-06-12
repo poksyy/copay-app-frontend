@@ -29,7 +29,7 @@ import com.copay.app.ui.components.button.cancelButtonSmall
 import com.copay.app.ui.components.button.confirmButtonSmall
 import com.copay.app.ui.components.snackbar.greenSnackbarHost
 import com.copay.app.ui.components.snackbar.redSnackbarHost
-import com.copay.app.ui.components.topNavBar
+import com.copay.app.ui.components.TopNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -82,7 +82,7 @@ fun searchPhotoScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            topNavBar(
+            TopNavBar(
                 title = "Search Photo",
                 onBackClick = { navigationViewModel.navigateTo(SpaScreens.GroupSubscreen.EditGroup) }
             )

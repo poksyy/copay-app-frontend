@@ -6,18 +6,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.copay.app.navigation.SpaScreens
-import com.copay.app.ui.components.button.backButtonTop
 import com.copay.app.ui.components.button.secondaryButton
 import com.copay.app.ui.components.input.inputField
-import com.copay.app.ui.components.topNavBar
+import com.copay.app.ui.components.TopNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.ProfileState
@@ -71,27 +68,19 @@ fun changePasswordScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        topNavBar(
+        TopNavBar(
             title = "Change password",
             onBackClick = { navigationViewModel.navigateBack() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter)
         )
 
-        val scrollState = rememberScrollState()
-
-        // Screen content
+        // Screen content.
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 12.dp)
                 .padding(top = 90.dp)
-                .imePadding(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
+                .verticalScroll(rememberScrollState())
+                .imePadding()
         ) {
             // Current password field
             inputField(
@@ -199,15 +188,5 @@ fun changePasswordScreen(
                     .padding(vertical = 16.dp)
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun changePasswordScreenPreview() {
-    MaterialTheme {
-        changePasswordScreen(
-            navigationViewModel = NavigationViewModel()
-        )
     }
 }
