@@ -27,7 +27,7 @@ import com.copay.app.ui.components.input.dropdownField
 import com.copay.app.ui.components.input.inputField
 import com.copay.app.ui.components.input.priceInputField
 import com.copay.app.ui.components.snackbar.redSnackbarHost
-import com.copay.app.ui.components.topNavBar
+import com.copay.app.ui.components.TopNavBar
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 import com.copay.app.utils.state.GroupState
@@ -209,18 +209,17 @@ fun CreateGroupScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column {
-            topNavBar(
-                title = "Create new group",
-                onBackClick = { navigationViewModel.navigateBack() }
-            )
-        }
+        TopNavBar(
+            title = "Create new group",
+            onBackClick = { navigationViewModel.navigateBack() }
+        )
 
+        // Screen content.
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
-                .padding(top = 70.dp)
+                .padding(top = 90.dp)
                 .verticalScroll(rememberScrollState())
                 .imePadding()
         ) {

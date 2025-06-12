@@ -21,9 +21,8 @@ import com.copay.app.ui.components.dialog.*
 import com.copay.app.ui.components.listitem.externalMemberItem
 import com.copay.app.ui.components.listitem.registeredMemberItem
 import com.copay.app.ui.components.snackbar.greenSnackbarHost
-import com.copay.app.ui.components.topNavBar
+import com.copay.app.ui.components.TopNavBar
 import com.copay.app.utils.state.GroupState
-import com.copay.app.utils.state.ProfileState
 import com.copay.app.viewmodel.GroupViewModel
 import com.copay.app.viewmodel.NavigationViewModel
 import com.copay.app.viewmodel.UserViewModel
@@ -187,10 +186,9 @@ fun editGroupMembersContent(
     screenSnackbarHostState: SnackbarHostState
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        topNavBar(
+        TopNavBar(
             title = "Edit group members",
             onBackClick = onBack,
-            modifier = Modifier.align(Alignment.TopCenter)
         )
 
         FloatingActionButton(

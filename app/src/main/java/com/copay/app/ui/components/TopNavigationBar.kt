@@ -1,47 +1,45 @@
 package com.copay.app.ui.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.copay.app.ui.components.button.backButtonTop
 import com.copay.app.ui.theme.CopayColors
 import com.copay.app.ui.theme.CopayTypography
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun topNavBar(
+fun TopNavBar(
     title: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            backButtonTop(onBackClick = onBackClick, modifier = Modifier.align(Alignment.CenterStart))
-            Text(
-                text = title,
-                style = CopayTypography.navTitle,
-                color = CopayColors.primary,
-                modifier = Modifier.align(Alignment.Center)
+    Column(modifier = modifier.fillMaxWidth()) {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(
+                    text = title,
+                    style = CopayTypography.navTitle,
+                    color = CopayColors.primary
+                )
+            },
+            navigationIcon = {
+                backButtonTop(onBackClick = onBackClick)
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = CopayColors.background
             )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
+        )
 
         HorizontalDivider(
             color = CopayColors.outline,
-            thickness = 0.5.dp,
-            modifier = Modifier.fillMaxWidth()
+            thickness = 0.5.dp
         )
     }
 }
-
