@@ -29,9 +29,9 @@ fun DashboardPager(
     val pagerState = rememberPagerState(pageCount = { 3 })
 
     val items = listOf(
-        Triple("Paid to Friends", "${totalSpent}€", "This month"),
-        Triple("Owed by Friends", "${totalDebt}€", "Awaiting confirmation"),
-        Triple("Groups Joined", groupsJoined.toString(), "All time")
+            Triple("You owe", "${totalSpent}€", "Outstanding balance"),
+            Triple("You're owed", "${totalDebt}€", "Pending payments"),
+            Triple("Active groups", groupsJoined.toString(), "Currently joined")
     )
 
     Column {
